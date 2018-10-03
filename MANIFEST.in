@@ -1,0 +1,2 @@
+include versioneer.py
+include skullbasenavigation/_version.py
