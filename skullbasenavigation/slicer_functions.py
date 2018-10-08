@@ -7,6 +7,8 @@ def connect_to_OpenIGTLink(name, host, port):
   cnode.SetTypeClient(host, port)
   cnode.Start()
 
+  return cnode
+
 def create_needle_model(name, length, radius, tip_radius):
   #TODO: Set colour
   show_markers = False
@@ -15,6 +17,8 @@ def create_needle_model(name, length, radius, tip_radius):
   needle.SetName(name)
 
   return needle
+
+
 
 def create_transform_node(name):
   transform = slicer.vtkMRMLTransformNode()
@@ -69,5 +73,3 @@ def check_if_item_is_transform(item_ID):
 def set_parent_of_transform_hierarchy_node(child, parent):
   child.SetAndObserveTransformNodeID(parent.GetID())
 
-
-  
