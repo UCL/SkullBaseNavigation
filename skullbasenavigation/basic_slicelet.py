@@ -3,7 +3,7 @@ import unittest
 import vtk, qt, ctk, slicer
 from slicer.ScriptedLoadableModule import *
 import logging
-
+from ui.form import Ui_Form
 
 class Slicelet(object):
   """A slicer slicelet is a module widget that comes up in stand alone mode
@@ -15,51 +15,110 @@ class Slicelet(object):
 
 
   def __init__(self, widgetClass=None):
-    self.parent = qt.QFrame()
-    self.top_splitter = qt.QSplitter()
-    self.top_splitter.orientation=qt.Qt.Horizontal
+    
+    self.parent = qt.QSplitter()
+    self.parent.orientation = qt.Qt.Horizontal
+    
+    ## Left side of splitter
+    self.control_panel = qt.QSplitter()
+    self.control_panel.orientation = qt.Qt.Vertical
+   
+    self.parent.addWidget(self.control_panel)
 
-    self.parent.setLayout( qt.QHBoxLayout() )
+    # Buttons Widget
+    button_widget_index = 0
 
-    self.parent.layout().addWidget(self.top_splitter)
-    #splitter
-    self.splitter = qt.QSplitter()
-    self.splitter.orientation = qt.Qt.Vertical
-    self.top_splitter.addWidget(self.splitter)
-
-    # buttons - top frame
     self.buttons = qt.QFrame()
-    self.buttons.setLayout( qt.QVBoxLayout() )
-    self.loadDataButton = qt.QPushButton("Connect to PLUS")
-    self.buttons.layout().addWidget(self.loadDataButton)
-    self.loadDataButton.connect('clicked()', slicer.app.ioManager().openAddVolumeDialog)
-    self.showIn3DButton = qt.QPushButton("Check Data")
-    self.buttons.layout().addWidget(self.showIn3DButton)
-    self.showIn3DButton.connect('clicked()', self.showIn3D)
-    self.addDataButton = qt.QPushButton("Calibration")
-    self.buttons.layout().addWidget(self.addDataButton)
-    self.addDataButton.connect("clicked()",slicer.app.ioManager().openAddDataDialog)
-    self.loadSceneButton = qt.QPushButton("Load Scene")
-    self.buttons.layout().addWidget(self.loadSceneButton)
-    self.loadSceneButton.connect("clicked()",slicer.app.ioManager().openLoadSceneDialog)
+    self.buttons.setLayout(qt.QVBoxLayout())
 
-    self.splitter.addWidget(self.buttons)
+    self.advanced_options_checkbox = qt.QCheckBox("Show Advanced Settings")
+    self.advanced_options_checkbox.stateChanged.connect(self.toggle_tab_panel)
+    self.buttons.layout().addWidget(self.advanced_options_checkbox)
 
-    # bottom frame
-    self.bottomFrame = qt.QFrame()
-    self.bottomFrame.setLayout(qt.QVBoxLayout() )
-    self.splitter.addWidget(self.bottomFrame)
+    self.add_connect_to_IGTLink_button()
+    self.test_widget = qt.QWidget()
+    self.ui=Ui_Form()
+    self.ui.setupUi(self.test_widget)
+    test_widget_index = 1
+    #self.setupUi(self.test_widget)
+    
+    self.control_panel.insertWidget(test_widget_index, self.test_widget)
+    self.control_panel.insertWidget(button_widget_index,self.buttons)
+    self.control_panel.setCollapsible(test_widget_index,False)
 
-    #tab widget
+    self.control_panel.setCollapsible(button_widget_index,False)
+
+    # Tabbed modules - hide by default
+    tab_widget_index = 2
     self.tabWidget = qt.QTabWidget()
-    self.bottomFrame.layout().addWidget(self.tabWidget)
+    self.tabWidget.hide()
+    self.add_tab_widgets()
 
-    module_name_label_pairs = [ ["volumerendering", "Volumes"],
-                                ["openigtlinkif", "IGTLink"],
-                                ["openigtlinkremote", "IGT Remote"],
-                                ["pivotcalibration", "Calibrate"],
-                                ["createmodels","Models"]]
+    self.control_panel.insertWidget(tab_widget_index, self.tabWidget) 
 
+
+
+    ## Right side of splitter
+    # 3D/Slice Viewer
+    self.layoutManager = slicer.qMRMLLayoutWidget()
+    self.layoutManager.setMRMLScene(slicer.mrmlScene)
+    self.layoutManager.setLayout(slicer.vtkMRMLLayoutNode.SlicerLayoutDefaultView)
+    self.parent.addWidget(self.layoutManager)
+
+    self.parent.show()    
+
+  def add_connect_to_IGTLink_button(self):
+    self.connect_to_IGTL_frame = qt.QFrame()
+    self.connect_to_IGTL_frame.setLayout(qt.QGridLayout())
+    
+    self.connect_to_IGTL_button = qt.QPushButton("Connect")
+    self.ip_edit_text = qt.QTextEdit("localhost")
+    self.port_edit_text = qt.QTextEdit("18904")
+
+    self.connect_to_IGTL_frame.layout().addWidget(qt.QLabel("OpenIGTLink Settings"),1,1,1,2, qt.Qt.AlignHCenter)
+    self.connect_to_IGTL_frame.layout().addWidget(qt.QLabel("IP:"),2,1)
+    self.connect_to_IGTL_frame.layout().addWidget(qt.QLabel("Port:"),3,1)
+    self.connect_to_IGTL_frame.layout().addWidget(self.ip_edit_text, 2,2)
+    self.connect_to_IGTL_frame.layout().addWidget(self.port_edit_text,3,2)
+    self.connect_to_IGTL_frame.layout().addWidget(self.connect_to_IGTL_button,4,1,4,2, qt.Qt.AlignHCenter )
+
+
+ 
+    # self.connect_to_IGTL_form.addRow(qt.QLabel("IP:"), self.ip_edit_text)
+    # self.connect_to_IGTL_form.addRow(qt.QLabel("Port:"), self.port_edit_text)
+
+    # self.connect_to_IGTL_frame.layout().addLayout(self.connect_to_IGTL_form)
+    # self.connect_to_IGTL_frame.layout().addWidget(self.connect_to_IGTL_button)
+
+    
+
+    self.buttons.layout().addWidget(self.connect_to_IGTL_frame)
+
+  def setupUi(self, Form):
+    Form.resize(350, 519)
+    self.verticalLayoutWidget = qt.QWidget(Form)
+    self.verticalLayoutWidget.setGeometry(qt.QRect(40, 30, 271, 441))
+    self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
+    self.verticalLayout = qt.QVBoxLayout(self.verticalLayoutWidget)
+    self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+    self.verticalLayout.setObjectName("verticalLayout")
+    self.checkBox = qt.QCheckBox(self.verticalLayoutWidget)
+    self.checkBox.setObjectName("checkBox")
+    self.verticalLayout.addWidget(self.checkBox)
+    self.pushButton = qt.QPushButton(self.verticalLayoutWidget)
+    self.pushButton.setObjectName("pushButton")
+    self.verticalLayout.addWidget(self.pushButton)
+
+    self.retranslateUi(Form)
+
+
+  def retranslateUi(self, Form):
+    _translate = qt.QCoreApplication.translate
+    Form.setWindowTitle(_translate("Form", "Form"))
+    self.checkBox.setText(_translate("Form", "CheckBox"))
+    self.pushButton.setText(_translate("Form", "PushButton"))
+
+  def add_tab_widgets(self):
     module_names = ["data","volumerendering","openigtlinkif","openigtlinkremote","pivotcalibration","createmodels"]
     module_labels = ["Data","Volumes", "IGTLink", "IGT Remote", "Calibrate", "Models"]
 
@@ -70,24 +129,14 @@ class Slicelet(object):
       self.scrollArea.setWidgetResizable(True)
       self.tabWidget.addTab(self.scrollArea, label)
 
-    # moduleSelector = slicer.qSlicerModuleSelectorToolBar()
-    # moduleSelector.setModuleManager(slicer.app.moduleManager())
-    # self.buttons.addWidget(moduleSelector)
 
-    # layout
-    layoutManager = slicer.qMRMLLayoutWidget()
-    layoutManager.setMRMLScene(slicer.mrmlScene)
-    layoutManager.setLayout(slicer.vtkMRMLLayoutNode.SlicerLayoutDefaultView)
-    self.top_splitter.addWidget(layoutManager)
+  def toggle_tab_panel(self):
+    if self.advanced_options_checkbox.isChecked():
+      self.tabWidget.show()
+    else:
+      self.tabWidget.hide()
 
-    self.parent.show()    
 
-  # def addModule(module_name):
-  #   scrollArea = qt.QScrollArea()
-  #   widget = getattr(slicer.modules, module_name).widgetRepresentation()
-  #   scrollArea.setWidget(widget)
-  #   self.tabWidget.addTab(scrollArea, module_name)
-  
   def showIn3D(self):
     # Turn on the 3D Volume view for the loaded node
 
@@ -117,3 +166,35 @@ if __name__ == "__main__":
   print( sys.argv )
 
   slicelet = TractographySlicelet()
+
+
+def connect_to_OpenIGTLink(name, host, port):
+  cnode=slicer.vtkMRMLIGTLConnectorNode()
+  slicer.mrmlScene.AddNode(cnode)
+  cnode.SetName(name)
+  cnode.SetTypeClient(host, port)
+  cnode.Start()
+
+def create_needle_model(name, length, radius, tip_radius):
+  #TODO: Set colour
+  show_markers = False
+  create_model_module_logic = slicer.modules.createmodels.logic()
+  needle = create_model_module_logic.CreateNeedle(length, radius, tip_radius, show_markers)
+  needle.SetName(name)
+
+  return needle
+
+def create_transform_node(name):
+  transform = slicer.vtkMRMLTransformNode()
+  transform.SetName(name)
+  slicer.mrmlScene.AddNode(transform)
+
+  return transform
+
+
+def set_node_visible(node_nam):
+  transform_name.SetDisplayVisibility(1)
+
+def set_node_invisible(node_name):
+  transform_name.SetDisplayVisibility(0)
+  
