@@ -43,7 +43,7 @@ def test_create_needle_model():
 
     needle = create_needle_model(name, length, radius, tip)
 
-    check_equal(needle.GetName(), 'name')
+    check_equal(needle.GetName(), name)
 
     return needle
 
@@ -82,14 +82,19 @@ def test_create_transform():
 
 def test_check_if_transform(tf, model):
     
+    tf_name = tf.GetName()
+    model_name = model.GetName()
     print("Testing Transform Checker")
-    tf_ID = get_item_id_by_name(tf.GetName())
-    model_ID = get_item_id_by_name(model.GetName())
+    tf_ID = get_item_id_by_name(tf_name)
+    model_ID = get_item_id_by_name(model_name)
 
     print("Actual Transform")
     check_equal(check_if_item_is_transform(tf_ID), True)
     print("Not a transform")
     check_equal(check_if_item_is_transform(model_ID), False)
+
+    print("Testing Transform Checker Wrapper Function")
+    check_equal(does_node_exist_as_a_transform(tf_name), True)
 
 def test_set_transform_parent():
 

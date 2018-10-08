@@ -19,7 +19,6 @@ def create_needle_model(name, length, radius, tip_radius):
   return needle
 
 
-
 def create_transform_node(name):
   transform = slicer.vtkMRMLTransformNode()
   transform.SetName(name)
@@ -50,6 +49,7 @@ def get_item_id_by_name(item):
 
   return item_ID
 
+
 def check_if_item_exists(item_ID):
   invalid_item_ID = slicer.vtkMRMLSubjectHierarchyNode.GetInvalidItemID()
 
@@ -58,6 +58,7 @@ def check_if_item_exists(item_ID):
 
   else:
     return False
+
 
 def check_if_item_is_transform(item_ID):
 
@@ -69,6 +70,17 @@ def check_if_item_is_transform(item_ID):
   
   else:
     return False 
+
+def does_node_exist_as_a_transform(name):
+
+    item_ID = get_item_id_by_name(name)
+    item_exists = check_if_item_exists(item_ID)
+    item_is_transform = check_if_item_is_transform(item_ID)
+
+    if item_exists and item_is_transform:
+        return True
+    
+    return False
 
 def set_parent_of_transform_hierarchy_node(child, parent):
   child.SetAndObserveTransformNodeID(parent.GetID())
