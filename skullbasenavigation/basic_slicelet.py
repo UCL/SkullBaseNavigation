@@ -167,34 +167,3 @@ if __name__ == "__main__":
 
   slicelet = TractographySlicelet()
 
-
-def connect_to_OpenIGTLink(name, host, port):
-  cnode=slicer.vtkMRMLIGTLConnectorNode()
-  slicer.mrmlScene.AddNode(cnode)
-  cnode.SetName(name)
-  cnode.SetTypeClient(host, port)
-  cnode.Start()
-
-def create_needle_model(name, length, radius, tip_radius):
-  #TODO: Set colour
-  show_markers = False
-  create_model_module_logic = slicer.modules.createmodels.logic()
-  needle = create_model_module_logic.CreateNeedle(length, radius, tip_radius, show_markers)
-  needle.SetName(name)
-
-  return needle
-
-def create_transform_node(name):
-  transform = slicer.vtkMRMLTransformNode()
-  transform.SetName(name)
-  slicer.mrmlScene.AddNode(transform)
-
-  return transform
-
-
-def set_node_visible(node_nam):
-  transform_name.SetDisplayVisibility(1)
-
-def set_node_invisible(node_name):
-  transform_name.SetDisplayVisibility(0)
-  
