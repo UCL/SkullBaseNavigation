@@ -1,10 +1,95 @@
 # -*- coding: utf-8 -*-
 
-try:
-    from PySide import QtWidgets
-except:
-    from PyQt5 import QtWidgets
+# Form implementation generated from reading ui file 'ui/form.ui'
+#
+# Created by: PyQt5 UI code generator 5.9.2
+#
+# WARNING! All changes made in this file will be lost!
 
+import qt
 
-class form:
-    def __init__(self):
+class Ui_Form(object):
+    def setupUi(self, Form):
+        Form.setObjectName("Form")
+        Form.resize(931, 646)
+        sizePolicy = qt.QSizePolicy(qt.QSizePolicy.Minimum, qt.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        Form.setSizePolicy(sizePolicy)
+        self.gridLayout = qt.QGridLayout(Form)
+        self.gridLayout.setObjectName("gridLayout")
+        self.splitter = qt.QSplitter(Form)
+        sizePolicy = qt.QSizePolicy(qt.QSizePolicy.Expanding, qt.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(1)
+        sizePolicy.setVerticalStretch(1)
+        self.splitter.setSizePolicy(sizePolicy)
+        self.splitter.setOrientation(qt.Qt.Vertical)
+        self.splitter.setChildrenCollapsible(False)
+        self.splitter.setObjectName("splitter")
+        self.frame = qt.QFrame(self.splitter)
+        self.frame.setFrameShape(qt.QFrame.StyledPanel)
+        self.frame.setFrameShadow(qt.QFrame.Raised)
+        self.frame.setObjectName("frame")
+        self.gridLayout_2 = qt.QGridLayout(self.frame)
+        self.gridLayout_2.setObjectName("gridLayout_2")
+        self.verticalLayout = qt.QVBoxLayout()
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.formLayout = qt.QFormLayout()
+        self.formLayout.setObjectName("formLayout")
+        self.IPLabel = qt.QLabel(self.frame)
+        self.IPLabel.setObjectName("IPLabel")
+        self.formLayout.setWidget(2, qt.QFormLayout.LabelRole, self.IPLabel)
+        self.IPLineEdit = qt.QLineEdit(self.frame)
+        self.IPLineEdit.setObjectName("IPLineEdit")
+        self.formLayout.setWidget(2, qt.QFormLayout.FieldRole, self.IPLineEdit)
+        self.portLabel = qt.QLabel(self.frame)
+        self.portLabel.setObjectName("portLabel")
+        self.formLayout.setWidget(3, qt.QFormLayout.LabelRole, self.portLabel)
+        self.portLineEdit = qt.QLineEdit(self.frame)
+        self.portLineEdit.setObjectName("portLineEdit")
+        self.formLayout.setWidget(3, qt.QFormLayout.FieldRole, self.portLineEdit)
+        self.pushButton = qt.QPushButton(self.frame)
+        sizePolicy = qt.QSizePolicy(qt.QSizePolicy.Maximum, qt.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        self.pushButton.setSizePolicy(sizePolicy)
+        self.pushButton.setObjectName("pushButton")
+        self.formLayout.setWidget(4, qt.QFormLayout.FieldRole, self.pushButton)
+        self.verticalLayout.addLayout(self.formLayout)
+        self.gridLayout_2.addLayout(self.verticalLayout, 1, 0, 1, 1)
+        self.label = qt.QLabel(self.frame)
+        self.label.setAlignment(qt.Qt.AlignCenter)
+        self.label.setObjectName("label")
+        self.gridLayout_2.addWidget(self.label, 0, 0, 1, 1)
+        self.frame_2 = qt.QFrame(self.splitter)
+        self.frame_2.setFrameShape(qt.QFrame.StyledPanel)
+        self.frame_2.setFrameShadow(qt.QFrame.Raised)
+        self.frame_2.setObjectName("frame_2")
+        self.gridLayout_3 = qt.QGridLayout(self.frame_2)
+        self.gridLayout_3.setObjectName("gridLayout_3")
+        self.tabWidget = qt.QTabWidget(self.frame_2)
+        self.tabWidget.setObjectName("tabWidget")
+        self.tab = qt.QWidget()
+        self.tab.setObjectName("tab")
+        self.tabWidget.addTab(self.tab, "")
+        self.tab_2 = qt.QWidget()
+        self.tab_2.setObjectName("tab_2")
+        self.tabWidget.addTab(self.tab_2, "")
+        self.gridLayout_3.addWidget(self.tabWidget, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
+
+        self.retranslateUi(Form)
+        self.tabWidget.setCurrentIndex(1)
+
+    def retranslateUi(self, Form):
+        _translate = qt.QCoreApplication.translate
+        Form.setWindowTitle(_translate("Form", "Form"))
+        self.IPLabel.setText(_translate("Form", "IP:"))
+        self.IPLineEdit.setText(_translate("Form", "localhost"))
+        self.portLabel.setText(_translate("Form", "Port:"))
+        self.portLineEdit.setText(_translate("Form", "18904"))
+        self.pushButton.setText(_translate("Form", "Connect"))
+        self.label.setText(_translate("Form", "Connect To OpenIGTLink"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("Form", "Tab 1"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("Form", "Tab 2"))
+

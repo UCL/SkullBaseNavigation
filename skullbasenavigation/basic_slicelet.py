@@ -4,6 +4,7 @@ import vtk, qt, ctk, slicer
 from slicer.ScriptedLoadableModule import *
 import logging
 from ui.form import Ui_Form
+import sbn
 
 class Slicelet(object):
   """A slicer slicelet is a module widget that comes up in stand alone mode
@@ -20,10 +21,10 @@ class Slicelet(object):
     self.parent.orientation = qt.Qt.Horizontal
     
     ## Left side of splitter
-    self.control_panel = qt.QSplitter()
+    self.control_panel = qt.QSplitter(self.parent)
     self.control_panel.orientation = qt.Qt.Vertical
    
-    self.parent.addWidget(self.control_panel)
+    #self.parent.addWidget(self.control_panel)
 
     # Buttons Widget
     button_widget_index = 0

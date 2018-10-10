@@ -75,8 +75,9 @@ def test_create_transform():
     
     print("Testing Transform Creation")
     name = "test_transform"
-    tf = create_transform_node(name)
+    tf = create_linear_transform_node(name)
     check_equal(tf.GetName(), name)
+    check_equal(type(tf), type(slicer.vtkMRMLLinearTransformNode()))
 
     return tf
 
@@ -99,8 +100,8 @@ def test_check_if_transform(tf, model):
 def test_set_transform_parent():
 
     print("Testing Setting of Transform Parent Node")
-    tf_child = create_transform_node('child')
-    tf_parent = create_transform_node('parent')
+    tf_child = create_linear_transform_node('child')
+    tf_parent = create_linear_transform_node('parent')
 
     set_parent_of_transform_hierarchy_node(tf_child, tf_parent)
 
