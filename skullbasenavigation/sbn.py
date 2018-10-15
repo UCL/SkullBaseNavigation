@@ -2,7 +2,7 @@ from slicer_functions import *
 
 def connect():
     igt_connector = connect_to_OpenIGTLink('OpenIGT', 'localhost', 18905)
-    
+        
     return igt_connector
 
 def set_visible():
@@ -22,7 +22,7 @@ def wait_for_transforms():
     transforms = ['StylusToRas', 'StylusToReference', 'SureTrack2ToRas']
 
     for transform in transforms:
-        if does_node_exist_as_a_transform(transform):
+        if not does_node_exist_as_a_transform(transform):
             return False
     
     return True

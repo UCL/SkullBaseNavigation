@@ -1,5 +1,4 @@
 import slicer
-import time
 
 def connect_to_OpenIGTLink(name, host, port):
   cnode=slicer.vtkMRMLIGTLConnectorNode()
@@ -153,7 +152,7 @@ def set_pivot_transforms(input_transform, output_transform):
     output_combo_box.setCurrentNode(output_transform)
 
 
-def get_model_over_IGTLink(igtlink_node):
+def set_model_widget_connector(igtlink_node):
     igt_remote_widget = slicer.modules.openigtlinkremote.widgetRepresentation()
 
     combo_box_type = slicer.qMRMLNodeComboBox()

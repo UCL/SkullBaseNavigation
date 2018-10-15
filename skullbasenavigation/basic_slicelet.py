@@ -11,9 +11,6 @@ class Slicelet(object):
   implemented as a python class.
   This class provides common wrapper functionality used by all slicer modlets.
   """
-  # TODO: put this in a SliceletLib
-  # TODO: parse command line arge
-
 
   def __init__(self, widgetClass=None):
     
@@ -24,30 +21,70 @@ class Slicelet(object):
     self.control_panel = qt.QSplitter(self.parent)
     self.control_panel.orientation = qt.Qt.Vertical
    
-    #self.parent.addWidget(self.control_panel)
-
     # Buttons Widget
     button_widget_index = 0
 
-    self.buttons = qt.QFrame()
+    self.buttons = qt.QFrame(self.control_panel)
+    self.control_panel.setCollapsible(button_widget_index,False)
+
     self.buttons.setLayout(qt.QVBoxLayout())
 
-    self.advanced_options_checkbox = qt.QCheckBox("Show Advanced Settings")
-    self.advanced_options_checkbox.stateChanged.connect(self.toggle_tab_panel)
-    self.buttons.layout().addWidget(self.advanced_options_checkbox)
+    self.connect_btn = qt.QPushButton("Connect to OpenIGTLink")
+    self.buttons.layout().addWidget(self.connect_btn)
 
-    self.add_connect_to_IGTLink_button()
-    self.test_widget = qt.QWidget()
-    self.ui=Ui_Form()
-    self.ui.setupUi(self.test_widget)
-    test_widget_index = 1
-    #self.setupUi(self.test_widget)
+    self.ctk_model_box = ctk.ctkCollapsibleButton()
+    self.ctk_model_box.setText("OpenIGTLink Remote")
+    self.ctk_model_box.setOn(False)
     
-    self.control_panel.insertWidget(test_widget_index, self.test_widget)
-    self.control_panel.insertWidget(button_widget_index,self.buttons)
-    self.control_panel.setCollapsible(test_widget_index,False)
+    self.remote_layout = qt.QVBoxLayout()
+    self.remote_scroll_area = qt.QScrollArea()
+    self.remote = slicer.modules.openigtlinkremote.widgetRepresentation()
 
-    self.control_panel.setCollapsible(button_widget_index,False)
+    self.remote_scroll_area.setWidget(self.remote)
+    self.remote_scroll_area.setWidgetResizable(True)
+    self.remote_layout.addWidget(self.remote_scroll_area)
+    self.ctk_model_box.setLayout(self.remote_layout)
+
+    self.buttons.layout().addWidget(self.ctk_model_box)
+
+    self.ctk_pivot_box = ctk.ctkCollapsibleButton()
+    self.ctk_pivot_box.setText("Pivot Calibration")
+    self.ctk_pivot_box.setOn(False)
+    
+    self.pivot_layout = qt.QVBoxLayout()
+    self.pivot_scroll_area = qt.QScrollArea()
+    self.pivot = slicer.modules.pivotcalibration.widgetRepresentation()
+
+    self.pivot_scroll_area.setWidget(self.pivot)
+    self.pivot_scroll_area.setWidgetResizable(True)
+    self.pivot_layout.addWidget(self.pivot_scroll_area)
+
+    self.ctk_pivot_box.setLayout(self.pivot_layout)
+    self.buttons.layout().addWidget(self.ctk_pivot_box)
+
+    # Disable some buttons (they are enabled if wait_for_transforms returns true)
+    self.ctk_pivot_box.setEnabled(False)
+    
+    # Button callbacks
+    self.connect_btn.clicked.connect(sbn.connect)
+
+    self.advanced_options_checkbox = qt.QCheckBox("Show Advanced Settings")
+    self.buttons.layout().addWidget(self.advanced_options_checkbox)
+    self.advanced_options_checkbox.stateChanged.connect(self.toggle_tab_panel)
+
+
+    #Timer to check if CT model and ultrasound are available
+    self.checkModelsTimer = qt.QTimer()
+    self.checkModelsTimer.setInterval(1000)
+    self.checkModelsTimer.timeout.connect(self.check_if_models_exist)
+    self.checkModelsTimer.start()
+
+    #Timer to check if needed transforms are active
+    self.checkTranformsTimer = qt.QTimer()
+    self.checkTranformsTimer.setInterval(1000)
+    self.checkTranformsTimer.timeout.connect(self.check_if_transforms_active)
+    self.checkTranformsTimer.start()
+
 
     # Tabbed modules - hide by default
     tab_widget_index = 2
@@ -56,8 +93,6 @@ class Slicelet(object):
     self.add_tab_widgets()
 
     self.control_panel.insertWidget(tab_widget_index, self.tabWidget) 
-
-
 
     ## Right side of splitter
     # 3D/Slice Viewer
@@ -68,60 +103,40 @@ class Slicelet(object):
 
     self.parent.show()    
 
-  def add_connect_to_IGTLink_button(self):
-    self.connect_to_IGTL_frame = qt.QFrame()
-    self.connect_to_IGTL_frame.setLayout(qt.QGridLayout())
-    
-    self.connect_to_IGTL_button = qt.QPushButton("Connect")
-    self.ip_edit_text = qt.QTextEdit("localhost")
-    self.port_edit_text = qt.QTextEdit("18904")
-
-    self.connect_to_IGTL_frame.layout().addWidget(qt.QLabel("OpenIGTLink Settings"),1,1,1,2, qt.Qt.AlignHCenter)
-    self.connect_to_IGTL_frame.layout().addWidget(qt.QLabel("IP:"),2,1)
-    self.connect_to_IGTL_frame.layout().addWidget(qt.QLabel("Port:"),3,1)
-    self.connect_to_IGTL_frame.layout().addWidget(self.ip_edit_text, 2,2)
-    self.connect_to_IGTL_frame.layout().addWidget(self.port_edit_text,3,2)
-    self.connect_to_IGTL_frame.layout().addWidget(self.connect_to_IGTL_button,4,1,4,2, qt.Qt.AlignHCenter )
-
-
  
-    # self.connect_to_IGTL_form.addRow(qt.QLabel("IP:"), self.ip_edit_text)
-    # self.connect_to_IGTL_form.addRow(qt.QLabel("Port:"), self.port_edit_text)
+  def check_if_models_exist(self):
+   #TODO - tidy up
+    ultrasound_name = 'Image_Reference'
+    CT_name = ''
 
-    # self.connect_to_IGTL_frame.layout().addLayout(self.connect_to_IGTL_form)
-    # self.connect_to_IGTL_frame.layout().addWidget(self.connect_to_IGTL_button)
+    ultrasound_id = sbn.get_item_id_by_name(ultrasound_name)
+    ct_id = sbn.get_item_id_by_name(CT_name)
 
+    ultrasound_exists = sbn.check_if_item_exists(ultrasound_id)
+    ct_exists = sbn.check_if_item_exists(ct_id)
+
+    if (ultrasound_exists and ct_exists):
+      sbn.set_visible()
+      self.checkModelsTimer.stop()
     
 
-    self.buttons.layout().addWidget(self.connect_to_IGTL_frame)
+  def check_if_transforms_active(self):
+    
+   all_active = sbn.wait_for_transforms()
+   
+   if all_active:
+     sbn.create_models()
+     sbn.prepare_pivot_cal()
+     sbn.set_transform_hierarchy()
 
-  def setupUi(self, Form):
-    Form.resize(350, 519)
-    self.verticalLayoutWidget = qt.QWidget(Form)
-    self.verticalLayoutWidget.setGeometry(qt.QRect(40, 30, 271, 441))
-    self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
-    self.verticalLayout = qt.QVBoxLayout(self.verticalLayoutWidget)
-    self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-    self.verticalLayout.setObjectName("verticalLayout")
-    self.checkBox = qt.QCheckBox(self.verticalLayoutWidget)
-    self.checkBox.setObjectName("checkBox")
-    self.verticalLayout.addWidget(self.checkBox)
-    self.pushButton = qt.QPushButton(self.verticalLayoutWidget)
-    self.pushButton.setObjectName("pushButton")
-    self.verticalLayout.addWidget(self.pushButton)
-
-    self.retranslateUi(Form)
-
-
-  def retranslateUi(self, Form):
-    _translate = qt.QCoreApplication.translate
-    Form.setWindowTitle(_translate("Form", "Form"))
-    self.checkBox.setText(_translate("Form", "CheckBox"))
-    self.pushButton.setText(_translate("Form", "PushButton"))
+     self.ctk_pivot_box.setEnabled(True)
+     self.checkTranformsTimer.stop()
+   else:
+     self.check_transforms_btn.setText("Not Found")
 
   def add_tab_widgets(self):
-    module_names = ["data","volumerendering","openigtlinkif","openigtlinkremote","pivotcalibration","createmodels"]
-    module_labels = ["Data","Volumes", "IGTLink", "IGT Remote", "Calibrate", "Models"]
+    module_names = ["data","volumerendering","openigtlinkif","createmodels"]
+    module_labels = ["Data","Volumes", "IGTLink", "Models"]
 
     for name, label in zip(module_names, module_labels) :
       self.scrollArea = qt.QScrollArea()
@@ -136,20 +151,6 @@ class Slicelet(object):
       self.tabWidget.show()
     else:
       self.tabWidget.hide()
-
-
-  def showIn3D(self):
-    # Turn on the 3D Volume view for the loaded node
-
-    nodes = slicer.mrmlScene.GetNodesByName('MRHead')
-    first_item_index = 0
-    node = nodes.GetItemAsObject(first_item_index)
-    node.SetDisplayVisibility(0)
-
-    self.loadDataButton.setText(node.GetDisplayVisibility())
-    node.SetDisplayVisibility(1)
-
-  
 
 class TractographySlicelet(Slicelet):
   """ Creates the interface when module is run as a stand alone gui app.
