@@ -1,24 +1,32 @@
-from slicer_functions import *
+from functions import *
+
+## Workflow specifically for use in the mock OR.
+## Calls more generic functions from slicer_functions
 
 def connect():
+    # Connect to PLUS Server to receive OpenIGTLink data
     igt_connector = connect_to_OpenIGTLink('OpenIGT', 'localhost', 18905)
         
     return igt_connector
 
 def set_visible():
-        scene = slicer.mrmlScene
+    #Set the US and CT data to visible
+    scene = slicer.mrmlScene
 
-        ultrasound_volume_name = 'Image_Reference'
-        ct_volume_name = ''
+    ultrasound_volume_name = 'Image_Reference'
+    ct_volume_name = ''
         
-        ultrasound_node = scene.GetFirstNodeByName(ultrasound_volume_name)
-        ct_node = scene.GetFirstNodeByName(ct_volume_name)
+    ultrasound_node = scene.GetFirstNodeByName(ultrasound_volume_name)
+    ct_node = scene.GetFirstNodeByName(ct_volume_name)
 
-        set_node_visible(ultrasound_node)
-        set_node_visible(ct_node)
+    set_node_visible(ultrasound_node)
+    set_node_visible(ct_node)
 
     
 def wait_for_transforms():
+    # The tools need to be placed in the StealthStation field of view
+    #before the next step can be performed.
+    
     transforms = ['StylusToRas', 'StylusToReference', 'SureTrack2ToRas']
 
     for transform in transforms:
@@ -32,7 +40,7 @@ def create_models():
     probe = create_needle_model("ProbeModel", 100, 0.5, 0.2)
 
 def prepare_pivot_cal():
-    
+    # Set some default values for pivot calibration
     tf_tip2suretrack = create_linear_transform_node("Tip2SureTrack")
     tf_suretrack2ras = slicer.mrmlScene.GetFirstNodeByName("SureTrack2ToRas")
 
@@ -41,6 +49,7 @@ def prepare_pivot_cal():
     remove_unused_widgets_from_pivot_calibration()
 
 def set_transform_hierarchy():
+    #Set the tranform hierarchy for the stylus and probe
     scene = slicer.mrmlScene
 
     tf_tip2suretrack = scene.GetFirstNodeByName("Tip2SureTrack")

@@ -110,6 +110,10 @@ def test_set_transform_parent():
     check_equal(child_nodes_parent_id, parent_id)
 
 
+if __name__ == "__main__":
+    run_all_tests()
+
+
 
 
 

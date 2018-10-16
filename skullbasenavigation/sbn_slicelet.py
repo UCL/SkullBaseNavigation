@@ -3,8 +3,7 @@ import unittest
 import vtk, qt, ctk, slicer
 from slicer.ScriptedLoadableModule import *
 import logging
-from ui.form import Ui_Form
-import sbn
+from sbn import workflow, functions
 
 class Slicelet(object):
   """A slicer slicelet is a module widget that comes up in stand alone mode
@@ -66,7 +65,7 @@ class Slicelet(object):
     self.ctk_pivot_box.setEnabled(False)
     
     # Button callbacks
-    self.connect_btn.clicked.connect(sbn.connect)
+    self.connect_btn.clicked.connect(workflow.connect)
 
     self.advanced_options_checkbox = qt.QCheckBox("Show Advanced Settings")
     self.buttons.layout().addWidget(self.advanced_options_checkbox)
@@ -109,30 +108,28 @@ class Slicelet(object):
     ultrasound_name = 'Image_Reference'
     CT_name = ''
 
-    ultrasound_id = sbn.get_item_id_by_name(ultrasound_name)
-    ct_id = sbn.get_item_id_by_name(CT_name)
+    ultrasound_id = functions.get_item_id_by_name(ultrasound_name)
+    ct_id = functions.get_item_id_by_name(CT_name)
 
-    ultrasound_exists = sbn.check_if_item_exists(ultrasound_id)
-    ct_exists = sbn.check_if_item_exists(ct_id)
+    ultrasound_exists = functions.check_if_item_exists(ultrasound_id)
+    ct_exists = functions.check_if_item_exists(ct_id)
 
     if (ultrasound_exists and ct_exists):
-      sbn.set_visible()
+      workflow.set_visible()
       self.checkModelsTimer.stop()
     
 
   def check_if_transforms_active(self):
     
-   all_active = sbn.wait_for_transforms()
+   all_active = workflow.wait_for_transforms()
    
    if all_active:
-     sbn.create_models()
-     sbn.prepare_pivot_cal()
-     sbn.set_transform_hierarchy()
+     workflow.create_models()
+     workflow.prepare_pivot_cal()
+     workflow.set_transform_hierarchy()
 
      self.ctk_pivot_box.setEnabled(True)
      self.checkTranformsTimer.stop()
-   else:
-     self.check_transforms_btn.setText("Not Found")
 
   def add_tab_widgets(self):
     module_names = ["data","volumerendering","openigtlinkif","createmodels"]
