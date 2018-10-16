@@ -24,23 +24,38 @@ Skull Base Navigation
 .. image:: https://readthedocs.org/projects/SkullBaseNavigation/badge/?version=latest
     :target: http://SkullBaseNavigation.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
-
-
-
-Skull Base Navigation is a python project that does interesting things.
+    
 
 Author: Thomas Dowrick
 
 Skull Base Navigation was developed at the `Wellcome EPSRC Centre for Interventional and Surgical Sciences`_ in `University College London (UCL)`_.
 
+.. image:: images/slicelet.gif
 
-Installing
-~~~~~~~~~~
 
-You can pip install directly from the repository as follows:
+Requirements
+^^^^^^^^^^
+
+Slicer and SlicerIGT Extension
+
+Running
+^^^^^^^^^^
+
+The below assumes that you are in the root directory of the **SkullBaseNavigation** repository.
+
+Run the slicelet:
+::
+    /path/to/slicer/Slicer --no-main-window --python-script skullbasenavigation/sbn_slicelet.py
+    
+*no_main_window* runs the slicelet standalone, running without this also launches the standard Slicer GUI.
+
+There are some basic unit tests implemented, these can be ran using:
+
 ::
 
-    pip install git+https://weisslab.cs.ucl.ac.uk/WEISS/SoftwareRepositories/SkullBaseNavigation
+    /path/to/slicer/Slicer --python-script skullbasenavigation/test/test_slicer_functions.py
+
+    
 
 
 Developing
@@ -53,41 +68,6 @@ You can clone the repository using the following command:
     git clone https://weisslab.cs.ucl.ac.uk/WEISS/SoftwareRepositories/SkullBaseNavigation
 
 
-Running the tests
-^^^^^^^^^^^^^^^^^
-
-You can run the unit tests by installing and running tox:
-
-    ::
-
-      pip install tox
-      tox
-
-Get started with PyCharm
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-This assumes you have PyCharm installed and configured to support virtual environments.
-
-1. Start PyCharm
-2. Select File > Open
-3. Select the project's folder
-4. Open in a new window
-5. Open Preferences
-6. Click on Project: [YourProject] and select Project Interpreter
-7. At the right of the Project Interpreterm, click the cog
-8. Select Add Local...
-9. Select Virtual Environment
-10. Choose a location for your virtual environment (for example, [YourHomeFolder]/VirtualEnvs/[YourProjectName])
-11. Select a base interpreter (usually the latest version of Python 3).
-12. Recommended settings: Do not inherit global site-packages, and do not make available to all projects.
-13. Click OK
-14. Click on Terminal
-15. `pip install tox`
-16. `tox`
-17. Expand the project
-18. Right-click on the Tests folder and choose "Run Unittests in tests". This will create a new configuration for running tests
-19. Right-click on skullbasenavigation and select Run skullbasenavigation. This will create a new configuration for running the project.
-20. Switch between the program and test configurations using the drop-down at the top of the screen, and the green arrow to run or the green bug to debug.
 
 Contributing
 ^^^^^^^^^^^^
