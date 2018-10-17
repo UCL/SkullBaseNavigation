@@ -33,7 +33,7 @@ class Slicelet(object):
 
     self.ctk_model_box = ctk.ctkCollapsibleButton()
     self.ctk_model_box.setText("OpenIGTLink Remote")
-    self.ctk_model_box.setOn(False)
+    self.ctk_model_box.setChecked(False)
     
     self.remote_layout = qt.QVBoxLayout()
     self.remote_scroll_area = qt.QScrollArea()
@@ -48,7 +48,7 @@ class Slicelet(object):
 
     self.ctk_pivot_box = ctk.ctkCollapsibleButton()
     self.ctk_pivot_box.setText("Pivot Calibration")
-    self.ctk_pivot_box.setOn(False)
+    self.ctk_pivot_box.setChecked(False)
     
     self.pivot_layout = qt.QVBoxLayout()
     self.pivot_scroll_area = qt.QScrollArea()
