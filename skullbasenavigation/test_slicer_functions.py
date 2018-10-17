@@ -1,4 +1,4 @@
-from slicer_functions import *
+from sbn.functions import *
 
 def check_equal(a,b):
     if a == b:
