@@ -1,0 +1,112 @@
+<PlusConfiguration version="2.3">
+  <DataCollection StartupDelaySec="1.0" >
+    <DeviceSet
+      Name="fCal: Ultrasonix US + StealthLinkTracker (Reference, Stylus, SureTrack2) - fCal Phantom 2.0"
+      Description="US probe calibration with StealthLinkTracker using fCal"
+    />
+    
+    <Device
+      Id="SLD"
+      Type="StealthLinkTracker"
+      ServerAddress="128.16.0.2"
+      ServerPort="6996"
+      RegistrationUpdatePeriod="0.0"
+      ToolReferenceFrame="Tracker" >
+      <DataSources>
+        <!-- Remove tools that are not defined by the StealthStation -->
+        <!-- Corresponding tools also need to be removed from the OutputChannels section -->
+        <DataSource Type="Tool" Id="Stylus" PortName="Passive Planar, Blunt" AlwaysTrack="TRUE"/>
+        <DataSource Type="Tool" Id="Reference" PortName="Small Passive Cranial Frame" />
+        <DataSource Type="Tool" Id="SureTrack2" PortName="SureTrak2 Silver Passive" AlwaysTrack="TRUE"/>
+      </DataSources>
+      <OutputChannels>
+        <OutputChannel Id="TrackerStream">
+          <DataSource  Id="SureTrack2" />
+          <DataSource  Id="Stylus" />
+          <DataSource  Id="Reference" />
+        </OutputChannel>
+      </OutputChannels>
+    </Device>
+
+  <Device
+    Id="VideoDevice"
+    Type="SonixVideo"
+    AcquisitionRate="30"
+    AutoClipEnabled="TRUE"
+    ImageGeometryOutputEnabled="TRUE"
+    ImageToTransducerTransformName="ImageToTransducer"
+    IP="128.16.0.3" >
+    <DataSources>
+      <DataSource Type="Video" Id="BModeVideo" PortName="B" PortUsImageOrientation="UF"  />
+    </DataSources>
+    <OutputChannels>
+      <OutputChannel Id="BModeVideoStream" VideoDataSourceId="BModeVideo" />
+    </OutputChannels>
+  </Device>
+
+  <Device
+    Id="TrackedUltrasoundDevice"
+    Type="VirtualMixer"
+    BaseFilename="RecordingTest.mha"
+    EnableCapturingOnStart="FALSE" >
+    <InputChannels>
+      <InputChannel Id="BModeVideoStream" />
+      <InputChannel Id="TrackerStream" />
+    </InputChannels>
+    <OutputChannels>
+      <OutputChannel Id="TrackedVideoStream"/>
+    </OutputChannels>
+  </Device>
+
+</DataCollection>
+
+  <CoordinateDefinitions>
+    <Transform From="Ras" To="Lps"
+      Matrix="
+        -1  0  0  0
+         0 -1  0  0
+         0  0  1  0
+         0  0  0  1" />
+
+    <Transform From="Image" To="Reference"
+      Matrix="
+        0.2 0.0 0.0 0.0
+        0.0 0.2 0.0 0.0
+        0.0 0.0 0.2 0.0
+        0 0 0 1" />
+  </CoordinateDefinitions>
+
+  <fCal
+    PhantomModelId="PhantomModel"
+    ReconstructedVolumeId="Volume"
+    TransducerModelId="ProbeModel"
+    StylusModelId="StylusModel"
+    ImageDisplayableObjectId="LiveImage"
+    NumberOfCalibrationImagesToAcquire="200"
+    NumberOfValidationImagesToAcquire="100"
+    NumberOfStylusCalibrationPointsToAcquire="200"
+    RecordingIntervalMs="100"
+    MaxTimeSpentWithProcessingMs="70"
+    ImageCoordinateFrame="Image"
+    ProbeCoordinateFrame="Probe"
+    ReferenceCoordinateFrame="Reference"
+    TransducerOriginCoordinateFrame="TransducerOrigin"
+    TransducerOriginPixelCoordinateFrame="TransducerOriginPixel"
+    TemporalCalibrationDurationSec="10"
+    FixedChannelId="VideoStream" 
+    FixedSourceId="Video"
+    MovingChannelId="TrackerStream"
+    MovingSourceId="ProbeToTracker"
+    DefaultSelectedChannelId="TrackedVideoStream" />
+
+  <vtkPlusPivotCalibrationAlgo
+    ObjectMarkerCoordinateFrame="Stylus"
+    ReferenceCoordinateFrame="Reference"
+    ObjectPivotPointCoordinateFrame="StylusTip" />
+
+  <vtkTemporalCalibrationAlgo
+    ClipRectangleOrigin="27 27" 
+    ClipRectangleSize="766 562" />
+
+	
+	</PlusConfiguration>
