@@ -36,7 +36,8 @@ Skull Base Navigation was developed at the `Wellcome EPSRC Centre for Interventi
 Requirements
 ^^^^^^^^^^
 
-Slicer and SlicerIGT Extension
+See the `wiki
+<https://weisslab.cs.ucl.ac.uk/WEISS/SoftwareRepositories/skullbasenavigation/wikis/home>`_.
 
 Running
 ^^^^^^^^^^
