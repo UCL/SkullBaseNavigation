@@ -1,0 +1,77 @@
+ <PlusConfiguration version="2.1">
+
+  <DataCollection StartupDelaySec="1.0" >
+    <DeviceSet 
+      Name="PlusServer: BK ultrasound imaging device using OEM interface"
+      Description="Broadcasting ultrasound images acquired from the BK system through OEM (TCP/IP) interface."
+    />
+    <!-- Setting AcquisitionRate to higher value may decrease the responsiveness of the BK software on the scanner. Thoroughly test the performance of the BK scanner when acquiring images through the OEM interface. -->
+    <!-- For offline testing set OfflineTesting to true and supply path to test image file. -->
+    <Device 
+      Id="VideoDevice"
+      Type="BkProFocusOem"
+      ScannerAddress="128.16.0.3"
+      OemPort="7915"
+      ContinuousStreamingEnabled="false"
+      ColorEnabled="false"
+      AcquisitionRate="1.5"
+      OfflineTesting="false"
+      OfflineTestingFilePath="c:\dev\bktest.png" >
+      <DataSources>
+        <DataSource Type="Video" Id="Video" PortUsImageOrientation="MF"  />
+      </DataSources>
+      <OutputChannels>
+        <OutputChannel Id="VideoStream" VideoDataSourceId="Video"  />
+      </OutputChannels>
+    </Device>
+    <Device
+      Id="CaptureDevice"
+      Type="VirtualCapture"
+      BaseFilename="RecordingTest.mha"
+      EnableCapturingOnStart="FALSE" >
+      <InputChannels>
+        <InputChannel Id="VideoStream" />
+      </InputChannels>
+    </Device>
+  </DataCollection>
+
+  <CoordinateDefinitions>
+    <Transform From="Image" To="Reference"
+      Matrix="
+        0.2 0.0 0.0 0.0
+        0.0 0.2 0.0 0.0
+        0.0 0.0 0.2 0.0        
+        0 0 0 1" />
+  </CoordinateDefinitions>
+  
+  <PlusOpenIGTLinkServer 
+    MaxNumberOfIgtlMessagesToSend="1" 
+    MaxTimeSpentWithProcessingMs="50" 
+    ListeningPort="18944" 
+    SendValidTransformsOnly="false" 
+    OutputChannelId="VideoStream" > 
+    <DefaultClientInfo> 
+      <MessageTypes> 
+        <Message Type="IMAGE" />
+        <Message Type="STRING" />
+      </MessageTypes>
+      <!-- Send parameters according to OpenIGTLinkIO standard (under development) -->
+      <!-- These parameters should be sent as meta data in the image message in the future. -->
+      <StringNames>
+        <String Name="ProbeType" />
+        <String Name="Origin" />
+        <String Name="Angles" />
+        <String Name="BouningBox" />
+        <String Name="Depths" />
+        <String Name="LinearWidth" />
+        <!-- Spacing are sent as separate messages, should be sent with image in the future. -->
+        <String Name="SpacingX" />
+        <String Name="SpacingY" />
+      </StringNames>
+      <ImageNames>
+        <Image Name="Image" EmbeddedTransformToFrame="Reference" />
+      </ImageNames>
+    </DefaultClientInfo>
+  </PlusOpenIGTLinkServer>
+
+</PlusConfiguration>
