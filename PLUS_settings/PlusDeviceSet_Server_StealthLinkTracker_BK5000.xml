@@ -15,7 +15,7 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
         <DataSource Type="Tool" Id="Stylus" PortName="Passive Planar, Blunt" />
         <DataSource Type="Tool" Id="Reference" PortName="Small Passive Cranial Frame" />
         <DataSource Type="Tool" Id="Ras"      PortName="RasRegistration" />
-	      <DataSource Type="Tool" Id="SureTrack2"      PortName="SureTrak2 Silver Passive" />
+	      <DataSource Type="Tool" Id="SureTrack2"      PortName="SureTrak2 Black Passive" />
       </DataSources>
       <OutputChannels>
         <OutputChannel Id="TrackerStream">
@@ -34,7 +34,7 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
 	OemPort="7915"
     ContinuousStreamingEnabled="false"
     ColorEnabled="false"
-    AcquisitionRate="1.5"
+    AcquisitionRate="10"
     OfflineTesting="false"
     OfflineTestingFilePath="c:\dev\bktest.png" >
     <DataSources>
