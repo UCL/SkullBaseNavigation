@@ -120,10 +120,10 @@ class Slicelet(object):
     
 
   def check_if_transforms_active(self):
-    
-   all_active = workflow.wait_for_transforms()
+    """ Check if the transform is active"""
+    all_active = workflow.wait_for_transforms()
    
-   if all_active:
+    if all_active:
      workflow.create_models()
      workflow.prepare_pivot_cal()
      workflow.set_transform_hierarchy()
