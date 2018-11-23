@@ -54,7 +54,7 @@ There are some basic unit tests implemented, these can be ran using:
 
 ::
 
-    /path/to/slicer/Slicer --python-script skullbasenavigation/test_slicer_functions.py
+    /path/to/slicer/Slicer --python-script skullbasenavigation/testing_slicer_functions.py
 
     
 
