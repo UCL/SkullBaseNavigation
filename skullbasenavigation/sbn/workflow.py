@@ -23,7 +23,7 @@ def load_volume_from_file():
     scene = slicer.mrmlScene
     ct_node = scene.GetFirstNodeByName(volume_name)
     functions.set_CT_model_visible(ct_node)
-    
+
 
 def set_visible():
     """ Set the US and CT data to visible """
