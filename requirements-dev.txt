@@ -6,4 +6,5 @@ parameterized
 pylint
 sphinx
 pyinstaller
+pytest
 tox
