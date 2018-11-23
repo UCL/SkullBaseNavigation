@@ -42,6 +42,11 @@ class Slicelet(object):
         self.buttons.layout().addWidget(self.connect_btn)
         self.connect_btn.clicked.connect(workflow.connect)
 
+        # Button to load a volume from a file
+        self.load_volume_btn = qt.QPushButton("Load Volume Data")
+        self.buttons.layout().addWidget(self.load_volume_btn)
+        self.load_volume_btn.clicked.connect(workflow.load_volume_from_file)
+
         # Collapsible button to hold OpenIGTLink Remote Module
         self.ctk_model_box = ctk.ctkCollapsibleButton()
         self.ctk_model_box.setText("OpenIGTLink Remote")

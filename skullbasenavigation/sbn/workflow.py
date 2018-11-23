@@ -12,6 +12,18 @@ def connect():
 
     return igt_connector
 
+def load_volume_from_file():
+    """ Load a volume to render from a file and specify the
+    name that will be used to identify the volume."""
+    #TODO: Read in filename from configuration file
+    filename = 'tests/data/MrHead.nrrd'
+    volume_name = 'CT'
+    slicer.util.loadVolume(filename, properties={'name': volume_name})
+
+    scene = slicer.mrmlScene
+    ct_node = scene.GetFirstNodeByName(volume_name)
+    functions.set_CT_model_visible(ct_node)
+    
 
 def set_visible():
     """ Set the US and CT data to visible """
