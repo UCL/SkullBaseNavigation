@@ -8,6 +8,9 @@ from slicer.ScriptedLoadableModule import *
 
 from sbn import workflow, functions
 
+#pylint: disable=useless-object-inheritance
+# Pylint thinks that passing 'object' as an argument is
+# unnecessary, but that is incorrect.
 
 class Slicelet(object):
     """A slicer slicelet is a module widget that comes up in stand alone mode
