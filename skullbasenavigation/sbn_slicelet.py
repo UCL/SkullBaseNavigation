@@ -13,13 +13,15 @@ from sbn import workflow, functions
 # unnecessary, but that is incorrect.
 
 class Slicelet(object):
-    """A slicer slicelet is a module widget that comes up in stand alone mode
-    implemented as a python class.
-    This class provides common wrapper functionality used by all slicer modlets.
+    """
+    SBN Slicelet
     """
 
     def __init__(self):
 
+        # GUI has a right panel for displaying models/images
+        # and a left panel for controls/buttons etc.
+        # Use a QSplitter to separate the two.
         self.parent = qt.QSplitter()
         self.parent.orientation = qt.Qt.Horizontal
 
@@ -27,7 +29,7 @@ class Slicelet(object):
         self.control_panel = qt.QSplitter(self.parent)
         self.control_panel.orientation = qt.Qt.Vertical
 
-        # Buttons Widget
+        # Create a widget to contain all buttons
         button_widget_index = 0
 
         self.buttons = qt.QFrame(self.control_panel)
@@ -35,9 +37,12 @@ class Slicelet(object):
 
         self.buttons.setLayout(qt.QVBoxLayout())
 
+        # Button to connect to OpenIGTLink
         self.connect_btn = qt.QPushButton("Connect to OpenIGTLink")
         self.buttons.layout().addWidget(self.connect_btn)
+        self.connect_btn.clicked.connect(workflow.connect)
 
+        # Collapsible button to hold OpenIGTLink Remote Module
         self.ctk_model_box = ctk.ctkCollapsibleButton()
         self.ctk_model_box.setText("OpenIGTLink Remote")
         self.ctk_model_box.setChecked(False)
@@ -53,6 +58,10 @@ class Slicelet(object):
 
         self.buttons.layout().addWidget(self.ctk_model_box)
 
+        # Collapsible button to hole Pivot calibration module
+        # Won't be active until the tools have been seen
+        # by the StealthStation - i.e. the Stylus and SureTrack
+        # transforms have been sent to Slicer
         self.ctk_pivot_box = ctk.ctkCollapsibleButton()
         self.ctk_pivot_box.setText("Pivot Calibration")
         self.ctk_pivot_box.setChecked(False)
@@ -68,12 +77,9 @@ class Slicelet(object):
         self.ctk_pivot_box.setLayout(self.pivot_layout)
         self.buttons.layout().addWidget(self.ctk_pivot_box)
 
-        # Disable some buttons (they are enabled if wait_for_transforms returns
+        # Disable the button (enabled if wait_for_transforms returns
         # true)
         self.ctk_pivot_box.setEnabled(False)
-
-        # Button callbacks
-        self.connect_btn.clicked.connect(workflow.connect)
 
         self.advanced_options_checkbox = qt.QCheckBox("Show Advanced Settings")
         self.buttons.layout().addWidget(self.advanced_options_checkbox)
@@ -101,8 +107,7 @@ class Slicelet(object):
 
         self.control_panel.insertWidget(tab_widget_index, self.tabWidget)
 
-        # Right side of splitter
-        # 3D/Slice Viewer
+        # Right side of splitter - 3D/Slice Viewer
         self.layoutManager = slicer.qMRMLLayoutWidget()
         self.layoutManager.setMRMLScene(slicer.mrmlScene)
         self.layoutManager.setLayout(
@@ -112,10 +117,16 @@ class Slicelet(object):
         self.parent.show()
 
     def check_if_models_exist(self):
-        """ Check if a the CT and ultrasound models have been
+        """ Check if the CT and ultrasound models have been
         loaded.
         """
-        # TODO - tidy up
+
+        # The ultrasound name is defined in the PLUS xml config file.
+        # The CT doesn't have a name (not sure why) when it is sent from
+        # the StealthStation
+        # TODO - tidy up - shouldn't hard code the variable names here,
+        # better to read in from a file or something.
+
         ultrasound_name = 'Image_Reference'
         CT_name = ''
 
@@ -146,13 +157,17 @@ class Slicelet(object):
         Add tab widgets for each of the Slicer modules we want access
         to in the 'advanced' mode.
         """
+
         module_names = [
             "data",
             "volumerendering",
             "openigtlinkif",
             "createmodels"]
+
+        # Need to have a text label for each module tab
         module_labels = ["Data", "Volumes", "IGTLink", "Models"]
 
+        # Create a tab widget for each module
         for name, label in zip(module_names, module_labels):
             self.scrollArea = qt.QScrollArea()
             widget = getattr(slicer.modules, name).widgetRepresentation()

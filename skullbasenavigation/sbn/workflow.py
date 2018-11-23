@@ -28,8 +28,9 @@ def set_visible():
 
 
 def wait_for_transforms():
-    """ The tools need to be placed in the StealthStation field of view
-     before the next step can be performed. """
+    """ Check if the transforms that correspond to the tools being
+    placed in the StealthStation field of view have been created.
+    """
 
     transforms = ['StylusToRas', 'StylusToReference', 'SureTrack2ToRas']
 
