@@ -2,7 +2,8 @@
 Basic set of tests for slicer functions in functions.py
 """
 import slicer
-from sbn import functions
+# from sbn import functions
+import functions 
 
 #pylint: disable=missing-docstring
 def check_equal(a, b):
@@ -112,14 +113,14 @@ def test_check_if_transform(tf, model):
 def test_set_transform_parent():
 
     print("Testing Setting of Transform Parent Node")
-    tf_child = functions.create_linear_transform_node('child')
+    tf_child = functions.create_linear_transform_node('childa')
     tf_parent = functions.create_linear_transform_node('parent')
 
     functions.set_parent_of_transform_hierarchy_node(tf_child, tf_parent)
 
     child_nodes_parent_id = tf_child.GetParentTransformNode().GetID()
     parent_id = tf_parent.GetID()
-    check_equal(child_nodes_parent_id, parent_id)
+    assert child_nodes_parent_id == parent_id
 
 
 if __name__ == "__main__":
