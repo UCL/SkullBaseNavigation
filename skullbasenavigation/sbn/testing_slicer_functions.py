@@ -1,127 +1,133 @@
 """
-Basic set of tests for slicer functions in functions.py
+Basic set of unit tests for the methods in functions.py using Slicer
+and the Python unittest framework.
 """
+
+import functions as fns
+import unittest
 import slicer
-# from sbn import functions
-import functions 
-
-#pylint: disable=missing-docstring
-def check_equal(a, b):
-    if a == b:
-        print("Passed")
-        return True
-
-    print("FAILED!!!")
-    return False
 
 
-def run_all_tests():
+class TestOpenIGTLinkConnection(unittest.TestCase):
 
-    test_connect_to_OpenIGTLink()
-    model_node = test_create_needle_model()
-    test_visiblity_settings(model_node)
-    test_find_item_id(model_node)
+    def setUp(self):
+        self.message = "Creating and testing an OpenIGTLink connection"
+        self.name = "test_OpenIGTLink_connection"
+        self.host = 'localhost'
+        self.port = 18904
+        self.cnode = fns.connect_to_OpenIGTLink(self.name,
+                                                self.host,
+                                                self.port)
 
-    tf = test_create_transform()
-    test_check_if_transform(tf, model_node)
-
-    test_set_transform_parent()
-
-
-def test_connect_to_OpenIGTLink():
-    print("Creating OpenIGTLink Connection")
-
-    name = "test_IGT"
-    host = 'localhost'
-    port = 18904
-
-    cnode = functions.connect_to_OpenIGTLink(name, host, port)
-
-    check_equal(cnode.GetServerHostname(), host)
+    def test_connect_to_OpenIGTLink(self):
+        print(self.message)
+        self.assertEqual(self.cnode.GetServerHostname(), self.host)
 
 
-def test_create_needle_model():
-    print("Creating Needle Model")
+class TestNeedle(unittest.TestCase):
 
-    name = "test_needle"
-    length = 100
-    radius = 10
-    tip = 2
-
-    needle = functions.create_needle_model(name, length, radius, tip)
-
-    check_equal(needle.GetName(), name)
-
-    return needle
-
-
-def test_visiblity_settings(node):
-    print("Testing setting node visible/invisible")
-    functions.set_node_visible(node)
-    check_equal(node.GetDisplayVisibility(), 1)
-
-    functions.set_node_invisible(node)
-    check_equal(node.GetDisplayVisibility(), 0)
+    def setUp(self):
+        self.message = "Creating and testing a Needle model"
+        self.name = "test_needle"
+        self.length = 100
+        self.radius = 10
+        self.tip = 2
+        self.needle = fns.create_needle_model(self.name,
+                                              self.length,
+                                              self.radius,
+                                              self.tip)
+        self.tf_name = "test_create_transform"
+        self.transform = fns.create_linear_transform_node(self.tf_name)
+        self.transform_name = self.transform.GetName()
+        self.transform_id = fns.get_item_id_by_name(self.transform_name)
 
 
-def test_find_item_id(node):
+class TestCreateNeedleModel(TestNeedle):
 
-    print("Testing Find Item ID")
-    print("Testing invalid (non-string) input")
-    non_string_input = 1001
-    node_id = functions.get_item_id_by_name(non_string_input)
-    check_equal(node_id, -1)
-
-    print("Testing valid input")
-    item_ID = functions.get_item_id_by_name(node.GetName())
-    check_equal(functions.check_if_item_exists(item_ID), True)
-
-    print("Testing invalid (non-existent) input")
-    item_doesnt_exist = "fake_item"
-    item_ID = functions.get_item_id_by_name(item_doesnt_exist)
-    check_equal(functions.check_if_item_exists(item_ID), False)
+    def runTest(self):
+        print(self.message)
+        self.assertEqual(self.needle.GetName(), self.name)
 
 
-def test_create_transform():
+class TestNodeVisibilitySettings(TestNeedle):
 
-    print("Testing Transform Creation")
-    name = "test_transform"
-    tf = functions.create_linear_transform_node(name)
-    check_equal(tf.GetName(), name)
-    check_equal(type(tf), type(slicer.vtkMRMLLinearTransformNode()))
+    def test_1(self):
+        self.message = "Testing node visible setting"
+        print(self.message)
+        fns.set_node_visible(self.needle)
+        self.assertEqual(self.needle.GetDisplayVisibility(), 1)
 
-    return tf
-
-
-def test_check_if_transform(tf, model):
-
-    tf_name = tf.GetName()
-    model_name = model.GetName()
-    print("Testing Transform Checker")
-    tf_ID = functions.get_item_id_by_name(tf_name)
-    model_ID = functions.get_item_id_by_name(model_name)
-
-    print("Actual Transform")
-    check_equal(functions.check_if_item_is_transform(tf_ID), True)
-    print("Not a transform")
-    check_equal(functions.check_if_item_is_transform(model_ID), False)
-
-    print("Testing Transform Checker Wrapper Function")
-    check_equal(functions.does_node_exist_as_a_transform(tf_name), True)
+    def test_2(self):
+        self.message = "Testing node invisible setting"
+        print(self.message)
+        fns.set_node_invisible(self.needle)
+        self.assertEqual(self.needle.GetDisplayVisibility(), 0)
 
 
-def test_set_transform_parent():
+class TestGetItemId(TestNeedle):
 
-    print("Testing Setting of Transform Parent Node")
-    tf_child = functions.create_linear_transform_node('childa')
-    tf_parent = functions.create_linear_transform_node('parent')
+    def test_1(self):
+        self.message = "Testing getting the item id with \
+                        invalid (non-string) input"
+        print(self.message)
+        non_string_input = 1001
+        item_id = fns.get_item_id_by_name(non_string_input)
+        self.assertEqual(item_id, -1)
 
-    functions.set_parent_of_transform_hierarchy_node(tf_child, tf_parent)
+    def test_2(self):
+        self.message = "Testing if item exists from node with valid input"
+        print(self.message)
+        item_id = fns.get_item_id_by_name(self.needle.GetName())
+        self.assertEqual(fns.check_if_item_exists(item_id), True)
 
-    child_nodes_parent_id = tf_child.GetParentTransformNode().GetID()
-    parent_id = tf_parent.GetID()
-    assert child_nodes_parent_id == parent_id
+    def test_3(self):
+        self.message = "Testing if item exists from node with invalid \
+                        (non-existent) input"
+        print(self.message)
+        invalid_input = "fake_item"
+        item_ID = fns.get_item_id_by_name(invalid_input)
+        self.assertEqual(fns.check_if_item_exists(item_ID), False)
+
+
+class TestTransform(TestNeedle):
+
+    def test_1(self):
+        self.message = "Testing Transform Creation"
+        print(self.message)
+        self.assertEqual(self.transform.GetName(), self.tf_name)
+        self.assertEqual(type(self.transform),
+                         type(slicer.vtkMRMLLinearTransformNode()))
+
+    def test_2(self):
+        self.message = "Test if actual tranform"
+        print(self.message)
+        self.assertEqual(fns.check_if_item_is_transform(self.transform_id),
+                         True)
+
+    def test_3(self):
+        self.message = "Testing Transform Checker Wrapper Function"
+        print(self.message)
+        self.assertEqual(fns.does_node_exist_as_a_transform(
+                         self.transform_name), True)
+
+    def test_4(self):
+        self.message = "Test not a transform"
+        print(self.message)
+        item_id = fns.get_item_id_by_name(self.needle.GetName())
+        self.assertEqual(fns.check_if_item_is_transform(item_id), False)
+
+# def test_set_transform_parent():
+
+#     print("Testing Setting of Transform Parent Node")
+#     tf_child = functions.create_linear_transform_node('childa')
+#     tf_parent = functions.create_linear_transform_node('parent')
+
+#     functions.set_parent_of_transform_hierarchy_node(tf_child, tf_parent)
+
+#     child_nodes_parent_id = tf_child.GetParentTransformNode().GetID()
+#     parent_id = tf_parent.GetID()
+#     assert child_nodes_parent_id == parent_id
 
 
 if __name__ == "__main__":
-    run_all_tests()
+    unittest.main()
