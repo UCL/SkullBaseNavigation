@@ -28,11 +28,11 @@ class TestNeedle(unittest.TestCase):
 
     def setUp(self):
         self.message = "Creating and testing a Needle model"
-        self.name = "test_needle"
+        self.needle_name = "test_needle"
         self.length = 100
         self.radius = 10
         self.tip = 2
-        self.needle = fns.create_needle_model(self.name,
+        self.needle = fns.create_needle_model(self.needle_name,
                                               self.length,
                                               self.radius,
                                               self.tip)
@@ -46,18 +46,18 @@ class TestCreateNeedleModel(TestNeedle):
 
     def runTest(self):
         print(self.message)
-        self.assertEqual(self.needle.GetName(), self.name)
+        self.assertEqual(self.needle.GetName(), self.needle_name)
 
 
 class TestNodeVisibilitySettings(TestNeedle):
 
-    def test_1(self):
+    def test_visible_setting(self):
         self.message = "Testing node visible setting"
         print(self.message)
         fns.set_node_visible(self.needle)
         self.assertEqual(self.needle.GetDisplayVisibility(), 1)
 
-    def test_2(self):
+    def test_invisible_setting(self):
         self.message = "Testing node invisible setting"
         print(self.message)
         fns.set_node_invisible(self.needle)
@@ -66,7 +66,7 @@ class TestNodeVisibilitySettings(TestNeedle):
 
 class TestGetItemId(TestNeedle):
 
-    def test_1(self):
+    def test_get_item_id_NSinput(self):
         self.message = "Testing getting the item id with \
                         invalid (non-string) input"
         print(self.message)
@@ -74,13 +74,13 @@ class TestGetItemId(TestNeedle):
         item_id = fns.get_item_id_by_name(non_string_input)
         self.assertEqual(item_id, -1)
 
-    def test_2(self):
+    def test_get_item_id_valid_input(self):
         self.message = "Testing if item exists from node with valid input"
         print(self.message)
         item_id = fns.get_item_id_by_name(self.needle.GetName())
         self.assertEqual(fns.check_if_item_exists(item_id), True)
 
-    def test_3(self):
+    def test_get_item_id_NEinput(self):
         self.message = "Testing if item exists from node with invalid \
                         (non-existent) input"
         print(self.message)
@@ -91,26 +91,26 @@ class TestGetItemId(TestNeedle):
 
 class TestTransform(TestNeedle):
 
-    def test_1(self):
+    def test_creating_transform(self):
         self.message = "Testing Transform Creation"
         print(self.message)
         self.assertEqual(self.transform.GetName(), self.tf_name)
         self.assertEqual(type(self.transform),
                          type(slicer.vtkMRMLLinearTransformNode()))
 
-    def test_2(self):
-        self.message = "Test if actual tranform"
+    def test_actual_transform(self):
+        self.message = "Test if actual transform"
         print(self.message)
         self.assertEqual(fns.check_if_item_is_transform(self.transform_id),
                          True)
 
-    def test_3(self):
+    def test_is_node_transform_wrapper(self):
         self.message = "Testing Transform Checker Wrapper Function"
         print(self.message)
         self.assertEqual(fns.does_node_exist_as_a_transform(
                          self.transform_name), True)
 
-    def test_4(self):
+    def test_not_transform(self):
         self.message = "Test not a transform"
         print(self.message)
         item_id = fns.get_item_id_by_name(self.needle.GetName())
