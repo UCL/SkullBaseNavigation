@@ -38,10 +38,6 @@ class TestNeedle(unittest.TestCase):
                                               self.length,
                                               self.radius,
                                               self.tip)
-        self.tf_name = "test_create_transform"
-        self.transform = fns.create_linear_transform_node(self.tf_name)
-        self.transform_name = self.transform.GetName()
-        self.transform_id = fns.get_item_id_by_name(self.transform_name)
 
 
 class TestCreateNeedleModel(TestNeedle):
@@ -92,6 +88,13 @@ class TestGetItemId(TestNeedle):
 
 
 class TestTransform(TestNeedle):
+
+    def setUp(self):
+        super(TestTransform, self).setUp()
+        self.tf_name = "test_create_transform"
+        self.transform = fns.create_linear_transform_node(self.tf_name)
+        self.transform_name = self.transform.GetName()
+        self.transform_id = fns.get_item_id_by_name(self.transform_name)
 
     def test_creating_transform(self):
         self.message = "Testing Transform Creation"
