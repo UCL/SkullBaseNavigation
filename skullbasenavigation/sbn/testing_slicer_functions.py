@@ -116,17 +116,21 @@ class TestTransform(TestNeedle):
         item_id = fns.get_item_id_by_name(self.needle.GetName())
         self.assertEqual(fns.check_if_item_is_transform(item_id), False)
 
-# def test_set_transform_parent():
 
-#     print("Testing Setting of Transform Parent Node")
-#     tf_child = functions.create_linear_transform_node('childa')
-#     tf_parent = functions.create_linear_transform_node('parent')
+class TestTransformFiliation(unittest.TestCase):
 
-#     functions.set_parent_of_transform_hierarchy_node(tf_child, tf_parent)
+    def setUp(self):
+        self.message = "Testing node hierachy"
+        self.tf_child = fns.create_linear_transform_node('child')
+        self.tf_parent = fns.create_linear_transform_node('parent')
 
-#     child_nodes_parent_id = tf_child.GetParentTransformNode().GetID()
-#     parent_id = tf_parent.GetID()
-#     assert child_nodes_parent_id == parent_id
+    def test_node_hierarchy(self):
+        print(self.message)
+        fns.set_parent_of_transform_hierarchy_node(self.tf_child,
+                                                   self.tf_parent)
+        parent_id_from_child = self.tf_child.GetParentTransformNode().GetID()
+        parent_id = self.tf_parent.GetID()
+        self.assertEqual(parent_id_from_child, parent_id)
 
 
 if __name__ == "__main__":
