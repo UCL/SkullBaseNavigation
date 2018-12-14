@@ -27,17 +27,17 @@ class TestOpenIGTLinkConnection(unittest.TestCase):
 
 
 class TestNeedle(unittest.TestCase):
-
-    def setUp(self):
-        self.message = "Creating and testing a Needle model"
-        self.needle_name = "test_needle"
-        self.length = 100
-        self.radius = 10
-        self.tip = 2
-        self.needle = fns.create_needle_model(self.needle_name,
-                                              self.length,
-                                              self.radius,
-                                              self.tip)
+    @classmethod
+    def setUpClass(cls):
+        cls.message = "Creating and testing a Needle model"
+        cls.needle_name = "test_needle"
+        cls.length = 100
+        cls.radius = 10
+        cls.tip = 2
+        cls.needle = fns.create_needle_model(cls.needle_name,
+                                             cls.length,
+                                             cls.radius,
+                                             cls.tip)
 
 
 class TestCreateNeedleModel(TestNeedle):
@@ -88,13 +88,13 @@ class TestGetItemId(TestNeedle):
 
 
 class TestTransform(TestNeedle):
-
-    def setUp(self):
-        super(TestTransform, self).setUp()
-        self.tf_name = "test_create_transform"
-        self.transform = fns.create_linear_transform_node(self.tf_name)
-        self.transform_name = self.transform.GetName()
-        self.transform_id = fns.get_item_id_by_name(self.transform_name)
+    @classmethod
+    def setUpClass(cls):
+        super(TestTransform, cls).setUpClass()
+        cls.tf_name = "test_create_transform"
+        cls.transform = fns.create_linear_transform_node(cls.tf_name)
+        cls.transform_name = cls.transform.GetName()
+        cls.transform_id = fns.get_item_id_by_name(cls.transform_name)
 
     def test_creating_transform(self):
         self.message = "Testing Transform Creation"
