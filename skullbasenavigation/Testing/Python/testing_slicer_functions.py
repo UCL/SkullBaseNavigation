@@ -31,7 +31,7 @@ class TestNeedle(unittest.TestCase):
     """A base class for test cases requiring a needle model."""
     @classmethod
     def setUpClass(cls):
-        cls.needle_name = "test_needle"
+        cls.needle_name = "test_needle_for" + cls.__name__
         cls.length = 100
         cls.radius = 10
         cls.tip = 2
