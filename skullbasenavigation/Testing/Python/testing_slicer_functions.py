@@ -67,7 +67,7 @@ class TestNodeVisibilitySettings(TestNeedle):
         self.assertEqual(self.needle.GetDisplayVisibility(), 0)
 
 
-class TestGetItemId(TestNeedle):
+class TestGetItemId(unittest.TestCase):
     """A test case for the behaviour of get_item_id_by_name."""
     def test_get_item_id_NSinput(self):
         """Check that we cannot get an item with a non-string name."""
@@ -82,7 +82,8 @@ class TestGetItemId(TestNeedle):
         """Check that we can get an item with a valid name."""
         self.message = "Testing if item exists from node with valid input"
         print(self.message)
-        item_id = fns.get_item_id_by_name(self.needle.GetName())
+        needle = fns.create_needle_model("dummy_id_needle", 100, 10, 2)
+        item_id = fns.get_item_id_by_name(needle.GetName())
         self.assertEqual(fns.check_if_item_exists(item_id), True)
 
     def test_get_item_id_NEinput(self):
@@ -95,11 +96,10 @@ class TestGetItemId(TestNeedle):
         self.assertEqual(fns.check_if_item_exists(item_ID), False)
 
 
-class TestTransform(TestNeedle):
+class TestTransform(unittest.TestCase):
     """A test case for transform-related functions."""
     @classmethod
     def setUpClass(cls):
-        super(TestTransform, cls).setUpClass()
         cls.tf_name = "test_create_transform"
         cls.transform = fns.create_linear_transform_node(cls.tf_name)
         cls.transform_name = cls.transform.GetName()
@@ -132,7 +132,9 @@ class TestTransform(TestNeedle):
         """Check that we do not mistake non-transforms for transforms."""
         self.message = "Test not a transform"
         print(self.message)
-        item_id = fns.get_item_id_by_name(self.needle.GetName())
+        # Create a dummy needle node to use just in this test
+        needle = fns.create_needle_model("dummy_tf_needle", 100, 10, 2)
+        item_id = fns.get_item_id_by_name(needle.GetName())
         self.assertEqual(fns.check_if_item_is_transform(item_id), False)
 
 
