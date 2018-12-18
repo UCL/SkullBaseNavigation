@@ -2,7 +2,6 @@
 Basic set of unit tests for the methods in functions.py using Slicer
 and the Python unittest framework.
 """
-
 import unittest
 
 import slicer
@@ -112,8 +111,9 @@ class TestTransform(TestNeedle):
     def test_is_node_transform_wrapper(self):
         self.message = "Testing Transform Checker Wrapper Function"
         print(self.message)
-        self.assertEqual(fns.does_node_exist_as_a_transform(
-                         self.transform_name), True)
+        self.assertEqual(
+            fns.does_node_exist_as_a_transform(self.transform_name),
+            True)
 
     def test_not_transform(self):
         self.message = "Test not a transform"
