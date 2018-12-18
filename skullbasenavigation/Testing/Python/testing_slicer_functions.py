@@ -71,8 +71,8 @@ class TestGetItemId(TestNeedle):
     """A test case for the behaviour of get_item_id_by_name."""
     def test_get_item_id_NSinput(self):
         """Check that we cannot get an item with a non-string name."""
-        self.message = "Testing getting the item id with \
-                        invalid (non-string) input"
+        self.message = "Testing getting the item id with invalid "\
+                       "(non-string) input"
         print(self.message)
         non_string_input = 1001
         item_id = fns.get_item_id_by_name(non_string_input)
@@ -87,8 +87,8 @@ class TestGetItemId(TestNeedle):
 
     def test_get_item_id_NEinput(self):
         """Check that we cannot get an item with a non-existent name."""
-        self.message = "Testing if item exists from node with invalid \
-                        (non-existent) input"
+        self.message = "Testing if item exists from node with invalid " \
+                       "(non-existent) input"
         print(self.message)
         invalid_input = "fake_item"
         item_ID = fns.get_item_id_by_name(invalid_input)
