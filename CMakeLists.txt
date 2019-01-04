@@ -13,14 +13,19 @@ project(SkullBaseNavigationTesting)
 
 #-----------------------------------------------------------------------------
 # Extension dependencies
-set(Slicer_DIR "/Users/rolandguichard/Desktop/SkullProject/Slicer/Slicer-SuperBuild/Slicer-build" )
+set(Slicer_DIR "/Slicer/Slicer-r27501/Slicer-Superbuild/Slicer-build" )
 
 find_package(Slicer REQUIRED)
+
+set(DEPENDENCIES_ADDITIONAL_MODULE_PATHS "")
+list(APPEND DEPENDENCIES_ADDITIONAL_MODULE_PATHS "/SlicerOpenIGTLink/SlicerOpenIGTLink-build/inner-build/lib/Slicer-4.10/qt-loadable-modules")
+list(APPEND DEPENDENCIES_ADDITIONAL_MODULE_PATHS "/SlicerIGT/SliceIGT-build/lib/Slicer-4.10/qt-loadable-modules")
+
 include(${Slicer_USE_FILE})
 
 #-----------------------------------------------------------------------------
 # Extension modules
-add_subdirectory(skullbasenavigation/sbn)
+add_subdirectory(skullbasenavigation)
 ## NEXT_MODULE
 
 #-----------------------------------------------------------------------------
