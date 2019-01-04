@@ -3,9 +3,11 @@ Basic set of unit tests for the methods in functions.py using Slicer
 and the Python unittest framework.
 """
 
-import functions as fns
 import unittest
+
 import slicer
+
+import sbn.functions as fns
 
 
 class TestOpenIGTLinkConnection(unittest.TestCase):
