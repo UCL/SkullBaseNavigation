@@ -13,13 +13,15 @@ project(SkullBaseNavigationTesting)
 
 #-----------------------------------------------------------------------------
 # Extension dependencies
-set(Slicer_DIR "/Slicer/Slicer-r27501/Slicer-Superbuild/Slicer-build" )
+set(Slicer_DIR "/usr/src/Slicer-build/Slicer-build" )
 
 find_package(Slicer REQUIRED)
 
 set(DEPENDENCIES_ADDITIONAL_MODULE_PATHS "")
-list(APPEND DEPENDENCIES_ADDITIONAL_MODULE_PATHS "/SlicerOpenIGTLink/SlicerOpenIGTLink-build/inner-build/lib/Slicer-4.10/qt-loadable-modules")
-list(APPEND DEPENDENCIES_ADDITIONAL_MODULE_PATHS "/SlicerIGT/SliceIGT-build/lib/Slicer-4.10/qt-loadable-modules")
+list(APPEND DEPENDENCIES_ADDITIONAL_MODULE_PATHS "/usr/src/SlicerOpenIGTLink/build/inner-build/lib/Slicer-4.10/qt-loadable-modules")
+list(APPEND DEPENDENCIES_ADDITIONAL_MODULE_PATHS "/usr/src/SlicerOpenIGTLink/build/inner-build/lib/Slicer-4.10/qt-scripted-modules")
+list(APPEND DEPENDENCIES_ADDITIONAL_MODULE_PATHS "/usr/src/SlicerIGT/build/lib/Slicer-4.10/qt-loadable-modules")
+list(APPEND DEPENDENCIES_ADDITIONAL_MODULE_PATHS "/usr/src/SlicerIGT/build/lib/Slicer-4.10/qt-scripted-modules")
 
 include(${Slicer_USE_FILE})
 
