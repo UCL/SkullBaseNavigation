@@ -3,13 +3,17 @@
 Calls more generic functions from functions.py
 """
 import functions
+import qt
 import slicer
 
 def connect():
     """ Connect to PLUS Server to receive OpenIGTLink data """
     igt_connector = functions.connect_to_OpenIGTLink(
         'OpenIGT', 'localhost', 18905)
-
+    if functions.is_connected(igt_connector):
+        show_message("OpenIGTLink connection successful.")
+    else:
+        show_message("Could not connect via OpenIGTLink.")
     return igt_connector
 
 
@@ -75,3 +79,13 @@ def set_transform_hierarchy():
 
     functions.set_parent_of_transform_hierarchy_node(
         tf_tip2suretrack, tf_suretrack2ras)
+
+
+def show_message(text):
+    msg = qt.QMessageBox()
+    msg.setText(text)
+    # Note that the Qt method is properly called exec, but as this clashes
+    # with the reserved keyword in Python 2, the Python version is exec_.
+    # A method called exec also exists for backwards compatibility.
+    msg.exec_()
+

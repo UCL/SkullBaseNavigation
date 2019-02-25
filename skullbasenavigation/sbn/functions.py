@@ -1,5 +1,7 @@
 """ Functions required to implement Slicer workflow. """
 
+import time
+
 import slicer
 
 def connect_to_OpenIGTLink(name, host, port):
@@ -13,6 +15,16 @@ def connect_to_OpenIGTLink(name, host, port):
     cnode.Start()
 
     return cnode
+
+
+def is_connected(connector):
+    """Check whether an IGT connection has been successful.
+
+    :param connector: A vtkMRMLIGTConnectorNode instance.
+    :return: True if the node's status indicates it is connected, otherwise False.
+    """
+    time.sleep(1)  # wait a bit because the state does not update immediately
+    return connector.GetState() == slicer.vtkMRMLIGTLConnectorNode.StateConnected
 
 
 def create_needle_model(name, length, radius, tip_radius):
