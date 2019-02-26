@@ -183,8 +183,30 @@ class Slicelet(object):
             self.tabWidget.hide()
 
     def try_connection(self):
-        """Try to set up an OpenIGTLink connection"""
-        workflow.connect(self.connect_btn)
+        """Try to set up an OpenIGTLink connection.
+
+        :return: True if the connection was successful, else False.
+        """
+        self.connect_btn.setEnabled(False)
+        self.connect_btn.setText("Connecting...")
+        connector = workflow.connect(self.connect_btn)
+        success = functions.is_connected(connector)
+        if success:
+            self.show_message("OpenIGTLink connection successful.")
+            self.connect_btn.setText("Connected")
+        else:
+            self.show_message("Could not connect via OpenIGTLink.")
+            self.connect_btn.setText("Connect to OpenIGTLink")
+            self.connect_btn.setEnabled("True")
+        return success
+
+    def show_message(self, text):
+        msg = qt.QMessageBox()
+        msg.setText(text)
+        # Note that the Qt method is properly called exec, but as this clashes
+        # with the reserved keyword in Python 2, the Python version is exec_.
+        # A method called exec also exists for backwards compatibility.
+        msg.exec_()
 
 
 class TractographySlicelet(Slicelet):
