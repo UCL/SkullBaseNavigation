@@ -40,7 +40,7 @@ class Slicelet(object):
         # Button to connect to OpenIGTLink
         self.connect_btn = qt.QPushButton("Connect to OpenIGTLink")
         self.buttons.layout().addWidget(self.connect_btn)
-        self.connect_btn.clicked.connect(workflow.connect)
+        self.connect_btn.clicked.connect(self.try_connection)
 
         # Collapsible button to hold OpenIGTLink Remote Module
         self.ctk_model_box = ctk.ctkCollapsibleButton()
@@ -181,6 +181,10 @@ class Slicelet(object):
             self.tabWidget.show()
         else:
             self.tabWidget.hide()
+
+    def try_connection(self):
+        """Try to set up an OpenIGTLink connection"""
+        workflow.connect(self.connect_btn)
 
 
 class TractographySlicelet(Slicelet):

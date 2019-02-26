@@ -6,14 +6,21 @@ import functions
 import qt
 import slicer
 
-def connect():
-    """ Connect to PLUS Server to receive OpenIGTLink data """
+def connect(button):
+    """ Connect to PLUS Server to receive OpenIGTLink data.
+
+    :param button: the button that triggered this request."""
+    button.setEnabled(False)
+    button.setText("Connecting...")
     igt_connector = functions.connect_to_OpenIGTLink(
         'OpenIGT', 'localhost', 18905)
     if functions.is_connected(igt_connector):
         show_message("OpenIGTLink connection successful.")
+        button.setText("Connected")
     else:
         show_message("Could not connect via OpenIGTLink.")
+        button.setText("Connect to OpenIGTLink")
+        button.setEnabled("True")
     return igt_connector
 
 
