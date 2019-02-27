@@ -107,6 +107,10 @@ class Slicelet(object):
 
         self.control_panel.insertWidget(tab_widget_index, self.tabWidget)
 
+        # Button to start/stop ultrasound volume reconstruction
+        self.us_recon_btn = USReconstructionButton(self)
+        self.buttons.layout().addWidget(self.us_recon_btn)
+
         # Right side of splitter - 3D/Slice Viewer
         self.layoutManager = slicer.qMRMLLayoutWidget()
         self.layoutManager.setMRMLScene(slicer.mrmlScene)
@@ -215,6 +219,31 @@ class TractographySlicelet(Slicelet):
     #pylint: disable=useless-super-delegation
     def __init__(self):
         super(TractographySlicelet, self).__init__()
+
+
+class USReconstructionButton(qt.QPushButton):
+    """A button that starts or stops ultrasound reconstruction when clicked."""
+    START_TEXT = "Start reconstruction"
+    STOP_TEXT = "Stop reconstruction"
+
+    def __init__(self, slicelet):
+        """Create a new button belonging to the given slicelet."""
+        super(USReconstructionButton, self).__init__(self.START_TEXT)
+        self.working = False  # are we currently doing a reconstruction?
+        self.slicelet = slicelet
+        self.clicked.connect(self.react)
+
+    def react(self):
+        """React to being clicked, depending on the current state."""
+        if self.working:
+            # Send command to stop reconstruction
+            self.slicelet.show_message("Stopping")  # Placeholder
+        else:
+            # Send command to start reconstruction
+            self.slicelet.show_message("Starting")  # Placeholder
+        # Toggle state and text
+        self.working = not self.working
+        self.setText(self.STOP_TEXT if self.working else self.START_TEXT)
 
 
 if __name__ == "__main__":
