@@ -6,7 +6,7 @@ import functions
 
 import slicer
 
-def connect(button):
+def connect():
     """Connect to PLUS Server to receive OpenIGTLink data.
 
     :return: The resulting vtkMRMLIGTLConnectorNode.

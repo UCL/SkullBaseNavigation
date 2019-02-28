@@ -118,6 +118,9 @@ class Slicelet(object):
             slicer.vtkMRMLLayoutNode.SlicerLayoutDefaultView)
         self.parent.addWidget(self.layoutManager)
 
+        # Non-visual members:
+        self.connector = None  # the OpenIGTLink connector to be used
+
         self.parent.show()
 
     def check_if_models_exist(self):
@@ -193,8 +196,8 @@ class Slicelet(object):
         """
         self.connect_btn.setEnabled(False)
         self.connect_btn.setText("Connecting...")
-        connector = workflow.connect(self.connect_btn)
-        success = functions.is_connected(connector)
+        self.connector = workflow.connect()
+        success = functions.is_connected(self.connector)
         if success:
             self.show_message("OpenIGTLink connection successful.")
             self.connect_btn.setText("Connected")
@@ -230,20 +233,30 @@ class USReconstructionButton(qt.QPushButton):
         """Create a new button belonging to the given slicelet."""
         super(USReconstructionButton, self).__init__(self.START_TEXT)
         self.working = False  # are we currently doing a reconstruction?
-        self.slicelet = slicelet
-        self.clicked.connect(self.react)
+        self.slicelet = slicelet  # the parent slicelet
+        self.clicked.connect(self.react)  # call the react method when clicked
+        self.logic = slicer.modules.openigtlinkremote.logic()
 
     def react(self):
         """React to being clicked, depending on the current state."""
-        if self.working:
-            # Send command to stop reconstruction
-            self.slicelet.show_message("Stopping")  # Placeholder
-        else:
-            # Send command to start reconstruction
-            self.slicelet.show_message("Starting")  # Placeholder
-        # Toggle state and text
-        self.working = not self.working
-        self.setText(self.STOP_TEXT if self.working else self.START_TEXT)
+        if self.working:  # Send command to stop reconstruction
+            node_id = self.slicelet.connector.GetID()
+            cmd = slicer.vtkSlicerOpenIGTLinkCommand()
+            cmd.SetCommandName("StopVolumeReconstruction")
+            # Specify the name of the output volume and a filename to store it
+            cmd.SetCommandAttribute("OutputVolDeviceName", "ReconVolReference")
+            cmd.SetCommandAttribute("OutputVolFilename", "output_reconstruction.mha")
+        else:  # Send command to start reconstruction
+            node_id = self.slicelet.connector.GetID()
+            cmd = slicer.vtkSlicerOpenIGTLinkCommand()
+            cmd.SetCommandName("StartVolumeReconstruction")
+        # Sending the command returns True on success, False on failure
+        response = self.logic.SendCommand(cmd, node_id)
+        # TODO Maybe we should use an observer for the command completing instead
+        if response:
+            # Toggle state and text
+            self.working = not self.working
+            self.setText(self.STOP_TEXT if self.working else self.START_TEXT)
 
 
 if __name__ == "__main__":
