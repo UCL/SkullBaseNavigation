@@ -208,6 +208,10 @@ class Slicelet(object):
         return success
 
     def show_message(self, text):
+        """Display the given text to the user.
+
+        Current implementation shows a message box.
+        """
         msg = qt.QMessageBox()
         msg.setText(text)
         # Note that the Qt method is properly called exec, but as this clashes
@@ -229,11 +233,11 @@ class USReconstructionButton(qt.QPushButton):
     START_TEXT = "Start reconstruction"
     STOP_TEXT = "Stop reconstruction"
 
-    def __init__(self, slicelet):
+    def __init__(self, parent_slicelet):
         """Create a new button belonging to the given slicelet."""
         super(USReconstructionButton, self).__init__(self.START_TEXT)
         self.working = False  # are we currently doing a reconstruction?
-        self.slicelet = slicelet  # the parent slicelet
+        self.slicelet = parent_slicelet  # the parent slicelet
         self.clicked.connect(self.react)  # call the react method when clicked
         self.logic = slicer.modules.openigtlinkremote.logic()
 
@@ -245,14 +249,16 @@ class USReconstructionButton(qt.QPushButton):
             cmd.SetCommandName("StopVolumeReconstruction")
             # Specify the name of the output volume and a filename to store it
             cmd.SetCommandAttribute("OutputVolDeviceName", "ReconVolReference")
-            cmd.SetCommandAttribute("OutputVolFilename", "output_reconstruction.mha")
+            cmd.SetCommandAttribute("OutputVolFilename",
+                                    "output_reconstruction.mha")
         else:  # Send command to start reconstruction
             node_id = self.slicelet.connector.GetID()
             cmd = slicer.vtkSlicerOpenIGTLinkCommand()
             cmd.SetCommandName("StartVolumeReconstruction")
         # Sending the command returns True on success, False on failure
         response = self.logic.SendCommand(cmd, node_id)
-        # TODO Maybe we should use an observer for the command completing instead
+        # TODO Maybe we should use an observer for the command completing
+        # instead of examining the response value.
         if response:
             # Toggle state and text
             self.working = not self.working

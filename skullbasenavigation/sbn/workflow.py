@@ -78,4 +78,3 @@ def set_transform_hierarchy():
 
     functions.set_parent_of_transform_hierarchy_node(
         tf_tip2suretrack, tf_suretrack2ras)
-
