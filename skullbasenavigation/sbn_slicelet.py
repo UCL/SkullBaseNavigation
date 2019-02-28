@@ -243,8 +243,13 @@ class USReconstructionButton(qt.QPushButton):
 
     def react(self):
         """React to being clicked, depending on the current state."""
-        if self.working:  # Send command to stop reconstruction
+        try:
             node_id = self.slicelet.connector.GetID()
+        except AttributeError:  # something (connector) is None or missing
+            self.slicelet.show_message(
+                "Cannot find OpenIGT connection! You must first connect.")
+            return
+        if self.working:  # Send command to stop reconstruction
             cmd = slicer.vtkSlicerOpenIGTLinkCommand()
             cmd.SetCommandName("StopVolumeReconstruction")
             # Specify the name of the output volume and a filename to store it
@@ -252,7 +257,6 @@ class USReconstructionButton(qt.QPushButton):
             cmd.SetCommandAttribute("OutputVolFilename",
                                     "output_reconstruction.mha")
         else:  # Send command to start reconstruction
-            node_id = self.slicelet.connector.GetID()
             cmd = slicer.vtkSlicerOpenIGTLinkCommand()
             cmd.SetCommandName("StartVolumeReconstruction")
         # Sending the command returns True on success, False on failure
