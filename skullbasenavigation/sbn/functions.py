@@ -24,7 +24,9 @@ def is_connected(connector):
     :return: True if the node's status indicates it is connected, otherwise False.
     """
     time.sleep(1)  # wait a bit because the state does not update immediately
-    return connector.GetState() == slicer.vtkMRMLIGTLConnectorNode.StateConnected
+    # In Slicer 4.10, this attribute is called StateConnected, but in previous
+    # versions it is called STATE_CONNECTED
+    return connector.GetState() == slicer.vtkMRMLIGTLConnectorNode.STATE_CONNECTED
 
 
 def create_needle_model(name, length, radius, tip_radius):
