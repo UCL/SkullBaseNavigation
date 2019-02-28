@@ -230,8 +230,8 @@ class TractographySlicelet(Slicelet):
 
 class USReconstructionButton(qt.QPushButton):
     """A button that starts or stops ultrasound reconstruction when clicked."""
-    START_TEXT = "Start reconstruction"
-    STOP_TEXT = "Stop reconstruction"
+    START_TEXT = "Start acquisition"
+    STOP_TEXT = "Stop acquisition & reconstruct"
 
     def __init__(self, parent_slicelet):
         """Create a new button belonging to the given slicelet."""
