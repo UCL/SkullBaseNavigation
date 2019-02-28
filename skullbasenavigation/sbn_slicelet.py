@@ -115,7 +115,7 @@ class Slicelet(object):
         self.layoutManager = slicer.qMRMLLayoutWidget()
         self.layoutManager.setMRMLScene(slicer.mrmlScene)
         self.layoutManager.setLayout(
-            slicer.vtkMRMLLayoutNode.SlicerLayoutDefaultView)
+            slicer.vtkMRMLLayoutNode.SlicerLayoutFourUpView)
         self.parent.addWidget(self.layoutManager)
 
         # Non-visual members:
