@@ -1,7 +1,7 @@
 <PlusConfiguration version="2.3">
   <DataCollection StartupDelaySec="1.0" >
     <DeviceSet
-      Name="PlusServer: Medtronic StealthLink tracker + BK5000"
+      Name="PlusServer: Medtronic StealthLink tracker + BK5000 (via pyIGTLink)"
       Description="Broadcasting tool tracking data through OpenIGTLink
 Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
     />
