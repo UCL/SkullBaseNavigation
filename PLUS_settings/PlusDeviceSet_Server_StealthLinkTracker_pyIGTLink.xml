@@ -67,6 +67,24 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
       </InputChannels>
     </Device>
 
+
+  <Device
+     Id="VolumeReconstructorDevice"
+     Type="VirtualVolumeReconstructor">
+     <InputChannels>
+       <InputChannel Id="TrackedVideoStream" />
+     </InputChannels>
+     <VolumeReconstruction
+       ImageCoordinateFrame="Image" ReferenceCoordinateFrame="Reference"
+       Interpolation="LINEAR" Optimization="FULL" Compounding="On" FillHoles="Off" NumberOfThreads="2"
+       OutputSpacing="0.5 0.5 0.5" >
+       <HoleFilling>
+         <HoleFillingElement Type="GAUSSIAN" Size="5" Stdev="0.6667" MinimumKnownVoxelsRatio="0.50001" />
+         <HoleFillingElement Type="STICK" StickLengthLimit="9" NumberOfSticksToUse="1" />
+        </HoleFilling>
+      </VolumeReconstruction>
+  </Device>
+
 </DataCollection>
 
   <CoordinateDefinitions>
