@@ -30,7 +30,7 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
     <Device
     Id="OpenIGTLinkVideoSenderDevice"
     Type="OpenIGTLinkVideo"
-    MessageType="TrackedFrame"
+    MessageType="Image"
     ServerAddress="127.0.0.1"
     ServerPort="18944"
     IgtlMessageCrcCheckEnabled="false" >
