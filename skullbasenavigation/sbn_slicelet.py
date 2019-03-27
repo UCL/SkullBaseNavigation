@@ -232,6 +232,7 @@ class USReconstructionButton(qt.QPushButton):
     """A button that starts or stops ultrasound reconstruction when clicked."""
     START_TEXT = "Start acquisition"
     STOP_TEXT = "Stop acquisition & reconstruct"
+    VOLUME_NAME = "ReconVolReference"
 
     def __init__(self, parent_slicelet):
         """Create a new button belonging to the given slicelet."""
@@ -253,7 +254,7 @@ class USReconstructionButton(qt.QPushButton):
             cmd = slicer.vtkSlicerOpenIGTLinkCommand()
             cmd.SetCommandName("StopVolumeReconstruction")
             # Specify the name of the output volume and a filename to store it
-            cmd.SetCommandAttribute("OutputVolDeviceName", "ReconVolReference")
+            cmd.SetCommandAttribute("OutputVolDeviceName", self.VOLUME_NAME)
             cmd.SetCommandAttribute("OutputVolFilename",
                                     "output_reconstruction.mha")
         else:  # Send command to start reconstruction
