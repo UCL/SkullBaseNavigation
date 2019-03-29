@@ -55,7 +55,8 @@ def create_models():
 
 def prepare_pivot_cal():
     """ Set some default values for pivot calibration """
-    tf_tip2suretrack = functions.create_linear_transform_node("SureTrack2TipToSureTrack2")
+    tf_tip2suretrack = functions.create_linear_transform_node(
+        "SureTrack2TipToSureTrack2")
     tf_suretrack2ras = slicer.mrmlScene.GetFirstNodeByName("SureTrack2ToRas")
 
     functions.set_pivot_transforms(tf_suretrack2ras, tf_tip2suretrack)
@@ -75,7 +76,8 @@ def set_transform_hierarchy():
     stylus = scene.GetFirstNodeByName("StylusModel")
     probe = scene.GetFirstNodeByName("ProbeModel")
 
-    functions.set_parent_of_transform_hierarchy_node(stylus, tf_stylus2reference)
+    functions.set_parent_of_transform_hierarchy_node(
+        stylus, tf_stylus2reference)
     functions.set_parent_of_transform_hierarchy_node(probe, tf_tip2suretrack)
     functions.set_parent_of_transform_hierarchy_node(
         tf_tip2suretrack, tf_suretrack2ras)
