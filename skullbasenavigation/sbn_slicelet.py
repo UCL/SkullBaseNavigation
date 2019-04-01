@@ -107,6 +107,10 @@ class Slicelet(object):
 
         self.control_panel.insertWidget(tab_widget_index, self.tabWidget)
 
+        # Button to retrieve the CT scan from the StealthStation
+        self.ct_loader_btn = PlusRemoteCTLoaderButton(self)
+        self.buttons.layout().addWidget(self.ct_loader_btn)
+
         # Button to start/stop ultrasound volume reconstruction
         self.us_recon_btn = USReconstructionButton(self)
         self.buttons.layout().addWidget(self.us_recon_btn)
@@ -226,6 +230,60 @@ class TractographySlicelet(Slicelet):
     #pylint: disable=useless-super-delegation
     def __init__(self):
         super(TractographySlicelet, self).__init__()
+
+class PlusRemoteCTLoaderButton(qt.QPushButton):
+    """A button to load the CT scan from the StealthLink station"""
+    LOAD_TEXT = "Load CT scan"
+
+    def __init__(self, parent_slicelet):
+        """Create a Load CT button in the slicelet"""
+        super(PlusRemoteCTLoaderButton, self).__init__(self.LOAD_TEXT)
+        self.slicelet = parent_slicelet  # Stores the parent slicelet
+        self.clicked.connect(self.react)  # Calls react when clicked
+        self.logic = slicer.modules.openigtlinkremote.logic()  # Get the logic from the PlusRemote module
+
+    def react(self):
+        """React to being clicked"""
+        try:
+            node_id = self.slicelet.connector.GetID()
+            ct_scan = self.query_and_get_CT_scan(node_id)
+            return ct_scan
+        except AttributeError:
+            self.slicelet.show_message(
+                "Cannot find OpenIGT connection. Please connect first.")
+            return
+
+    def query_and_get_CT_scan(self, node_id):
+        """Query for all the images and get the CT scan"""
+        query_node = slicer.vtkMRMLIGTQueryNode()
+        query_node.SetQueryType(query_node.TYPE_GET)
+        query_node.SetIGTLName("IMGMETA")  # Ask for all images metadata
+        query_node.SetQueryStatus(query_node.STATUS_PREPARED)  # Needed ?
+        connector_node = slicer.mrmlScene.GetNodeByID(node_id)
+        connector_node.PushQuery(query_node)
+        # Callback for the query response 
+        query_node.AddObserver(query_node.ResponseEvent, callback)
+        # Get the image file from a second query
+        response = query_node.GetResponseDataNode()
+        nb_responses = reponse.GetNumberOfImageMetaElement()
+        # We are assuming there is only one file in the response so far
+        # TODO: we might be implementing a more stringent filter based on
+        # i.e. file names in case more than one file exist on the Stealth
+        element_metadata = response.GetImageMetaElement(0)
+        query_node.SetIGTLName("IMAGE")
+        query_node.SetIGTLDeviceName(element.DeviceName)
+        query_node.SetQueryType(query_node.TYPE_GET)  # Is this necessary ?
+        query_node.SetQueryStatus(query_node.STATUS_PREPARED)  # Is this necessary ?
+        connector_node.PushQuery(query_node)
+        # Second callback
+        query_node.AddObserver(query_node.ResponseEvent, callback)
+        # Second response, it should be the CT scan file
+        response = query_node.GetResponseDataNode()
+        return response
+
+
+
+
 
 
 class USReconstructionButton(qt.QPushButton):
