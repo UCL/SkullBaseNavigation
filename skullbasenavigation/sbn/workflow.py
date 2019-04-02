@@ -12,7 +12,7 @@ def connect():
     :return: The resulting vtkMRMLIGTLConnectorNode.
     """
     igt_connector = functions.connect_to_OpenIGTLink(
-        'OpenIGT', 'localhost', 18905)
+        'OpenIGT', 'localhost', 18944)
     return igt_connector
 
 

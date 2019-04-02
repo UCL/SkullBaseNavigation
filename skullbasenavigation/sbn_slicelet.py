@@ -244,42 +244,58 @@ class PlusRemoteCTLoaderButton(qt.QPushButton):
 
     def react(self):
         """React to being clicked"""
+        print("Sliclet: {}".format(self.slicelet))
+        print("connector: {}".format(self.slicelet.connector))
         try:
             node_id = self.slicelet.connector.GetID()
+            print("node id: {}".format(node_id))
             ct_scan = self.query_and_get_CT_scan(node_id)
             return ct_scan
-        except AttributeError:
+        except AttributeError as e:
+            print(e)
             self.slicelet.show_message(
                 "Cannot find OpenIGT connection. Please connect first.")
             return
 
     def query_and_get_CT_scan(self, node_id):
         """Query for all the images and get the CT scan"""
-        query_node = slicer.vtkMRMLIGTQueryNode()
-        query_node.SetQueryType(query_node.TYPE_GET)
-        query_node.SetIGTLName("IMGMETA")  # Ask for all images metadata
-        query_node.SetQueryStatus(query_node.STATUS_PREPARED)  # Needed ?
+        self.query_node = slicer.vtkMRMLIGTLQueryNode()
+        self.query_node.SetName('QueryNode')
+        self.query_node.SetQueryType(self.query_node.TYPE_GET)
+        self.query_node.SetIGTLName("IMGMETA")  # Ask for all images metadata
+        self.query_node.SetQueryStatus(self.query_node.STATUS_PREPARED)  # Needed ?
+        slicer.mrmlScene.AddNode(self.query_node)
         connector_node = slicer.mrmlScene.GetNodeByID(node_id)
-        connector_node.PushQuery(query_node)
+        connector_node.PushQuery(self.query_node)
         # Callback for the query response 
-        query_node.AddObserver(query_node.ResponseEvent, callback)
+        self.query_node.AddObserver(self.query_node.ResponseEvent, self.callback)
+        print(self.query_node)
+
+    def callback(self, obj, ev):
         # Get the image file from a second query
-        response = query_node.GetResponseDataNode()
-        nb_responses = reponse.GetNumberOfImageMetaElement()
+        print("In callback for query response")
+        print(type(self))
+        print(obj, '...', ev)
+        print(obj.GetQueryStatus())
+        response = self.query_node.GetResponseDataNode()
+        print(response)
+        nb_responses = response.GetNumberOfImageMetaElement()
         # We are assuming there is only one file in the response so far
         # TODO: we might be implementing a more stringent filter based on
         # i.e. file names in case more than one file exist on the Stealth
         element_metadata = response.GetImageMetaElement(0)
-        query_node.SetIGTLName("IMAGE")
-        query_node.SetIGTLDeviceName(element.DeviceName)
-        query_node.SetQueryType(query_node.TYPE_GET)  # Is this necessary ?
-        query_node.SetQueryStatus(query_node.STATUS_PREPARED)  # Is this necessary ?
-        connector_node.PushQuery(query_node)
+        query_node2 = slicer.vtkMRMLIGTLQueryNode()
+        query_node2.SetIGTLName("IMAGE")
+        query_node2.SetIGTLDeviceName(element.DeviceName)
+        query_node2.SetQueryType(query_node2.TYPE_GET)  # Is this necessary ?
+        query_node2.SetQueryStatus(query_node2.STATUS_PREPARED)  # Is this necessary ?
+        slicer.mrmlScene.AddNode(query_node2)
+        connector_node.PushQuery(query_node2)
         # Second callback
-        query_node.AddObserver(query_node.ResponseEvent, callback)
+        # query_node.AddObserver(query_node.ResponseEvent, callback)
         # Second response, it should be the CT scan file
-        response = query_node.GetResponseDataNode()
-        return response
+        # response = query_node.GetResponseDataNode()
+        # return response
 
 
 

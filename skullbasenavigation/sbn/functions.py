@@ -27,7 +27,7 @@ def is_connected(connector):
     # In Slicer 4.10, this attribute is called StateConnected, but in previous
     # versions it is called STATE_CONNECTED
     return (connector.GetState()
-            == slicer.vtkMRMLIGTLConnectorNode.StateConnected)
+            == slicer.vtkMRMLIGTLConnectorNode.STATE_CONNECTED)
 
 
 def create_needle_model(name, length, radius, tip_radius):
