@@ -2,6 +2,9 @@
 Workflow specifically for use in the mock OR.
 Calls more generic functions from functions.py
 """
+import os.path
+import platform
+from subprocess import Popen, PIPE, STDOUT
 
 from sksurgerybk.interface import bk500
 import slicer
@@ -15,10 +18,18 @@ def start_dependencies():
     pyigtlink = bk500.BKpyIGTLink()
     pyigtlink.start()
     # PLUS Server (command will depend on the operating system)
-
-    # We may want to keep track of these connections,
+    # NB: This assumes that the PlusServer executable is on the path,
+    # and that we are in the root of the repository when running this!
+    os_name = platform.system()
+    plus_exec = "PlusServer.exe" if os_name == "Windows" else "PlusServer"
+    plus_config = os.path.join(
+        "PLUS_settings",
+        "PlusDeviceSet_Server_StealthLinkTracker_pyIGTLink.xml")
+    plus_args = [plus_exec, "--config-file", plus_config]
+    plus = Popen(plus_args, stdout=PIPE, stderr=STDOUT)
+    # We may want to keep track of these connections/processes,
     # e.g. so we can stop them when the slicelet shuts down or crashes
-    return pyigtlink
+    return pyigtlink, plus
 
 
 def connect():

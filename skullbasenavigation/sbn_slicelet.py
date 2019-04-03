@@ -150,7 +150,7 @@ class Slicelet(object):
         self.connector = None  # the OpenIGTLink connector to be used
 
         # Launch dependencies
-        self.pyigtlink = workflow.start_dependencies()
+        self.pyigtlink, self.plus = workflow.start_dependencies()
 
         self.parent.show()
 
