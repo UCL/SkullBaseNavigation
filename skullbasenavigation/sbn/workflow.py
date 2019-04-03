@@ -3,9 +3,23 @@ Workflow specifically for use in the mock OR.
 Calls more generic functions from functions.py
 """
 
+from sksurgerybk.interface import bk500
 import slicer
 
 import functions
+
+
+def start_dependencies():
+    """Launch services on which the Slicelet depends."""
+    # pyIGTLink server
+    pyigtlink = bk500.BKpyIGTLink()
+    pyigtlink.start()
+    # PLUS Server (command will depend on the operating system)
+
+    # We may want to keep track of these connections,
+    # e.g. so we can stop them when the slicelet shuts down or crashes
+    return pyigtlink
+
 
 def connect():
     """Connect to PLUS Server to receive OpenIGTLink data.
