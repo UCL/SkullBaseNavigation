@@ -6,7 +6,7 @@ import os.path
 import platform
 from subprocess import Popen, PIPE, STDOUT
 
-from sksurgerybk.interface import bk500
+from sksurgerybk.interface import bk5000
 import slicer
 
 import functions
@@ -15,7 +15,7 @@ import functions
 def start_dependencies():
     """Launch services on which the Slicelet depends."""
     # pyIGTLink server
-    pyigtlink = bk500.BKpyIGTLink()
+    pyigtlink = bk5000.BKpyIGTLink()
     pyigtlink.start()
     # PLUS Server (command will depend on the operating system)
     # NB: This assumes that the PlusServer executable is on the path,
