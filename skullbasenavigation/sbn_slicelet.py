@@ -272,6 +272,9 @@ class USReconstructionButton(qt.QPushButton):
         self.slicelet = parent_slicelet  # the parent slicelet
         self.clicked.connect(self.react)  # call the react method when clicked
         self.logic = slicer.modules.openigtlinkremote.logic()
+        # It seems we need to connect to this signal to avoid a segmentation
+        # fault when the slicelet is closed
+        self.destroyed.connect(lambda: 0)
 
     def react(self):
         """React to being clicked, depending on the current state."""
