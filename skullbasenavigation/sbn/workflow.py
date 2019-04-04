@@ -25,7 +25,7 @@ def start_dependencies():
     plus_config = os.path.join(
         "PLUS_settings",
         "PlusDeviceSet_Server_StealthLinkTracker_pyIGTLink.xml")
-    plus_args = [plus_exec, "--config-file", plus_config]
+    plus_args = [plus_exec, "--config-file=" + plus_config]
     plus = Popen(plus_args, stdout=PIPE, stderr=STDOUT)
     # We may want to keep track of these connections/processes,
     # e.g. so we can stop them when the slicelet shuts down or crashes
