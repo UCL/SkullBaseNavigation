@@ -1,7 +1,9 @@
 """ Functions required to implement Slicer workflow. """
 
 import time
-
+import datetime
+import json
+import os
 import slicer
 
 def connect_to_OpenIGTLink(name, host, port):
@@ -255,3 +257,66 @@ def query_remote_item():
     igt_query = slicer.vtkMRMLIGTQueryNode()
 
     return igt_query
+
+def get_all_transforms():
+    """ Return a dictionary of all the transforms in the
+    current hierarchy.
+    :return: Dictionary of transforms, or None if no transforms in hierarchy.
+    """
+    transform_nodes = slicer.mrmlScene.GetNodesByClass('vtkMRMLLinearTransformNode')
+    transform_nodes.InitTraversal()
+
+    tf_node = transform_nodes.GetNextItemAsObject()
+
+    if tf_node == None:
+        return None
+
+    transforms = {}
+    while tf_node:
+        tf = tf_node.GetTransformToParent()
+        matrix4x4 = tf.GetMatrix()
+
+        array = get_vtkmartrix4x4_as_array(matrix4x4)
+        tf_name = tf_node.GetName()
+
+        # Update dictionary
+        transforms[tf_name] = array
+
+        tf_node = transform_nodes.GetNextItemAsObject()
+
+    return transforms
+
+def save_transforms():
+    """ Write all transforms in the current hierarchy to a file,
+    where the filename contains a timestamp. """
+    current_time = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
+    transforms = get_all_transforms()
+
+    if not transforms:
+        return
+
+    directory  = 'outputs/'
+
+    # Create dir if it doesn't exist
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    filename = directory + 'transforms_' + current_time + '.json'
+    with open(filename, 'w') as f:
+        json.dump(transforms, f, indent=4)
+
+def get_vtkmartrix4x4_as_array(matrix4x4):
+    """ Iterate through elements of vtkMatrix4x4 and call
+    GetElement(i, j).
+    :param matrix4x4: instance of vtkMatrix4x4
+    :return: List of lists. Each sub list is a row in the matrix """
+
+    n = 4
+    array = [[0 for x in range(n)] for y in range(n)]
+
+    for i in range(n):
+        for j in range(n):
+            elem = matrix4x4.GetElement(i, j)
+            array[i][j] = elem
+        
+    return array
