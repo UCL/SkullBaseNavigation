@@ -184,10 +184,13 @@ class Slicelet(object):
             "volumerendering",
             "openigtlinkif",
             "createmodels",
-            ]
+            "transforms",
+            "plusremote",
+            "volumereslicedriver"]
 
         # Need to have a text label for each module tab
-        module_labels = ["Data", "Volumes", "IGTLink", "Models"]
+        module_labels = ["Data", "Volumes", "IGTLink", "Models", "Transforms", \
+                         "PLUS Remote", "Volume Reslice"]
 
         # Create a tab widget for each module
         for name, label in zip(module_names, module_labels):
