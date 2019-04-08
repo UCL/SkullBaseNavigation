@@ -2,6 +2,7 @@
 
 import time
 import datetime
+import logging
 import json
 import os
 import slicer
@@ -323,6 +324,7 @@ def get_vtkmartrix4x4_as_array(matrix4x4):
 
 def remove_all_transforms():
     """ Remove all transform nodes from scene/hierarchy. """
+    logging.debug("Removing all transforms.")
     transform_nodes = slicer.mrmlScene.GetNodesByClass('vtkMRMLLinearTransformNode')
     transform_nodes.InitTraversal()
     tf_node = transform_nodes.GetNextItemAsObject()

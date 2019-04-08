@@ -1,5 +1,6 @@
 """ Slicelet for SBN Project """
 
+import logging
 import qt
 import ctk
 import slicer
