@@ -320,3 +320,21 @@ def get_vtkmartrix4x4_as_array(matrix4x4):
             array[i][j] = elem
         
     return array
+
+def remove_all_transforms():
+    """ Remove all transform nodes from scene/hierarchy. """
+    transform_nodes = slicer.mrmlScene.GetNodesByClass('vtkMRMLLinearTransformNode')
+    transform_nodes.InitTraversal()
+    tf_node = transform_nodes.GetNextItemAsObject()
+
+    while tf_node:
+        slicer.mrmlScene.RemoveNode(tf_node)
+        tf_node = transform_nodes.GetNextItemAsObject()
+
+    # Check that no nodes remain
+    transform_nodes = slicer.mrmlScene.GetNodesByClass('vtkMRMLLinearTransformNode')
+    transform_nodes.InitTraversal()
+    tf_node = transform_nodes.GetNextItemAsObject()
+
+    if tf_node:
+        raise ValueError("Tried to delete all transform nodes, but it didn't work!")
