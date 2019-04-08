@@ -111,17 +111,31 @@ class Slicelet(object):
         self.us_recon_btn = USReconstructionButton(self)
         self.buttons.layout().addWidget(self.us_recon_btn)
 
+        # Button to save all transforms to file
+        # Used for syncing with neuromonitoring data
+        self.transform_save_btn = qt.QPushButton('Save Transforms')
+        self.transform_save_btn.clicked.connect(functions.save_transforms)
+        self.buttons.layout().addWidget(self.transform_save_btn)
+
         # Right side of splitter - 3D/Slice Viewer
         self.layoutManager = slicer.qMRMLLayoutWidget()
         self.layoutManager.setMRMLScene(slicer.mrmlScene)
         self.layoutManager.setLayout(
             slicer.vtkMRMLLayoutNode.SlicerLayoutFourUpView)
         self.parent.addWidget(self.layoutManager)
+        
+        # On startup, there are some 'hidden' identity transforms, named
+        # 'LinearTransform_*', that don't show up in the hierarchy.
+        # Want to delete these, so that they aren't saved when we use
+        # transform_save_btn
+        functions.remove_all_transforms()
 
         # Non-visual members:
         self.connector = None  # the OpenIGTLink connector to be used
 
         self.parent.show()
+
+
 
     def check_if_models_exist(self):
         """ Check if the CT and ultrasound models have been
@@ -169,7 +183,8 @@ class Slicelet(object):
             "data",
             "volumerendering",
             "openigtlinkif",
-            "createmodels"]
+            "createmodels",
+            ]
 
         # Need to have a text label for each module tab
         module_labels = ["Data", "Volumes", "IGTLink", "Models"]
