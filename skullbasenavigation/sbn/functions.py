@@ -28,9 +28,13 @@ def is_connected(connector):
     """
     time.sleep(1)  # wait a bit because the state does not update immediately
     # In Slicer 4.10, this attribute is called StateConnected, but in previous
-    # versions it is called STATE_CONNECTED
-    return (connector.GetState()
-            == slicer.vtkMRMLIGTLConnectorNode.STATE_CONNECTED)
+    # versions it is called STATE_CONNECTED. There is no easy way to check what
+    # version we are running, but we can check for both...
+    try:
+        connected_state = slicer.vtkMRMLIGTLConnectorNode.StateConnected
+    except AttributeError:
+        connected_state = slicer.vtkMRMLIGTLConnectorNode.STATE_CONNECTED
+    return connector.GetState() == connected_state
 
 
 def create_needle_model(name, length, radius, tip_radius):
