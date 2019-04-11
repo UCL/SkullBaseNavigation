@@ -12,10 +12,10 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
       ServerPort="6996"
       ToolReferenceFrame="Tracker" >
       <DataSources>
-        <DataSource Type="Tool" Id="Stylus" PortName="Passive Planar, Blunt" />
-        <DataSource Type="Tool" Id="Reference" PortName="Small Passive Cranial Frame" />
+        <DataSource Type="Tool" Id="Stylus" PortName="Passive Planar, Blunt" AlwaysTrack="TRUE"/>
+        <DataSource Type="Tool" Id="Reference" PortName="Small Passive Cranial Frame"  />
         <DataSource Type="Tool" Id="Ras"      PortName="RasRegistration" />
-	      <DataSource Type="Tool" Id="SureTrack2"      PortName="SureTrak2 Black Passive" />
+	      <DataSource Type="Tool" Id="SureTrack2"      PortName="SureTrak2 Black Passive" AlwaysTrack="TRUE"/>
       </DataSources>
       <OutputChannels>
         <OutputChannel Id="TrackerStream">
@@ -32,7 +32,7 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
     Type="OpenIGTLinkVideo"
     MessageType="Image"
     ServerAddress="127.0.0.1"
-    ServerPort="18944"
+    ServerPort="18905"
     IgtlMessageCrcCheckEnabled="false" >
     <DataSources>
       <DataSource Type="Video" Id="Video" PortUsImageOrientation="MF"  />
@@ -68,36 +68,47 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
     </Device>
 
 
-  <Device
-     Id="VolumeReconstructorDevice"
-     Type="VirtualVolumeReconstructor">
-     <InputChannels>
-       <InputChannel Id="TrackedVideoStream" />
-     </InputChannels>
-     <VolumeReconstruction
-       ImageCoordinateFrame="Image" ReferenceCoordinateFrame="Reference"
-       Interpolation="LINEAR" Optimization="FULL" Compounding="On" FillHoles="Off" NumberOfThreads="2"
-       OutputSpacing="0.5 0.5 0.5" >
-       <HoleFilling>
-         <HoleFillingElement Type="GAUSSIAN" Size="5" Stdev="0.6667" MinimumKnownVoxelsRatio="0.50001" />
-         <HoleFillingElement Type="STICK" StickLengthLimit="9" NumberOfSticksToUse="1" />
+	<Device
+      Id="VolumeReconstructorDevice"
+      Type="VirtualVolumeReconstructor"
+      OutputVolDeviceName="RecVol_Reference">
+      <InputChannels>
+        <InputChannel Id="TrackedVideoStream" />
+      </InputChannels>
+      <VolumeReconstruction
+        ImageCoordinateFrame="Image" ReferenceCoordinateFrame="Reference"
+        Interpolation="LINEAR" Optimization="NONE" Compounding="On" FillHoles="On" NumberOfThreads="2"
+		ClipRectangleOrigin="0 0" ClipRectangleSize="820 726"
+        OutputOrigin="0 0 0" OutputSpacing="0.5 0.5 0.5">
+		        <HoleFilling>
+          <HoleFillingElement
+            Type="STICK"
+            StickLengthLimit="9"
+            NumberOfSticksToUse="1" />
         </HoleFilling>
-      </VolumeReconstruction>
-  </Device>
-
+		</VolumeReconstruction>
+    </Device>
+ 
 </DataCollection>
 
   <CoordinateDefinitions>
 
-<!-- TransducerToProbe transform matrix is computed from calibration matrices provided by Ultrasonix for linear GPS probe -->
+	<Transform From="Image" To="SureTrack2Tip"
+	Matrix="
+	-0.0614524 -0.000590372 -0.00299226 27.1976 
+	-0.00298393 -0.000853928 0.0614497 1.57 
+	-0.000631149 0.0615193 0.000824247 2.5 
+	0 0 0 1 
+	" /> 
 
-    <Transform From="Transducer" To="Probe"
-      Matrix="
-        0.0018    0.9477   -0.0175   14.8449
-       -1.0000    0.0016   -0.0052   15.0061
-       -0.0052    0.0166    0.9998    0.1638
-             0         0         0    1.0000" />
-
+	<Transform From="SureTrack2Tip" To="SureTrack2"
+	Matrix="
+		0.999484 0 -0.0321145 -3.56231 
+		-0.032043 -0.0666886 -0.997259 -111.797 
+		-0.00214167 0.997774 -0.0666542 -47.7545 
+		0 0 0 1 
+	" /> 
+	
     <Transform From="Ras" To="Lps"
       Matrix="
         -1  0  0  0
@@ -105,18 +116,13 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
          0  0  1  0
          0  0  0  1" />
 
-    <Transform From="Image" To="Reference"
-      Matrix="
-        0.2 0.0 0.0 0.0
-        0.0 0.2 0.0 0.0
-        0.0 0.0 0.2 0.0
-        0 0 0 1" />
+
   </CoordinateDefinitions>
 
   <PlusOpenIGTLinkServer
-    MaxNumberOfIgtlMessagesToSend="1"
+    MaxNumberOfIgtlMessagesToSend="10"
     MaxTimeSpentWithProcessingMs="50"
-    ListeningPort="18905"
+    ListeningPort="18944"
     OutputChannelId="TrackedVideoStream"
     SendValidTransformsOnly="true"> <!--On the US config file-->
     <DefaultClientInfo>
@@ -129,10 +135,14 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
         <!-- To avoid "Transform path not found" warnings, remove transforms for tools that are not defined by the StealthStation -->
         <Transform Name="StylusToReference" />
         <Transform Name="SureTrack2ToRas"  />
-        <Transform Name="StylusToRas"  />
+		<Transform Name="SureTrack2ToReference"  />
+		<Transform Name="StylusToSureTrack2Tip"  />
+		<Transform Name="SureTrack2TipToSureTrack2"  />
+		<Transform Name="ReferenceToRas" />
+       <!-- <Transform Name="StylusToRas"  /> -->
       </TransformNames>
       <ImageNames>
-        <Image Name="Image" EmbeddedTransformToFrame="Reference" />
+        <Image Name="Image" EmbeddedTransformToFrame="SureTrack2Tip" />
       </ImageNames>
       <StringNames>
         <String Name="DepthMm" />
