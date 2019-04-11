@@ -283,12 +283,13 @@ def get_all_transforms():
     current hierarchy.
     :return: Dictionary of transforms, or None if no transforms in hierarchy.
     """
-    transform_nodes = slicer.mrmlScene.GetNodesByClass('vtkMRMLLinearTransformNode')
+    transform_nodes = slicer.mrmlScene.GetNodesByClass(
+        'vtkMRMLLinearTransformNode')
     transform_nodes.InitTraversal()
 
     tf_node = transform_nodes.GetNextItemAsObject()
 
-    if tf_node == None:
+    if tf_node is None:
         return None
 
     transforms = {}
@@ -315,7 +316,7 @@ def save_transforms():
     if not transforms:
         return
 
-    directory  = 'outputs/'
+    directory = 'outputs/'
 
     # Create dir if it doesn't exist
     if not os.path.exists(directory):
@@ -338,13 +339,14 @@ def get_vtkmartrix4x4_as_array(matrix4x4):
         for j in range(n):
             elem = matrix4x4.GetElement(i, j)
             array[i][j] = elem
-        
+
     return array
 
 def remove_all_transforms():
     """ Remove all transform nodes from scene/hierarchy. """
     logging.debug("Removing all transforms.")
-    transform_nodes = slicer.mrmlScene.GetNodesByClass('vtkMRMLLinearTransformNode')
+    transform_nodes = slicer.mrmlScene.GetNodesByClass(
+        'vtkMRMLLinearTransformNode')
     transform_nodes.InitTraversal()
     tf_node = transform_nodes.GetNextItemAsObject()
 
@@ -353,9 +355,11 @@ def remove_all_transforms():
         tf_node = transform_nodes.GetNextItemAsObject()
 
     # Check that no nodes remain
-    transform_nodes = slicer.mrmlScene.GetNodesByClass('vtkMRMLLinearTransformNode')
+    transform_nodes = slicer.mrmlScene.GetNodesByClass(
+        'vtkMRMLLinearTransformNode')
     transform_nodes.InitTraversal()
     tf_node = transform_nodes.GetNextItemAsObject()
 
     if tf_node:
-        raise ValueError("Tried to delete all transform nodes, but it didn't work!")
+        raise ValueError(
+            "Tried to delete all transform nodes, but it didn't work!")

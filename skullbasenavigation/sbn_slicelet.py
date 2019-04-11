@@ -1,6 +1,6 @@
 """ Slicelet for SBN Project """
 
-import logging
+import logging  #pylint: disable=unused-import
 import qt
 import ctk
 import slicer
@@ -150,13 +150,13 @@ class Slicelet(object):
         # better to read in from a file or something.
 
         ultrasound_name = 'Image_SureTrack2Tip'
-        CT_name = 'CT_scan'
+        # CT_name = 'CT_scan'
 
         ultrasound_id = functions.get_item_id_by_name(ultrasound_name)
-        ct_id = functions.get_item_id_by_name(CT_name)
+        # ct_id = functions.get_item_id_by_name(CT_name)
 
         ultrasound_exists = functions.check_if_item_exists(ultrasound_id)
-        ct_exists = functions.check_if_item_exists(ct_id)
+        # ct_exists = functions.check_if_item_exists(ct_id)
 
 
         # if (ultrasound_exists and ct_exists):
@@ -167,9 +167,10 @@ class Slicelet(object):
         #     # workflow.set_visible(ultrasound_node, ct_node)
         #     workflow.set_visible()
         #     self.checkModelsTimer.stop()
-        if (ultrasound_exists):
+        if ultrasound_exists:
             # Get the node
-            ultrasound_node = slicer.mrmlScene.GetFirstNodeByName(ultrasound_name)
+            ultrasound_node = slicer.mrmlScene.GetFirstNodeByName(
+                ultrasound_name)
             workflow.set_visible(ultrasound_node)
             self.checkModelsTimer.stop()
 
