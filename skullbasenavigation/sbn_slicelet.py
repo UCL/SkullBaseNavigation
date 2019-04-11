@@ -150,7 +150,7 @@ class Slicelet(object):
         # better to read in from a file or something.
 
         ultrasound_name = 'Image_Reference'
-        CT_name = ''
+        CT_name = 'CT_scan'
 
         ultrasound_id = functions.get_item_id_by_name(ultrasound_name)
         ct_id = functions.get_item_id_by_name(CT_name)

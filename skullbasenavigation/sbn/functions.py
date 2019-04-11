@@ -72,7 +72,7 @@ def set_node_visible(node):
         set_ultrasound_visible(node)
 
     # 3D CT Model
-    elif node.GetName() == '':
+    elif node.GetName() == 'CT_scan':
         set_CT_model_visible(node)
 
     else:
