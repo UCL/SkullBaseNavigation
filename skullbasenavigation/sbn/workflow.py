@@ -12,7 +12,7 @@ def connect():
     :return: The resulting vtkMRMLIGTLConnectorNode.
     """
     igt_connector = functions.connect_to_OpenIGTLink(
-        'OpenIGT', 'localhost', 18905)
+        'OpenIGT', 'localhost', 18944)
     return igt_connector
 
 
@@ -36,7 +36,7 @@ def wait_for_transforms():
     placed in the StealthStation field of view have been created.
     """
 
-    transforms = ['StylusToRas', 'StylusToReference', 'SureTrack2ToRas']
+    transforms = ['StylusToReference', 'SureTrack2ToRas']
 
     for transform in transforms:
         if not functions.does_node_exist_as_a_transform(transform):
@@ -55,7 +55,7 @@ def create_models():
 
 def prepare_pivot_cal():
     """ Set some default values for pivot calibration """
-    tf_tip2suretrack = functions.create_linear_transform_node("Tip2SureTrack")
+    tf_tip2suretrack = functions.create_linear_transform_node("SureTrack2TipToSureTrack2")
     tf_suretrack2ras = slicer.mrmlScene.GetFirstNodeByName("SureTrack2ToRas")
 
     functions.set_pivot_transforms(tf_suretrack2ras, tf_tip2suretrack)
@@ -67,15 +67,19 @@ def set_transform_hierarchy():
     """ Set the tranform hierarchy for the stylus and probe """
     scene = slicer.mrmlScene
 
-    tf_tip2suretrack = scene.GetFirstNodeByName("Tip2SureTrack")
+    tf_tip2suretrack = scene.GetFirstNodeByName("SureTrack2TipToSureTrack2")
     tf_suretrack2ras = scene.GetFirstNodeByName("SureTrack2ToRas")
-    tf_stylus2ras = scene.GetFirstNodeByName("StylusToRas")
+    tf_stylus2reference = scene.GetFirstNodeByName("StylusToReference")
+    img = scene.GetFirstNodeByName("Image_SureTrack2Tip")
 
     stylus = scene.GetFirstNodeByName("StylusModel")
     probe = scene.GetFirstNodeByName("ProbeModel")
 
-    functions.set_parent_of_transform_hierarchy_node(stylus, tf_stylus2ras)
+    functions.set_parent_of_transform_hierarchy_node(stylus, tf_stylus2reference)
     functions.set_parent_of_transform_hierarchy_node(probe, tf_tip2suretrack)
-
     functions.set_parent_of_transform_hierarchy_node(
         tf_tip2suretrack, tf_suretrack2ras)
+    functions.set_parent_of_transform_hierarchy_node(img, tf_tip2suretrack)
+
+    # TODO Once we have the STL model of the probe loaded, we should set that
+    # under SureTrack2Tip2SureTrack2.

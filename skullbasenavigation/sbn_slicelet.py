@@ -149,7 +149,7 @@ class Slicelet(object):
         # TODO - tidy up - shouldn't hard code the variable names here,
         # better to read in from a file or something.
 
-        ultrasound_name = 'Image_Reference'
+        ultrasound_name = 'Image_SureTrack2Tip'
         CT_name = 'CT_scan'
 
         ultrasound_id = functions.get_item_id_by_name(ultrasound_name)
@@ -171,6 +171,7 @@ class Slicelet(object):
             # Get the node
             ultrasound_node = slicer.mrmlScene.GetFirstNodeByName(ultrasound_name)
             workflow.set_visible(ultrasound_node)
+            self.checkModelsTimer.stop()
 
 
     def check_if_transforms_active(self):
