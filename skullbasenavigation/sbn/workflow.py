@@ -16,18 +16,19 @@ def connect():
     return igt_connector
 
 
-def set_visible():
+# def set_visible(ultrasound_node, ct_node):
+def set_visible(node):
     """ Set the US and CT data to visible """
-    scene = slicer.mrmlScene
+    # scene = slicer.mrmlScene
+    #
+    # ultrasound_volume_name = 'Image_Reference'
+    # ct_volume_name = ''
+    #
+    # ultrasound_node = scene.GetFirstNodeByName(ultrasound_volume_name)
+    # ct_node = scene.GetFirstNodeByName(ct_volume_name)
 
-    ultrasound_volume_name = 'Image_Reference'
-    ct_volume_name = ''
-
-    ultrasound_node = scene.GetFirstNodeByName(ultrasound_volume_name)
-    ct_node = scene.GetFirstNodeByName(ct_volume_name)
-
-    functions.set_node_visible(ultrasound_node)
-    functions.set_node_visible(ct_node)
+    functions.set_node_visible(node)
+    # functions.set_node_visible(ct_node)
 
 
 def wait_for_transforms():

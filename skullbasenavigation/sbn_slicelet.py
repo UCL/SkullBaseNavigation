@@ -158,9 +158,20 @@ class Slicelet(object):
         ultrasound_exists = functions.check_if_item_exists(ultrasound_id)
         ct_exists = functions.check_if_item_exists(ct_id)
 
-        if (ultrasound_exists and ct_exists):
-            workflow.set_visible()
-            self.checkModelsTimer.stop()
+
+        # if (ultrasound_exists and ct_exists):
+        #     # Get the nodes
+        #     ultrasound_node = slicer.mrmlScene.GetNodeByID(str(ultrasound_id))
+        #     ct_node = slicer.mrmlScene.GetNodeByID(str(ct_id))
+        #     print(ultrasound_node, ct_node)
+        #     # workflow.set_visible(ultrasound_node, ct_node)
+        #     workflow.set_visible()
+        #     self.checkModelsTimer.stop()
+        if (ultrasound_exists):
+            # Get the node
+            ultrasound_node = slicer.mrmlScene.GetFirstNodeByName(ultrasound_name)
+            workflow.set_visible(ultrasound_node)
+
 
     def check_if_transforms_active(self):
         """ Check if the transform is active"""
