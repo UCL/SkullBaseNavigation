@@ -81,10 +81,25 @@ def set_node_visible(node):
 
 def set_ultrasound_visible(node):
     """
-    Ultrasound data is an image - set to visible.
+    Ultrasound data is an image - set to visible in the slice viewer.
     """
     slicer.util.setSliceViewerLayers(background=node)
+    # Get all the red slice node
+    red_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeRed')
+    # Get the US node ID
+    node_id = node.GetID()
+    enable_volume_reslice(red_slice_node, node_id)
+    slicer.util.setSliceViewerLayers(background=node)
 
+def enable_volume_reslice(slice_node, node_id):
+    """Use the Volume Reslice Driver module to display the correct US slice in
+    the 3D viewer
+    """
+    # Get the logic from the Volume Slice Driver module
+    reslice_logic = slicer.modules.volumereslicedriver.logic()
+    reslice_logic.SetDriverForSlice(node_id, slice_node)
+    # Make the slice visible in the 3D viewer
+    slice_node.SetSliceVisible(True)
 
 def set_CT_model_visible(node):
     """
