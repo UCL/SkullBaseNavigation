@@ -1,10 +1,11 @@
 """
- Workflow specifically for use in the mock OR.
+Workflow specifically for use in the mock OR.
 Calls more generic functions from functions.py
 """
-import functions
 
 import slicer
+
+import functions
 
 def connect():
     """Connect to PLUS Server to receive OpenIGTLink data.

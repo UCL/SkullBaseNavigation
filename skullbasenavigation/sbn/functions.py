@@ -1,10 +1,11 @@
 """ Functions required to implement Slicer workflow. """
 
-import time
 import datetime
-import logging
 import json
+import logging
 import os
+import time
+
 import slicer
 
 def connect_to_OpenIGTLink(name, host, port):

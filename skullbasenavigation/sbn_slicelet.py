@@ -1,10 +1,10 @@
 """ Slicelet for SBN Project """
 
 import logging  #pylint: disable=unused-import
-import qt
-import ctk
-import slicer
 
+import ctk
+import qt
+import slicer
 from slicer.ScriptedLoadableModule import *
 
 from sbn import workflow, functions
