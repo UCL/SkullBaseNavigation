@@ -305,4 +305,10 @@ if __name__ == "__main__":
     import sys
     print(sys.argv)
 
+    # Set the transverse mode for the red slice view before
+    # running the slicelet as it seems not to work otherwise
+    red_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeRed')
+    reslice_logic = slicer.modules.volumereslicedriver.logic()
+    reslice_logic.SetModeForSlice(reslice_logic.MODE_TRANSVERSE, red_slice_node)
+
     slicelet = TractographySlicelet()
