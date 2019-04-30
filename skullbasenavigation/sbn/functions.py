@@ -52,6 +52,20 @@ def create_needle_model(name, length, radius, tip_radius):
     return needle
 
 
+def load_probe_image(name="BK_Probe"):
+    """Load the image of the probe and name the node as requested."""
+    # Slicer wants an absolute path to the STL image.
+    # This assumes we are at the top level of the repository.
+    img_path = os.path.join(os.getcwd(), "models", "BK_Probe.stl")
+    success, img_node = slicer.util.loadModel(img_path, returnNode=True)
+    if success:
+        img_node.SetName(name)
+    else:
+        # TODO Raise or log something
+        pass
+    return img_node
+
+
 def create_linear_transform_node(name):
     """
     Create a transform node.

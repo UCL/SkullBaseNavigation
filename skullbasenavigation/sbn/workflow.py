@@ -52,6 +52,7 @@ def create_models():
     """
     functions.create_needle_model("StylusModel", 100, 1, 0.1)
     functions.create_needle_model("ProbeModel", 100, 0.5, 0.2)
+    functions.load_probe_image()
 
 
 def prepare_pivot_cal():
@@ -76,10 +77,13 @@ def set_transform_hierarchy():
 
     stylus = scene.GetFirstNodeByName("StylusModel")
     probe = scene.GetFirstNodeByName("ProbeModel")
+    probe_img = scene.GetFirstNodeByName("BK_Probe")
 
     functions.set_parent_of_transform_hierarchy_node(
         stylus, tf_stylus2reference)
     functions.set_parent_of_transform_hierarchy_node(probe, tf_tip2suretrack)
+    functions.set_parent_of_transform_hierarchy_node(
+        probe_img, tf_tip2suretrack)
     functions.set_parent_of_transform_hierarchy_node(
         tf_tip2suretrack, tf_suretrack2ras)
     functions.set_parent_of_transform_hierarchy_node(img, tf_tip2suretrack)
