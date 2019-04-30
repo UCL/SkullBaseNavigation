@@ -124,7 +124,7 @@ class Slicelet(object):
         self.layoutManager.setLayout(
             slicer.vtkMRMLLayoutNode.SlicerLayoutFourUpView)
         self.parent.addWidget(self.layoutManager)
-        
+
         # On startup, there are some 'hidden' identity transforms, named
         # 'LinearTransform_*', that don't show up in the hierarchy.
         # Want to delete these, so that they aren't saved when we use
@@ -299,6 +299,38 @@ class USReconstructionButton(qt.QPushButton):
             # Toggle state and text
             self.working = not self.working
             self.setText(self.STOP_TEXT if self.working else self.START_TEXT)
+            # Change reslice settings after US reconstruction complete
+            self.change_reslice_settings()
+
+    def change_reslice_settings(self):
+        """After US reconstruction, the slice views are set
+        to show projections."""
+        # Get the necessary nodes
+        CT_name = 'CT_scan'
+        CT_node = slicer.mrmlScene.GetFirstNodeByName(CT_name)
+        SureTrack2TipToSureT_name = 'SureTrack2TipToSureT'
+        SureTrack2TipToSureT_node = slicer.mrmlScene.GetFirstNodeByName(SureTrack2TipToSureT_name)
+        SureTrack2TipToSureT_node_id = SureTrack2TipToSureT_node.GetID()
+        # Get the slice view nodes and the logic
+        red_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeRed')
+        yellow_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeYellow')
+        green_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeGreen')
+        reslice_logic = slicer.modules.volumereslicedriver.logic()
+        # Set the drivers
+        reslice_logic.SetDriverForSlice(SureTrack2TipToSureT_node_id, red_slice_node)
+        reslice_logic.SetDriverForSlice(SureTrack2TipToSureT_node_id, yellow_slice_node)
+        reslice_logic.SetDriverForSlice(SureTrack2TipToSureT_node_id, green_slice_node)
+        # Set the modes
+        reslice_logic.SetModeForSlice(reslice_logic.MODE_AXIAL, red_slice_node)
+        reslice_logic.SetModeForSlice(reslice_logic.MODE_SAGITTAL, yellow_slice_node)
+        reslice_logic.SetModeForSlice(reslice_logic.MODE_CORONAL, green_slice_node)
+        # Set the backgrounds
+        slicer.util.setSliceViewerLayers(background=CT_node)
+        # Set the foregrounds
+        slicer.util.setSliceViewerLayers(foreground=liveReconstruction_node)
+        # Set the red slice view foreground value to 0.5
+        slicer.util.setSliceViewerLayers(foregroundOpacity=0.5)
+
 
 
 if __name__ == "__main__":
