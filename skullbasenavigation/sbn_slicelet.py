@@ -330,23 +330,27 @@ class USReconstructionButton(qt.QPushButton):
         CT_name = 'SLD-*'
         CT_node = slicer.util.getNode(CT_name)
         SureTrack2TipToSureT_name = 'SureTrack2TipToSureTrack2'
-        SureTrack2TipToSureT_node = slicer.mrmlScene.GetFirstNodeByName(SureTrack2TipToSureT_name)
+        SureTrack2TipToSureT_node = slicer.mrmlScene.GetFirstNodeByName(
+            SureTrack2TipToSureT_name)
         SureTrack2TipToSureT_node_id = SureTrack2TipToSureT_node.GetID()
         liveReconstruction_name = 'liveReconstruction'
-        liveReconstruction_node = slicer.mrmlScene.GetFirstNodeByName(liveReconstruction_name)
+        liveReconstruction_node = slicer.mrmlScene.GetFirstNodeByName(
+            liveReconstruction_name)
         # Get the slice view nodes and the logic
         red_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeRed')
-        yellow_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeYellow')
+        yellow_slice_node = slicer.mrmlScene.GetNodeByID(
+            'vtkMRMLSliceNodeYellow')
         green_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeGreen')
         reslice_logic = slicer.modules.volumereslicedriver.logic()
         # Set the drivers
-        reslice_logic.SetDriverForSlice(SureTrack2TipToSureT_node_id, red_slice_node)
-        reslice_logic.SetDriverForSlice(SureTrack2TipToSureT_node_id, yellow_slice_node)
-        reslice_logic.SetDriverForSlice(SureTrack2TipToSureT_node_id, green_slice_node)
+        for node in [red_slice_node, yellow_slice_node, green_slice_node]:
+            reslice_logic.SetDriverForSlice(SureTrack2TipToSureT_node_id, node)
         # Set the modes
         reslice_logic.SetModeForSlice(reslice_logic.MODE_AXIAL, red_slice_node)
-        reslice_logic.SetModeForSlice(reslice_logic.MODE_SAGITTAL, yellow_slice_node)
-        reslice_logic.SetModeForSlice(reslice_logic.MODE_CORONAL, green_slice_node)
+        reslice_logic.SetModeForSlice(reslice_logic.MODE_SAGITTAL,
+                                      yellow_slice_node)
+        reslice_logic.SetModeForSlice(reslice_logic.MODE_CORONAL,
+                                      green_slice_node)
         # Set the backgrounds
         slicer.util.setSliceViewerLayers(background=CT_node)
         # Set the foregrounds
