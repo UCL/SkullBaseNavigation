@@ -306,11 +306,13 @@ class USReconstructionButton(qt.QPushButton):
         """After US reconstruction, the slice views are set
         to show projections."""
         # Get the necessary nodes
-        CT_name = 'CT_scan'
-        CT_node = slicer.mrmlScene.GetFirstNodeByName(CT_name)
-        SureTrack2TipToSureT_name = 'SureTrack2TipToSureT'
+        CT_name = 'SLD-*'
+        CT_node = slicer.util.getNode(CT_name)
+        SureTrack2TipToSureT_name = 'SureTrack2TipToSureTrack2'
         SureTrack2TipToSureT_node = slicer.mrmlScene.GetFirstNodeByName(SureTrack2TipToSureT_name)
         SureTrack2TipToSureT_node_id = SureTrack2TipToSureT_node.GetID()
+        liveReconstruction_name = 'liveReconstruction'
+        liveReconstruction_node = slicer.mrmlScene.GetFirstNodeByName(liveReconstruction_name)
         # Get the slice view nodes and the logic
         red_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeRed')
         yellow_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeYellow')
