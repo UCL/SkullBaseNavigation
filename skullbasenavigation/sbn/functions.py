@@ -38,6 +38,14 @@ def is_connected(connector):
     return connector.GetState() == connected_state
 
 
+def create_volume_node(name):
+    """Create a volume node with the given name, and add it to the scene."""
+    node = slicer.vtkMRMLScalarVolumeNode()
+    node.SetName(name)
+    slicer.mrmlScene.AddNode(node)
+    return node
+
+
 def create_needle_model(name, length, radius, tip_radius):
     """
     Create a model that can be used to represent the style/probe.

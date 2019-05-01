@@ -46,6 +46,18 @@ def wait_for_transforms():
     return True
 
 
+def prepare_nodes():
+    """
+    Create two volume nodes to hold the CT and reconstructed ultrasound.
+
+    This is required because the PlusRemote module expects nodes with
+    particular names and, if they are not present, it will use meaningless
+    names such as _1, _2 etc.
+    """
+    for volume_name in ["ScoutScan", "liveReconstruction"]:
+        functions.create_volume_node(volume_name)
+
+
 def create_models():
     """
     Create 3D models to visualise stylus and probe locations.
@@ -74,10 +86,13 @@ def set_transform_hierarchy():
     tf_suretrack2ras = scene.GetFirstNodeByName("SureTrack2ToRas")
     tf_stylus2reference = scene.GetFirstNodeByName("StylusToReference")
     img = scene.GetFirstNodeByName("Image_SureTrack2Tip")
+    ref = scene.GetFirstNodeByName("ReferenceToRas")
 
     stylus = scene.GetFirstNodeByName("StylusModel")
     probe = scene.GetFirstNodeByName("ProbeModel")
     probe_img = scene.GetFirstNodeByName("BK_Probe")
+    scout = scene.GetFirstNodeByName("ScoutScan")
+    reconstruction = scene.GetFirstNodeByName("liveReconstruction")
 
     functions.set_parent_of_transform_hierarchy_node(
         stylus, tf_stylus2reference)
@@ -87,6 +102,9 @@ def set_transform_hierarchy():
     functions.set_parent_of_transform_hierarchy_node(
         tf_tip2suretrack, tf_suretrack2ras)
     functions.set_parent_of_transform_hierarchy_node(img, tf_tip2suretrack)
+
+    functions.set_parent_of_transform_hierarchy_node(scout, ref)
+    functions.set_parent_of_transform_hierarchy_node(reconstruction, ref)
 
     # TODO Once we have the STL model of the probe loaded, we should set that
     # under SureTrack2Tip2SureTrack2.
