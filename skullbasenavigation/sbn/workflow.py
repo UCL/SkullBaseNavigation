@@ -46,16 +46,22 @@ def wait_for_transforms():
     return True
 
 
-def prepare_nodes():
+def setup_plus_remote(connector):
     """
-    Create two volume nodes to hold the CT and reconstructed ultrasound.
+    Set up the nodes and widgets that the PlusRemote module requires.
 
-    This is required because the PlusRemote module expects nodes with
-    particular names and, if they are not present, it will use meaningless
-    names such as _1, _2 etc.
+    :param connector: A vtkMRMLIGTConnectorNode to select.
     """
+    # Create two volume nodes to hold the CT and reconstructed ultrasound.
+    # This is required because the PlusRemote module expects nodes with
+    # particular names and, if they are not present, it will use meaningless
+    # names such as _1, _2 etc.
     for volume_name in ["ScoutScan", "liveReconstruction"]:
         functions.create_volume_node(volume_name)
+    # Setup the module to use the correct connector.
+    # This should enable the reconstruction buttons.
+    combo_box = functions.get_plus_remote_connector_selector()
+    combo_box.setCurrentNode(connector)
 
 
 def create_models():

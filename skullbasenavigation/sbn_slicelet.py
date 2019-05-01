@@ -195,7 +195,7 @@ class Slicelet(object):
         all_active = workflow.wait_for_transforms()
 
         if all_active:
-            workflow.prepare_nodes()
+            workflow.setup_plus_remote(self.connector)
             workflow.create_models()
             workflow.prepare_pivot_cal()
             workflow.set_transform_hierarchy()

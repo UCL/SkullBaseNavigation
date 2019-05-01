@@ -217,6 +217,35 @@ def set_parent_of_transform_hierarchy_node(child, parent):
     child.SetAndObserveTransformNodeID(parent.GetID())
 
 
+def get_plus_remote_connector_selector():
+    """
+    Get the combo box that controls which connector node the PlusRemote module
+    uses.
+
+    This is not straightforward because different versions of the module have
+    different layouts, and in some of them the widgets lack names.
+
+    :return: The combo box, as a qMRMLNodeComboBox instance.
+    """
+    # Finding the right selector box is easy if the widgets have names...
+    plus_remote_widget = slicer.modules.plusremote.widgetRepresentation()
+    try:
+        param_box = next(w for w in plus_remote_widget.children()
+                         if w.name == "ParametersCollapsibleButton")
+        combo_box = next(w for w in param_box.children()
+                         if w.name == "OpenIGTLinkConnectorNodeSelector")
+    except StopIteration:
+        # ...otherwise we have to try by position!
+        # NB: If we have moved any parts of PlusRemote to the slicelet, this
+        # index may change (but since the reconstruction buttons come after
+        # the parameter box, we should be OK...)
+        param_box = plus_remote_widget.children()[2]
+        # The layout and order of the widgets varies between versions, so it's
+        # safer to search by type of widget than by position.
+        combo_box = param_box.findChild(slicer.qMRMLNodeComboBox)
+    return combo_box
+
+
 def remove_unused_widgets_from_pivot_calibration():
     """
     Remove unused child widgets from the Pivot calibration widget, to make
