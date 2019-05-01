@@ -94,6 +94,8 @@ class Slicelet(object):
         else:  # e.g. if no buttons found because their names are empty
             self.ctk_recon_box = plus_wid[6]
         self.buttons.layout().addWidget(self.ctk_recon_box)
+        # Disable until transforms are available
+        self.ctk_recon_box.setEnabled(False)
 
         self.advanced_options_checkbox = qt.QCheckBox("Show Advanced Settings")
         self.buttons.layout().addWidget(self.advanced_options_checkbox)
@@ -198,6 +200,7 @@ class Slicelet(object):
             workflow.set_transform_hierarchy()
 
             self.ctk_pivot_box.setEnabled(True)
+            self.ctk_recon_box.setEnabled(True)
             self.checkTranformsTimer.stop()
 
     def add_tab_widgets(self):
