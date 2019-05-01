@@ -82,6 +82,19 @@ class Slicelet(object):
         # true)
         self.ctk_pivot_box.setEnabled(False)
 
+        # Ultrasound reconstruction buttons from PlusRemote module
+        plus_wid = slicer.modules.plusremote.widgetRepresentation().children()
+        # In recent versions of the module, the collapsible button we want can
+        # be identified by name. In older versions, the names are empty, so we
+        # have to hardcode the position we expect (and hope it is right!)
+        btn = [widget for widget in plus_wid
+               if widget.name == "VolumeReconstructionCollapsibleButton"]
+        if len(btn) == 1:
+            self.ctk_recon_box = btn[0]
+        else:  # e.g. if no buttons found because their names are empty
+            self.ctk_recon_box = plus_wid[6]
+        self.buttons.layout().addWidget(self.ctk_recon_box)
+
         self.advanced_options_checkbox = qt.QCheckBox("Show Advanced Settings")
         self.buttons.layout().addWidget(self.advanced_options_checkbox)
         self.advanced_options_checkbox.stateChanged.connect(
