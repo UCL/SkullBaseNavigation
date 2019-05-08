@@ -92,7 +92,9 @@ class Slicelet(object):
         if len(btn) == 1:
             self.ctk_recon_box = btn[0]
         else:  # e.g. if no buttons found because their names are empty
-            self.ctk_recon_box = plus_wid[6]
+            # this is originally in position 6, but we have already taken
+            # something out, so the indices have changed
+            self.ctk_recon_box = plus_wid[5]
         self.buttons.layout().addWidget(self.ctk_recon_box)
         # Disable until transforms are available
         self.ctk_recon_box.setEnabled(False)
