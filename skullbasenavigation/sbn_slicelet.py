@@ -84,6 +84,12 @@ class Slicelet(object):
         self.ctk_pivot_box.setLayout(self.pivot_layout)
         self.buttons.layout().addWidget(self.ctk_pivot_box)
 
+        # Set the default calibration duration to 10
+        calib_duration = 10
+        calib_duration_widget = self.buttons.findChild(
+                                ctk.ctkDoubleSpinBox(), u'durationTimerEdit')
+
+        calib_duration_widget.setValue(calib_duration)
         # Disable the button (enabled if wait_for_transforms returns
         # true)
         self.ctk_pivot_box.setEnabled(False)
@@ -102,6 +108,7 @@ class Slicelet(object):
             # something out, so the indices have changed
             self.ctk_recon_box = plus_wid[5]
         self.buttons.layout().addWidget(self.ctk_recon_box)
+
         # Disable until transforms are available
         self.ctk_recon_box.setEnabled(False)
 
