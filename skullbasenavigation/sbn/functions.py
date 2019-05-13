@@ -265,6 +265,18 @@ def remove_unused_widgets_from_pivot_calibration():
             widget.hide()
 
 
+def set_calibration_duration(delay):
+    """
+    Set the duration for pivot and spin calibration in the widget.
+
+    :param delay: the desired delay in seconds, as a numerical type.
+    """
+    pivot_cal_widget = slicer.modules.pivotcalibration.widgetRepresentation()
+    duration_spinbox = slicer.util.findChild(pivot_cal_widget, 'durationTimerEdit')
+    # The editable duration box is a ctkDoubleSpinBox
+    duration_spinbox.setValue(delay)
+
+
 def set_pivot_transforms(input_transform, output_transform):
     """
     Set the input and output transforms to use for the pivot calibration.

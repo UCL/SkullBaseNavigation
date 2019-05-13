@@ -83,6 +83,8 @@ def prepare_pivot_cal():
 
     functions.remove_unused_widgets_from_pivot_calibration()
 
+    functions.set_calibration_duration(10)
+
 
 def set_transform_hierarchy():
     """ Set the tranform hierarchy for the stylus and probe """
