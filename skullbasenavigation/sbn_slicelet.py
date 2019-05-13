@@ -338,6 +338,11 @@ class USReconstructionButton(qt.QPushButton):
         liveReconstruction_name = 'liveReconstruction'
         liveReconstruction_node = slicer.mrmlScene.GetFirstNodeByName(
             liveReconstruction_name)
+
+        # Change the volume lookup table color settings
+        CT_node.SetAndObserveColorNodeID('vtkMRMLColorTableNodeGrey')
+        liveReconstruction_node.SetAndObserveColorNodeID('vtkMRMLColorTableNodeRed')
+
         # Get the slice view nodes and the logic
         red_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeRed')
         yellow_slice_node = slicer.mrmlScene.GetNodeByID(
