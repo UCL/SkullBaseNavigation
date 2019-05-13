@@ -6,8 +6,11 @@ import ctk
 import qt
 import slicer
 from slicer.ScriptedLoadableModule import *
-
 from sbn import workflow, functions
+
+import pip
+pip.main(['install', 'scikit-surgerycore'])
+import sksurgerycore.configuration.configuration_manager as config
 
 #pylint: disable=useless-object-inheritance
 # Pylint thinks that passing 'object' as an argument is
@@ -19,6 +22,9 @@ class Slicelet(object):
     """
 
     def __init__(self):
+
+        configuration_manager = config.ConfigurationManager('config/default.json')
+        self.config = configuration_manager.get_copy()
 
         # GUI has a right panel for displaying models/images
         # and a left panel for controls/buttons etc.
@@ -129,6 +135,15 @@ class Slicelet(object):
         self.us_recon_btn = USReconstructionButton(self)
         self.buttons.layout().addWidget(self.us_recon_btn)
 
+        # Add QSlider to control opacity
+        self.opacity_label = qt.QLabel('Slice Opacity')
+        self.opacity_slider = qt.QSlider(qt.Qt.Horizontal)
+        self.opacity_slider.setValue(50)
+        self.opacity_slider.setTickInterval(50)
+        self.opacity_slider.valueChanged.connect(functions.set_slice_opacity)
+        self.buttons.layout().addWidget(self.opacity_label)
+        self.buttons.layout().addWidget(self.opacity_slider)
+
         # Button to save all transforms to file
         # Used for syncing with neuromonitoring data
         self.transform_save_btn = qt.QPushButton('Save Transforms')
@@ -152,8 +167,6 @@ class Slicelet(object):
         self.connector = None  # the OpenIGTLink connector to be used
 
         self.parent.show()
-
-
 
     def check_if_models_exist(self):
         """ Check if the CT and ultrasound models have been
@@ -281,7 +294,7 @@ class TractographySlicelet(Slicelet):
 
 class USReconstructionButton(qt.QPushButton):
     """A button that starts or stops ultrasound reconstruction when clicked."""
-    START_TEXT = "Start acquisition"
+    START_TEXT = "Visualse"
     STOP_TEXT = "Stop acquisition & reconstruct"
     VOLUME_NAME = "ReconVolReference"
 
@@ -298,32 +311,33 @@ class USReconstructionButton(qt.QPushButton):
 
     def react(self):
         """React to being clicked, depending on the current state."""
-        try:
-            node_id = self.slicelet.connector.GetID()
-        except AttributeError:  # something (connector) is None or missing
-            self.slicelet.show_message(
-                "Cannot find OpenIGT connection! You must first connect.")
-            return
-        if self.working:  # Send command to stop reconstruction
-            cmd = slicer.vtkSlicerOpenIGTLinkCommand()
-            cmd.SetCommandName("StopVolumeReconstruction")
-            # Specify the name of the output volume and a filename to store it
-            cmd.SetCommandAttribute("OutputVolDeviceName", self.VOLUME_NAME)
-            cmd.SetCommandAttribute("OutputVolFilename",
-                                    "output_reconstruction.mha")
-        else:  # Send command to start reconstruction
-            cmd = slicer.vtkSlicerOpenIGTLinkCommand()
-            cmd.SetCommandName("StartVolumeReconstruction")
-        # Sending the command returns True on success, False on failure
-        response = self.logic.SendCommand(cmd, node_id)
-        # TODO Maybe we should use an observer for the command completing
-        # instead of examining the response value.
-        if response:
-            # Toggle state and text
-            self.working = not self.working
-            self.setText(self.STOP_TEXT if self.working else self.START_TEXT)
-            # Change reslice settings after US reconstruction complete
-            self.change_reslice_settings()
+        self.change_reslice_settings()
+
+        # try:
+        #     node_id = self.slicelet.connector.GetID()
+        # except AttributeError:  # something (connector) is None or missing
+        #     self.slicelet.show_message(
+        #         "Cannot find OpenIGT connection! You must first connect.")
+        #     return
+        # if self.working:  # Send command to stop reconstruction
+        #     cmd = slicer.vtkSlicerOpenIGTLinkCommand()
+        #     cmd.SetCommandName("StopVolumeReconstruction")
+        #     # Specify the name of the output volume and a filename to store it
+        #     cmd.SetCommandAttribute("OutputVolDeviceName", self.VOLUME_NAME)
+        #     cmd.SetCommandAttribute("OutputVolFilename",
+        #                             "output_reconstruction.mha")
+        # else:  # Send command to start reconstruction
+        #     cmd = slicer.vtkSlicerOpenIGTLinkCommand()
+        #     cmd.SetCommandName("StartVolumeReconstruction")
+        # # Sending the command returns True on success, False on failure
+        # response = self.logic.SendCommand(cmd, node_id)
+        # # TODO Maybe we should use an observer for the command completing
+        # # instead of examining the response value.
+        # if response:
+        #     # Toggle state and text
+        #     self.working = not self.working
+        #     self.setText(self.STOP_TEXT if self.working else self.START_TEXT)
+        #     # Change reslice settings after US reconstruction complete
 
     def change_reslice_settings(self):
         """After US reconstruction, the slice views are set
@@ -364,8 +378,6 @@ class USReconstructionButton(qt.QPushButton):
         slicer.util.setSliceViewerLayers(foreground=liveReconstruction_node)
         # Set the red slice view foreground value to 0.5
         slicer.util.setSliceViewerLayers(foregroundOpacity=0.5)
-
-
 
 if __name__ == "__main__":
 
