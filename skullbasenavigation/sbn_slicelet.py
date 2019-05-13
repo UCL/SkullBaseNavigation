@@ -109,6 +109,7 @@ class Slicelet(object):
             self.ctk_recon_box = plus_wid[5]
         self.buttons.layout().addWidget(self.ctk_recon_box)
 
+        self.ctk_recon_box.setChecked(False)
         # Disable until transforms are available
         self.ctk_recon_box.setEnabled(False)
 
