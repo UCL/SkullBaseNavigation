@@ -99,7 +99,7 @@ def set_node_visible(node):
         set_ultrasound_visible(node)
 
     # 3D CT Model
-    elif node.GetName() == 'CT_scan':
+    elif node.GetName() == 'SLD-001':
         set_CT_model_visible(node)
 
     else:
@@ -133,12 +133,11 @@ def set_CT_model_visible(node):
     CT Model is a 3D volume - set to visible.
     """
     logic = slicer.modules.volumerendering.logic()
-
     displayNode = logic.CreateVolumeRenderingDisplayNode()
     slicer.mrmlScene.AddNode(displayNode)
     displayNode.UnRegister(logic)
     logic.UpdateDisplayNodeFromVolumeNode(displayNode, node)
-
+    node.AddAndObserveDisplayNodeID(displayNode.GetID())
 
 def set_node_invisible(node):
     """
