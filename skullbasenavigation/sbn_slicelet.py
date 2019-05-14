@@ -161,34 +161,32 @@ class Slicelet(object):
         """
 
         # The ultrasound name is defined in the PLUS xml config file.
-        # The CT doesn't have a name (not sure why) when it is sent from
-        # the StealthStation
+        # The CT node doesn't have a name in Slicer 4.8 when it is sent from
+        # the StealthStation. We rename the node after fetching it by ID.
         # TODO - tidy up - shouldn't hard code the variable names here,
         # better to read in from a file or something.
 
         ultrasound_name = 'Image_SureTrack2Tip'
-        # CT_name = 'CT_scan'
-
         ultrasound_id = functions.get_item_id_by_name(ultrasound_name)
-        # ct_id = functions.get_item_id_by_name(CT_name)
-
         ultrasound_exists = functions.check_if_item_exists(ultrasound_id)
-        # ct_exists = functions.check_if_item_exists(ct_id)
-
-
-        # if (ultrasound_exists and ct_exists):
-        #     # Get the nodes
-        #     ultrasound_node = slicer.mrmlScene.GetNodeByID(str(ultrasound_id))
-        #     ct_node = slicer.mrmlScene.GetNodeByID(str(ct_id))
-        #     print(ultrasound_node, ct_node)
-        #     # workflow.set_visible(ultrasound_node, ct_node)
-        #     workflow.set_visible()
-        #     self.checkModelsTimer.stop()
         if ultrasound_exists:
             # Get the node
             ultrasound_node = slicer.mrmlScene.GetFirstNodeByName(
                 ultrasound_name)
             workflow.set_visible(ultrasound_node)
+
+        # Set the name
+        CT_node_name = 'SLD-001'
+        CT_node_id = 'vtkMRMLScalarVolumeNode1' # Assuming the id remains always the same
+        CT_exists = functions.check_if_item_exists(CT_node_id)
+        if CT_exists:
+            CT_node = slicer.mrmlScene.GetNodeByID(CT_node_id)
+            CT_node.SetName(CT_node_name)
+            # Make the node visible in the volume rendering module
+            workflow.set_visible(CT_node)
+
+        # Stop the timer
+        if ultrasound_exists and CT_exists:
             self.checkModelsTimer.stop()
 
 
