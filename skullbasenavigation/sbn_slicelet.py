@@ -269,6 +269,7 @@ class Slicelet(object):
         self.connector = workflow.connect()
         success = functions.is_connected(self.connector)
         if success:
+            functions.set_model_widget_connector(self.connector)
             self.show_message("OpenIGTLink connection successful.")
             self.connect_btn.setText("Connected")
         else:

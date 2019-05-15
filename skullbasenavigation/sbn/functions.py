@@ -296,16 +296,10 @@ def set_model_widget_connector(igtlink_node):
     to be set to the one we have already created.
     """
     igt_remote_widget = slicer.modules.openigtlinkremote.widgetRepresentation()
-
-    combo_box_type = slicer.qMRMLNodeComboBox()
-
-    combo_box_widgets = igt_remote_widget.findChildren(combo_box_type)
-
-    connector_combo_box_name = 'connectorNodeSelector'
-
-    for box in combo_box_widgets:
-        if box.name == connector_combo_box_name:
-            box.setCurrentNode(igtlink_node)
+    box = slicer.util.findChild(igt_remote_widget, 'connectorNodeSelector')
+    # TODO Wrap the above in a try-catch in case node doesn't exist
+    # (in case it changes in future versions)
+    box.setCurrentNode(igtlink_node)
 
 
 def query_remote_list(igt_connector):
