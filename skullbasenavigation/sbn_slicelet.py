@@ -140,8 +140,8 @@ class Slicelet(object):
         self.control_panel.insertWidget(tab_widget_index, self.tabWidget)
 
         # Button to start/stop ultrasound volume reconstruction
-        self.us_recon_btn = USReconstructionButton(self)
-        self.buttons.layout().addWidget(self.us_recon_btn)
+        self.us_vis_btn = USVisualisationButton(self)
+        self.buttons.layout().addWidget(self.us_vis_btn)
 
         # Add QSlider to control opacity
         self.opacity_label = qt.QLabel('Slice Opacity')
@@ -298,15 +298,15 @@ class TractographySlicelet(Slicelet):
         super(TractographySlicelet, self).__init__()
 
 
-class USReconstructionButton(qt.QPushButton):
+class USVisualisationButton(qt.QPushButton):
     """A button that starts or stops ultrasound reconstruction when clicked."""
-    START_TEXT = "Visualse"
+    START_TEXT = "Visualise"
     STOP_TEXT = "Stop acquisition & reconstruct"
     VOLUME_NAME = "ReconVolReference"
 
     def __init__(self, parent_slicelet):
         """Create a new button belonging to the given slicelet."""
-        super(USReconstructionButton, self).__init__(self.START_TEXT)
+        super(USVisualisationButton, self).__init__(self.START_TEXT)
         self.working = False  # are we currently doing a reconstruction?
         self.slicelet = parent_slicelet  # the parent slicelet
         self.clicked.connect(self.react)  # call the react method when clicked
