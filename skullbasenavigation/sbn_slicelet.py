@@ -178,15 +178,15 @@ class Slicelet(object):
         # Set the name
         CT_node_name = 'SLD-001'
         CT_node_id = 'vtkMRMLScalarVolumeNode1' # Assuming the id remains always the same
-        CT_exists = functions.check_if_item_exists(CT_node_id)
-        if CT_exists:
-            CT_node = slicer.mrmlScene.GetNodeByID(CT_node_id)
+        volume_nodes_list = list(slicer.mrmlScene.GetNodesByClassByName('vtkMRMLScalarVolumeNode', ''))
+        if volume_nodes_list:
+            CT_node = volume_nodes_list[0]
             CT_node.SetName(CT_node_name)
             # Make the node visible in the volume rendering module
             workflow.set_visible(CT_node)
 
         # Stop the timer
-        if ultrasound_exists and CT_exists:
+        if ultrasound_exists and volume_nodes_list:
             self.checkModelsTimer.stop()
 
 
