@@ -414,3 +414,7 @@ def remove_all_transforms():
     if tf_node:
         raise ValueError(
             "Tried to delete all transform nodes, but it didn't work!")
+
+def set_slice_opacity(opacity):
+    """ Set the opacity of the foreground volumes in slice view. """
+    slicer.util.setSliceViewerLayers(foregroundOpacity=opacity / 100.0)
