@@ -23,7 +23,8 @@ class Slicelet(object):
 
     def __init__(self):
 
-        configuration_manager = config.ConfigurationManager('config/default.json')
+        configuration_manager = config.ConfigurationManager(
+            'config/default.json')
         self.config = configuration_manager.get_copy()
 
         # GUI has a right panel for displaying models/images
@@ -86,8 +87,8 @@ class Slicelet(object):
 
         # Set the default calibration duration to 10
         calib_duration = 10
-        calib_duration_widget = self.buttons.findChild(
-                                ctk.ctkDoubleSpinBox(), u'durationTimerEdit')
+        calib_duration_widget = self.buttons.findChild(ctk.ctkDoubleSpinBox(),
+                                                       u'durationTimerEdit')
 
         calib_duration_widget.setValue(calib_duration)
         # Disable the button (enabled if wait_for_transforms returns
@@ -198,8 +199,8 @@ class Slicelet(object):
 
         # Set the name
         CT_node_name = 'SLD-001'
-        CT_node_id = 'vtkMRMLScalarVolumeNode1' # Assuming the id remains always the same
-        volume_nodes_list = list(slicer.mrmlScene.GetNodesByClassByName('vtkMRMLScalarVolumeNode', ''))
+        volume_nodes_list = list(slicer.mrmlScene.GetNodesByClassByName(
+            'vtkMRMLScalarVolumeNode', ''))
         if volume_nodes_list:
             CT_node = volume_nodes_list[0]
             CT_node.SetName(CT_node_name)
@@ -361,8 +362,10 @@ class USVisualisationButton(qt.QPushButton):
             liveReconstruction_name)
 
         # Change the volume lookup table color settings
-        CT_node.GetDisplayNode().SetAndObserveColorNodeID('vtkMRMLColorTableNodeGrey')
-        liveReconstruction_node.GetDisplayNode().SetAndObserveColorNodeID('vtkMRMLColorTableNodeRed')
+        CT_node.GetDisplayNode().SetAndObserveColorNodeID(
+            'vtkMRMLColorTableNodeGrey')
+        liveReconstruction_node.GetDisplayNode().SetAndObserveColorNodeID(
+            'vtkMRMLColorTableNodeRed')
 
         # Get the slice view nodes and the logic
         red_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeRed')
