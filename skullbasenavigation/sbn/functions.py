@@ -297,16 +297,20 @@ def set_model_widget_connector(igtlink_node):
     """
     igt_remote_widget = slicer.modules.openigtlinkremote.widgetRepresentation()
 
-    combo_box_type = slicer.qMRMLNodeComboBox()
+    combo_box_type = ctk.ctkComboBox
 
     combo_box_widgets = igt_remote_widget.findChildren(combo_box_type)
 
-    connector_combo_box_name = 'connectorNodeSelector'
+    #TODO: Check button text is what we expect
 
-    for box in combo_box_widgets:
-        if box.name == connector_combo_box_name:
-            box.setCurrentNode(igtlink_node)
+    # The first widget ctkComboBox is the Connector selection
+    connector_combo_box = combo_box_widgets[0]
+    conenctor_combo_box.setCurrentIndex(1)
 
+    update_btn = w.findChildren(qt.QPushButton)[2]
+    get_item_btn = w.findChildren(qt.QPushButton)[2]
+    update_btn.click()
+    get_item_btn.click()
 
 def query_remote_list(igt_connector):
     """
@@ -418,3 +422,8 @@ def remove_all_transforms():
 def set_slice_opacity(opacity):
     """ Set the opacity of the foreground volumes in slice view. """
     slicer.util.setSliceViewerLayers(foregroundOpacity=opacity / 100.0)
+
+def get_ct_model(self):
+    """ Instead of clicking through all the options, activate the relevant
+    widgets automatically. """
+
