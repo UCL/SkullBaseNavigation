@@ -113,10 +113,7 @@ class Slicelet(object):
         # Disable until transforms are available
         self.ctk_recon_box.setEnabled(False)
 
-        self.advanced_options_checkbox = qt.QCheckBox("Show Advanced Settings")
-        self.buttons.layout().addWidget(self.advanced_options_checkbox)
-        self.advanced_options_checkbox.stateChanged.connect(
-            self.toggle_tab_panel)
+
 
         # Timer to check if CT model and ultrasound are available
         self.checkModelsTimer = qt.QTimer()
@@ -143,20 +140,40 @@ class Slicelet(object):
         self.us_recon_btn = USReconstructionButton(self)
         self.buttons.layout().addWidget(self.us_recon_btn)
 
-        # Add QSlider to control opacity
-        self.opacity_label = qt.QLabel('Slice Opacity')
-        self.opacity_slider = qt.QSlider(qt.Qt.Horizontal)
-        self.opacity_slider.setValue(50)
-        self.opacity_slider.setTickInterval(50)
-        self.opacity_slider.valueChanged.connect(functions.set_slice_opacity)
-        self.buttons.layout().addWidget(self.opacity_label)
-        self.buttons.layout().addWidget(self.opacity_slider)
-
         # Button to save all transforms to file
         # Used for syncing with neuromonitoring data
         self.transform_save_btn = qt.QPushButton('Save Transforms')
         self.transform_save_btn.clicked.connect(functions.save_transforms)
         self.buttons.layout().addWidget(self.transform_save_btn)
+
+        # Add QSlider to control opacity
+        self.opacity_layout = qt.QHBoxLayout()
+        self.opacity_label = qt.QLabel('Background Slice Opacity:')
+        self.opacity_label.setSizePolicy(qt.QSizePolicy.Fixed, qt.QSizePolicy.Fixed)
+        self.opacity_slider = qt.QSlider(qt.Qt.Horizontal)
+        self.opacity_slider.setValue(50)
+        self.opacity_slider.setTickInterval(50)
+        self.opacity_slider.valueChanged.connect(functions.set_slice_opacity)
+        self.opacity_layout.addWidget(self.opacity_label)
+        self.opacity_layout.addWidget(self.opacity_slider)
+        self.buttons.layout().addLayout(self.opacity_layout)        
+        # Spacer to occupy excess space
+        self.vertical_spacer = qt.QSpacerItem(20, 40, qt.QSizePolicy.Minimum, qt.QSizePolicy.Expanding)
+        self.buttons.layout().addItem(self.vertical_spacer)
+
+        # Advanced settings
+        self.advanced_options_checkbox = qt.QCheckBox("Show Advanced Settings")
+        self.buttons.layout().addWidget(self.advanced_options_checkbox)
+        self.advanced_options_checkbox.stateChanged.connect(
+            self.toggle_tab_panel)
+
+        # Add status bar for info messages
+        self.status_layout = qt.QHBoxLayout()
+        self.status_bar = qt.QStatusBar()
+        self.status_bar.showMessage("Startup")
+        self.status_bar.setStyleSheet("background-color: rgb(0, 255, 0); font-weight: bold;")
+        self.status_layout.addWidget(self.status_bar)
+        self.buttons.layout().addLayout(self.status_layout)
 
         # Right side of splitter - 3D/Slice Viewer
         self.layoutManager = slicer.qMRMLLayoutWidget()
@@ -269,15 +286,16 @@ class Slicelet(object):
         self.connector = workflow.connect()
         success = functions.is_connected(self.connector)
         if success:
-            self.show_message("OpenIGTLink connection successful.")
+            self.status_bar.showMessage("OpenIGTLink connection successful.")
             self.connect_btn.setText("Connected")
         else:
-            self.show_message("Could not connect via OpenIGTLink.")
+            self.status_bar.showMessage("Could not connect via OpenIGTLink.")
             self.connect_btn.setText("Connect to OpenIGTLink")
             self.connect_btn.setEnabled("True")
         return success
 
     def show_message(self, text):
+        #TODO: Can delete this as not being used?
         """Display the given text to the user.
 
         Current implementation shows a message box.
