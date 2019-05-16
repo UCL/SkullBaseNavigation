@@ -319,32 +319,6 @@ class USReconstructionButton(qt.QPushButton):
         """React to being clicked, depending on the current state."""
         self.change_reslice_settings()
 
-        # try:
-        #     node_id = self.slicelet.connector.GetID()
-        # except AttributeError:  # something (connector) is None or missing
-        #     self.slicelet.show_message(
-        #         "Cannot find OpenIGT connection! You must first connect.")
-        #     return
-        # if self.working:  # Send command to stop reconstruction
-        #     cmd = slicer.vtkSlicerOpenIGTLinkCommand()
-        #     cmd.SetCommandName("StopVolumeReconstruction")
-        #     # Specify the name of the output volume and a filename to store it
-        #     cmd.SetCommandAttribute("OutputVolDeviceName", self.VOLUME_NAME)
-        #     cmd.SetCommandAttribute("OutputVolFilename",
-        #                             "output_reconstruction.mha")
-        # else:  # Send command to start reconstruction
-        #     cmd = slicer.vtkSlicerOpenIGTLinkCommand()
-        #     cmd.SetCommandName("StartVolumeReconstruction")
-        # # Sending the command returns True on success, False on failure
-        # response = self.logic.SendCommand(cmd, node_id)
-        # # TODO Maybe we should use an observer for the command completing
-        # # instead of examining the response value.
-        # if response:
-        #     # Toggle state and text
-        #     self.working = not self.working
-        #     self.setText(self.STOP_TEXT if self.working else self.START_TEXT)
-        #     # Change reslice settings after US reconstruction complete
-
     def change_reslice_settings(self):
         """After US reconstruction, the slice views are set
         to show projections."""
@@ -397,3 +371,4 @@ if __name__ == "__main__":
     reslice_logic.SetModeForSlice(reslice_logic.MODE_TRANSVERSE, red_slice_node)
 
     slicelet = TractographySlicelet()
+    slicelet.parent.showFullScreen()
