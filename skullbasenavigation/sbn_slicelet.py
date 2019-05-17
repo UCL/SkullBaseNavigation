@@ -236,6 +236,7 @@ class Slicelet(object):
             workflow.set_transform_hierarchy()
 
             self.ctk_pivot_box.setEnabled(True)
+            self.ctk_pivot_box.setChecked(True)
             self.ctk_recon_box.setEnabled(True)
             self.checkTranformsTimer.stop()
             self.status_text.append("Enabling pivot calibration")
