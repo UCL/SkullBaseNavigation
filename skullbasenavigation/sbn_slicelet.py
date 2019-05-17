@@ -168,11 +168,12 @@ class Slicelet(object):
             self.toggle_tab_panel)
 
         # Add status bar for info messages
-        self.status_layout = qt.QHBoxLayout()
-        self.status_bar = qt.QStatusBar()
-        self.status_bar.showMessage("Startup")
-        self.status_bar.setStyleSheet("background-color: rgb(0, 255, 0); font-weight: bold;")
-        self.status_layout.addWidget(self.status_bar)
+        self.status_layout = qt.QVBoxLayout()
+        self.status_label = qt.QLabel("Status Log:")
+        self.status_text = qt.QTextEdit()
+        self.status_text.setReadOnly(True)
+        self.status_layout.addWidget(self.status_label)
+        self.status_layout.addWidget(self.status_text)
         self.buttons.layout().addLayout(self.status_layout)
 
         # Right side of splitter - 3D/Slice Viewer
@@ -209,6 +210,7 @@ class Slicelet(object):
         ultrasound_exists = functions.check_if_item_exists(ultrasound_id)
         if ultrasound_exists:
             # Get the node
+            self.status_text.append("Found Ultrasound Node: " + ultrasound_name)
             ultrasound_node = slicer.mrmlScene.GetFirstNodeByName(
                 ultrasound_name)
             workflow.set_visible(ultrasound_node)
@@ -218,6 +220,8 @@ class Slicelet(object):
         CT_node_id = 'vtkMRMLScalarVolumeNode1' # Assuming the id remains always the same
         volume_nodes_list = list(slicer.mrmlScene.GetNodesByClassByName('vtkMRMLScalarVolumeNode', ''))
         if volume_nodes_list:
+            self.status_text.append("Found CT_node: " + CT_node_name)
+
             CT_node = volume_nodes_list[0]
             CT_node.SetName(CT_node_name)
             # Make the node visible in the volume rendering module
@@ -233,6 +237,7 @@ class Slicelet(object):
         all_active = workflow.wait_for_transforms()
 
         if all_active:
+            self.status_text.append("Found expected transforms.")
             workflow.setup_plus_remote(self.connector)
             workflow.create_models()
             workflow.prepare_pivot_cal()
@@ -286,26 +291,13 @@ class Slicelet(object):
         self.connector = workflow.connect()
         success = functions.is_connected(self.connector)
         if success:
-            self.status_bar.showMessage("OpenIGTLink connection successful.")
+            self.status_text.append("OpenIGTLink connection successful.")
             self.connect_btn.setText("Connected")
         else:
-            self.status_bar.showMessage("Could not connect via OpenIGTLink.")
+            self.status_text.append("Could not connect via OpenIGTLink.")
             self.connect_btn.setText("Connect to OpenIGTLink")
             self.connect_btn.setEnabled("True")
         return success
-
-    def show_message(self, text):
-        #TODO: Can delete this as not being used?
-        """Display the given text to the user.
-
-        Current implementation shows a message box.
-        """
-        msg = qt.QMessageBox()
-        msg.setText(text)
-        # Note that the Qt method is properly called exec, but as this clashes
-        # with the reserved keyword in Python 2, the Python version is exec_.
-        # A method called exec also exists for backwards compatibility.
-        msg.exec_()
 
 
 class TractographySlicelet(Slicelet):
