@@ -210,7 +210,6 @@ class Slicelet(object):
         ultrasound_exists = functions.check_if_item_exists(ultrasound_id)
         if ultrasound_exists:
             # Get the node
-            self.status_text.append("Found Ultrasound Node: " + ultrasound_name)
             ultrasound_node = slicer.mrmlScene.GetFirstNodeByName(
                 ultrasound_name)
             workflow.set_visible(ultrasound_node)
@@ -220,7 +219,6 @@ class Slicelet(object):
         CT_node_id = 'vtkMRMLScalarVolumeNode1' # Assuming the id remains always the same
         volume_nodes_list = list(slicer.mrmlScene.GetNodesByClassByName('vtkMRMLScalarVolumeNode', ''))
         if volume_nodes_list:
-            self.status_text.append("Found CT_node: " + CT_node_name)
 
             CT_node = volume_nodes_list[0]
             CT_node.SetName(CT_node_name)
@@ -229,6 +227,8 @@ class Slicelet(object):
 
         # Stop the timer
         if ultrasound_exists and volume_nodes_list:
+            self.status_text.append("Found Ultrasound Node: " + ultrasound_name)
+            self.status_text.append("Found CT_node: " + CT_node_name)
             self.checkModelsTimer.stop()
 
 
