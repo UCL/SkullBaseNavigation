@@ -1,7 +1,7 @@
 """ Slicelet for SBN Project """
 
 import logging  #pylint: disable=unused-import
-
+import time
 import ctk
 import qt
 import slicer
@@ -48,6 +48,10 @@ class Slicelet(object):
         self.connect_btn = qt.QPushButton("Connect to OpenIGTLink")
         self.buttons.layout().addWidget(self.connect_btn)
         self.connect_btn.clicked.connect(self.try_connection)
+
+        self.get_model_btn = qt.QPushButton("Get Model From Remote")
+        self.get_model_btn.clicked.connect(self.get_ct_model)
+        self.buttons.layout().addWidget(self.get_model_btn)
 
         # Collapsible button to hold OpenIGTLink Remote Module
         self.ctk_model_box = ctk.ctkCollapsibleButton()
@@ -299,6 +303,53 @@ class Slicelet(object):
             self.connect_btn.setEnabled("True")
         return success
 
+    def get_ct_model(self):
+        """
+        To load the CT model from the StealthStation, we use the
+        OpenIGTLinkRemote module. The openIGTLink connection node needs
+        to be set to the one we have already created.
+        
+        Then click/select the relevant widget functions to load the CT model from remote.
+        Whenever a GUI element is clicked/selected, need to do a qApp.processEvents() call
+        so that QT reacts to the change.
+        """
+
+        # Need to get the QT Event loop to respond to the button clicks
+        # So call it manually - TODO: is there a better way to handle this?
+        app = qt.QApplication.instance()
+
+        self.status_text.append("Querying remote")
+        igt_remote_widget = slicer.modules.openigtlinkremote.widgetRepresentation()
+
+        connector_box = slicer.util.findChild(igt_remote_widget, 'connectorNodeSelector')
+        update_btn = slicer.util.findChildren(igt_remote_widget, 'updateButton')[0]
+        remote_data_table = slicer.util.findChildren(igt_remote_widget, 'remoteDataListTable')[0]
+        get_item_btn = slicer.util.findChildren(igt_remote_widget, 'getSelectedItemButton')[0]
+
+        # TODO Wrap the above in a try-catch in case node(s) don't exist
+        # (in case it changes in future versions)
+
+        # Set the connector node
+        connector_box.setCurrentNode(self.connector)
+        app.processEvents()
+
+        # Click 'Update' button
+        update_btn.clicked()
+        time.sleep(1)
+        app.processEvents()
+
+        # Select the first item in results table
+        first_item = remote_data_table.item(0,0).text()
+        if not first_item.startswith('SLD'):
+            raise ValueError("Expecting first item in remote data query list to be SLD-*")
+        remote_data_table.selectRow(0)
+        app.processEvents()
+
+        # click the 'Get selected items' button
+        get_item_btn.clicked()
+        app.processEvents()
+
+        self.status_text.append("Loading model")
 
 class TractographySlicelet(Slicelet):
     """ Creates the interface when module is run as a stand alone gui app.
@@ -381,4 +432,4 @@ if __name__ == "__main__":
     reslice_logic.SetModeForSlice(reslice_logic.MODE_TRANSVERSE, red_slice_node)
 
     slicelet = TractographySlicelet()
-    slicelet.parent.showFullScreen()
+    #slicelet.parent.showFullScreen()

@@ -288,30 +288,6 @@ def set_pivot_transforms(input_transform, output_transform):
     input_combo_box.setCurrentNode(input_transform)
     output_combo_box.setCurrentNode(output_transform)
 
-
-def set_model_widget_connector(igtlink_node):
-    """
-    To load the CT model from the StealthStation, we use the
-    OpenIGTLinkRemote module. The openIGTLink connection node needs
-    to be set to the one we have already created.
-    """
-    igt_remote_widget = slicer.modules.openigtlinkremote.widgetRepresentation()
-
-    combo_box_type = ctk.ctkComboBox
-
-    combo_box_widgets = igt_remote_widget.findChildren(combo_box_type)
-
-    #TODO: Check button text is what we expect
-
-    # The first widget ctkComboBox is the Connector selection
-    connector_combo_box = combo_box_widgets[0]
-    conenctor_combo_box.setCurrentIndex(1)
-
-    update_btn = w.findChildren(qt.QPushButton)[2]
-    get_item_btn = w.findChildren(qt.QPushButton)[2]
-    update_btn.click()
-    get_item_btn.click()
-
 def query_remote_list(igt_connector):
     """
     Query the OpenIGTLinkRemote node to get a list of available models.
