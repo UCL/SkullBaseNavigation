@@ -338,25 +338,6 @@ def get_all_transforms():
 
     return transforms
 
-def save_transforms():
-    """ Write all transforms in the current hierarchy to a file,
-    where the filename contains a timestamp. """
-    current_time = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
-    transforms = get_all_transforms()
-
-    if not transforms:
-        return
-
-    directory = 'outputs/'
-
-    # Create dir if it doesn't exist
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-    filename = directory + 'transforms_' + current_time + '.json'
-    with open(filename, 'w') as f:
-        json.dump(transforms, f, indent=4)
-
 def get_vtkmartrix4x4_as_array(matrix4x4):
     """ Iterate through elements of vtkMatrix4x4 and call
     GetElement(i, j).

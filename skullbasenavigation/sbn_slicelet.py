@@ -2,6 +2,9 @@
 
 import logging  #pylint: disable=unused-import
 import time
+import datetime
+import json
+import os
 import ctk
 import qt
 import slicer
@@ -52,22 +55,6 @@ class Slicelet(object):
         self.get_model_btn = qt.QPushButton("Get Model From Remote")
         self.get_model_btn.clicked.connect(self.get_ct_model)
         self.buttons.layout().addWidget(self.get_model_btn)
-
-        # Collapsible button to hold OpenIGTLink Remote Module
-        self.ctk_model_box = ctk.ctkCollapsibleButton()
-        self.ctk_model_box.setText("OpenIGTLink Remote")
-        self.ctk_model_box.setChecked(False)
-
-        self.remote_layout = qt.QVBoxLayout()
-        self.remote_scroll_area = qt.QScrollArea()
-        self.remote = slicer.modules.openigtlinkremote.widgetRepresentation()
-
-        self.remote_scroll_area.setWidget(self.remote)
-        self.remote_scroll_area.setWidgetResizable(True)
-        self.remote_layout.addWidget(self.remote_scroll_area)
-        self.ctk_model_box.setLayout(self.remote_layout)
-
-        self.buttons.layout().addWidget(self.ctk_model_box)
 
         # Collapsible button to hole Pivot calibration module
         # Won't be active until the tools have been seen
@@ -147,7 +134,7 @@ class Slicelet(object):
         # Button to save all transforms to file
         # Used for syncing with neuromonitoring data
         self.transform_save_btn = qt.QPushButton('Save Transforms')
-        self.transform_save_btn.clicked.connect(functions.save_transforms)
+        self.transform_save_btn.clicked.connect(self.save_transforms)
         self.buttons.layout().addWidget(self.transform_save_btn)
 
         # Add QSlider to control opacity
@@ -233,6 +220,7 @@ class Slicelet(object):
         if ultrasound_exists and volume_nodes_list:
             self.status_text.append("Found Ultrasound Node: " + ultrasound_name)
             self.status_text.append("Found CT_node: " + CT_node_name)
+            self.status_text.append("Waiting for tools to be visible to StealthStation")
             self.checkModelsTimer.stop()
 
 
@@ -241,7 +229,7 @@ class Slicelet(object):
         all_active = workflow.wait_for_transforms()
 
         if all_active:
-            self.status_text.append("Found expected transforms.")
+            self.status_text.append("Found expected transforms")
             workflow.setup_plus_remote(self.connector)
             workflow.create_models()
             workflow.prepare_pivot_cal()
@@ -250,6 +238,8 @@ class Slicelet(object):
             self.ctk_pivot_box.setEnabled(True)
             self.ctk_recon_box.setEnabled(True)
             self.checkTranformsTimer.stop()
+            self.status_text.append("Enabling pivot calibration")
+
 
     def add_tab_widgets(self):
         """
@@ -261,13 +251,14 @@ class Slicelet(object):
             "data",
             "volumerendering",
             "openigtlinkif",
+            "openigtlinkremote",
             "createmodels",
             "transforms",
             "plusremote",
             "volumereslicedriver"]
 
         # Need to have a text label for each module tab
-        module_labels = ["Data", "Volumes", "IGTLink", "Models", "Transforms", \
+        module_labels = ["Data", "Volumes", "IGTLink", "IGTLinkRemote", "Models", "Transforms", \
                          "PLUS Remote", "Volume Reslice"]
 
         # Create a tab widget for each module
@@ -333,10 +324,11 @@ class Slicelet(object):
         connector_box.setCurrentNode(self.connector)
         app.processEvents()
 
-        # Click 'Update' button
+        # Click 'Update' button and wait for the results to be received
         update_btn.clicked()
         time.sleep(1)
         app.processEvents()
+        self.status_text.append("Received data from remote")
 
         # Select the first item in results table
         first_item = remote_data_table.item(0,0).text()
@@ -350,6 +342,27 @@ class Slicelet(object):
         app.processEvents()
 
         self.status_text.append("Loading model")
+
+    def save_transforms(self):
+        """ Write all transforms in the current hierarchy to a file,
+        where the filename contains a timestamp. """
+        current_time = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
+        transforms = functions.get_all_transforms()
+
+        if not transforms:
+            return
+
+        directory = 'outputs/'
+
+        # Create dir if it doesn't exist
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        filename = directory + 'transforms_' + current_time + '.json'
+        with open(filename, 'w') as f:
+            json.dump(transforms, f, indent=4)
+
+        self.status_text.append("Saving transforms to: " + filename)
 
 class TractographySlicelet(Slicelet):
     """ Creates the interface when module is run as a stand alone gui app.
