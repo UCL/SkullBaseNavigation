@@ -7,6 +7,7 @@ import qt
 import slicer
 from slicer.ScriptedLoadableModule import *
 
+from config import Config
 from sbn import workflow, functions
 
 #pylint: disable=useless-object-inheritance
@@ -167,8 +168,8 @@ class Slicelet(object):
         # TODO - tidy up - shouldn't hard code the variable names here,
         # better to read in from a file or something.
 
-        ultrasound_name = 'Image_SureTrack2Tip'
-        # CT_name = 'CT_scan'
+        ultrasound_name = Config.US_IMG
+        CT_name = Config.CT_IMG
 
         ultrasound_id = functions.get_item_id_by_name(ultrasound_name)
         # ct_id = functions.get_item_id_by_name(CT_name)
