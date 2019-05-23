@@ -8,6 +8,8 @@ import time
 
 import slicer
 
+from ..config import Config
+
 def connect_to_OpenIGTLink(name, host, port):
     """
     Create an link to a OpenIGTLink server.
@@ -60,7 +62,7 @@ def create_needle_model(name, length, radius, tip_radius):
     return needle
 
 
-def load_probe_image(name="BK_Probe"):
+def load_probe_image(name=Config.PROBE_IMG):
     """Load the image of the probe and name the node as requested."""
     # Slicer wants an absolute path to the STL image.
     # This assumes we are at the top level of the repository.
@@ -95,11 +97,11 @@ def set_node_visible(node):
     # TODO: Better way to identify the nodes, other than checking the name
 
     # UltraSound
-    if node.GetName() == 'Image_SureTrack2Tip':
+    if node.GetName() == Config.US_IMG:
         set_ultrasound_visible(node)
 
     # 3D CT Model
-    elif node.GetName() == 'CT_scan':
+elif node.GetName() == Config.CT_IMG:
         set_CT_model_visible(node)
 
     else:
@@ -112,7 +114,7 @@ def set_ultrasound_visible(node):
     """
     slicer.util.setSliceViewerLayers(background=node)
     # Get all the red slice node
-    red_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeRed')
+    red_slice_node = slicer.mrmlScene.GetNodeByID(Config.SLICENODERED_ID)
     # Get the US node ID
     node_id = node.GetID()
     enable_volume_reslice(red_slice_node, node_id)
@@ -336,7 +338,7 @@ def get_all_transforms():
     :return: Dictionary of transforms, or None if no transforms in hierarchy.
     """
     transform_nodes = slicer.mrmlScene.GetNodesByClass(
-        'vtkMRMLLinearTransformNode')
+        Config.LINEARTRANSFORMNODE_CLS)
     transform_nodes.InitTraversal()
 
     tf_node = transform_nodes.GetNextItemAsObject()
@@ -398,7 +400,7 @@ def remove_all_transforms():
     """ Remove all transform nodes from scene/hierarchy. """
     logging.debug("Removing all transforms.")
     transform_nodes = slicer.mrmlScene.GetNodesByClass(
-        'vtkMRMLLinearTransformNode')
+        Config.LINEARTRANSFORMNODE_CLS)
     transform_nodes.InitTraversal()
     tf_node = transform_nodes.GetNextItemAsObject()
 
@@ -408,7 +410,7 @@ def remove_all_transforms():
 
     # Check that no nodes remain
     transform_nodes = slicer.mrmlScene.GetNodesByClass(
-        'vtkMRMLLinearTransformNode')
+        Config.LINEARTRANSFORMNODE_CLS)
     transform_nodes.InitTraversal()
     tf_node = transform_nodes.GetNextItemAsObject()
 

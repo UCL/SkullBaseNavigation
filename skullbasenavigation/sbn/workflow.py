@@ -9,6 +9,7 @@ from subprocess import Popen, PIPE, STDOUT
 from sksurgerybk.interface import bk5000
 import slicer
 
+from ..config import Config
 import functions
 
 
@@ -38,7 +39,7 @@ def connect():
     :return: The resulting vtkMRMLIGTLConnectorNode.
     """
     igt_connector = functions.connect_to_OpenIGTLink(
-        'OpenIGT', 'localhost', 18944)
+        'OpenIGT', Config.PLUS_HOST, Config.PLUS_PORT)
     return igt_connector
 
 
@@ -62,7 +63,7 @@ def wait_for_transforms():
     placed in the StealthStation field of view have been created.
     """
 
-    transforms = ['StylusToReference', 'SureTrack2ToRas']
+    transforms = [Config.STYLUSTOREFERENCE_TF, Config.SURETRACK2TORAS_TF]
 
     for transform in transforms:
         if not functions.does_node_exist_as_a_transform(transform):
@@ -81,7 +82,7 @@ def setup_plus_remote(connector):
     # This is required because the PlusRemote module expects nodes with
     # particular names and, if they are not present, it will use meaningless
     # names such as _1, _2 etc.
-    for volume_name in ["ScoutScan", "liveReconstruction"]:
+    for volume_name in [Config.SCOUTSCAN_VOL, Config.LIVERECONSTRUCTION_VOL]:
         functions.create_volume_node(volume_name)
     # Setup the module to use the correct connector.
     # This should enable the reconstruction buttons.
@@ -93,16 +94,17 @@ def create_models():
     """
     Create 3D models to visualise stylus and probe locations.
     """
-    functions.create_needle_model("StylusModel", 100, 1, 0.1)
-    functions.create_needle_model("ProbeModel", 100, 0.5, 0.2)
+    functions.create_needle_model(Config.STYLUS_MOD, 100, 1, 0.1)
+    functions.create_needle_model(Config.PROBE_MOD, 100, 0.5, 0.2)
     functions.load_probe_image()
 
 
 def prepare_pivot_cal():
     """ Set some default values for pivot calibration """
     tf_tip2suretrack = functions.create_linear_transform_node(
-        "SureTrack2TipToSureTrack2")
-    tf_suretrack2ras = slicer.mrmlScene.GetFirstNodeByName("SureTrack2ToRas")
+                                        Config.SURETRACK2TIPTOSURETRACK2_TF)
+    tf_suretrack2ras = slicer.mrmlScene.GetFirstNodeByName(
+                                        Config.SURETRACK2TORAS_TF)
 
     functions.set_pivot_transforms(tf_suretrack2ras, tf_tip2suretrack)
 
@@ -113,17 +115,20 @@ def set_transform_hierarchy():
     """ Set the tranform hierarchy for the stylus and probe """
     scene = slicer.mrmlScene
 
-    tf_tip2suretrack = scene.GetFirstNodeByName("SureTrack2TipToSureTrack2")
-    tf_suretrack2ras = scene.GetFirstNodeByName("SureTrack2ToRas")
-    tf_stylus2reference = scene.GetFirstNodeByName("StylusToReference")
-    img = scene.GetFirstNodeByName("Image_SureTrack2Tip")
-    ref = scene.GetFirstNodeByName("ReferenceToRas")
+    tf_tip2suretrack = scene.GetFirstNodeByName(
+                             Config.SURETRACK2TIPTOSURETRACK2_TF)
+    tf_suretrack2ras = scene.GetFirstNodeByName(
+                             Config.SURETRACK2TORAS_TF)
+    tf_stylus2reference = scene.GetFirstNodeByName(
+                                Config.STYLUSTOREFERENCE_TF)
+    img = scene.GetFirstNodeByName(Config.US_NAME)
+    ref = scene.GetFirstNodeByName(Config.REFERENCETORAS_TF)
 
-    stylus = scene.GetFirstNodeByName("StylusModel")
-    probe = scene.GetFirstNodeByName("ProbeModel")
-    probe_img = scene.GetFirstNodeByName("BK_Probe")
-    scout = scene.GetFirstNodeByName("ScoutScan")
-    reconstruction = scene.GetFirstNodeByName("liveReconstruction")
+    stylus = scene.GetFirstNodeByName(Config.STYLUS_MOD)
+    probe = scene.GetFirstNodeByName(Config.PROBE_MOD)
+    probe_img = scene.GetFirstNodeByName(Config.PROBE_IMG)
+    scout = scene.GetFirstNodeByName(Config.SCOUTSCAN_VOL)
+    reconstruction = scene.GetFirstNodeByName(Config.LIVERECONSTRUCTION_VOL)
 
     functions.set_parent_of_transform_hierarchy_node(
         stylus, tf_stylus2reference)
