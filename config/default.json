@@ -1,0 +1,45 @@
+{
+    "ultrasound name": "Image_SureTrack2Tip",
+    "CT name": "SLD-*",
+
+    "SureTrack2TiptoSureT name": "SureTrack2TipToSureTrack2",
+    "live reconstruction name": "liveReconstruction",
+
+    "CT colour map": "Grey",
+    "live reconustruction colour map": "Red",
+
+    "OpenIGT settings": {
+        "name": "OpenIGT",
+        "ip": "localhost",
+        "port": 18944
+    },
+
+    "default calibration duration": 10,
+
+    "transforms to wait for": ["StylusToReference", "SureTrack2ToRas"],
+
+    "output dir": "outputs/",
+
+    "advanced tabs": {
+        "modules": [
+            "data",
+            "volumerendering",
+            "openigtlinkif",
+            "createmodels",
+            "transforms",
+            "plusremote",
+            "volumereslicedriver"
+        ],
+
+        "labels": ["Data",
+            "Volumes",
+            "IGTLink",
+            "Models",
+            "Transforms",
+            "PLUS Remote",
+            "Volume Reslice"
+        ]
+
+    }
+
+}
