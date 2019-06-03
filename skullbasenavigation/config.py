@@ -7,7 +7,7 @@ class BaseConfig(object):
     """Base configuration settings for the skullbasenavigation project"""
 
     # PLUS settings
-    PLUS_HOST = 'locahost'
+    PLUS_HOST = 'localhost'
     PLUS_PORT = 18944
     PATH_TO_PLUS_SETTINGS = 'PLUS_settings'
     PLUS_CONFIG_FILE = 'PlusDeviceSet_Server_StealthLinkTracker_pyIGTLink.xml'
