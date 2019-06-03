@@ -12,8 +12,10 @@ class BaseConfig(object):
     PLUS_PATH = '/path/to/PLUS'
 
     # pyIGTLink settings
-    PYIGTLINK_HOST = 123
-    PYIGTLINK_PORT = 123
+    PYIGTLINK_TCP_IP = '128.16.0.3'
+    PYIGTLINK_TCP_PORT = 7915
+    PYIGTLINK_TIMEOUT = 5
+    PYIGTLINK_FPS = 25
 
     # IGTLink connector settings
     IGTLINK_NAME = 'name'
