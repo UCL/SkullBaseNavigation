@@ -26,9 +26,8 @@ def start_dependencies():
     # and that we are in the root of the repository when running this!
     os_name = platform.system()
     plus_exec = "PlusServer.exe" if os_name == "Windows" else "PlusServer"
-    plus_config = os.path.join(
-        "PLUS_settings",
-        "PlusDeviceSet_Server_StealthLinkTracker_pyIGTLink.xml")
+    plus_config = os.path.join(Config.PATH_TO_PLUS_SETTINGS,
+                               Config.PLUS_CONFIG_FILE)
     plus_args = [plus_exec, "--config-file=" + plus_config]
     plus = Popen(plus_args, stdout=PIPE, stderr=STDOUT)
     # We may want to keep track of these connections/processes,

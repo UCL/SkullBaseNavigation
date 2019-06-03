@@ -9,7 +9,8 @@ class BaseConfig(object):
     # PLUS settings
     PLUS_HOST = 'locahost'
     PLUS_PORT = 18944
-    PLUS_PATH = '/path/to/PLUS'
+    PATH_TO_PLUS_SETTINGS = 'PLUS_settings'
+    PLUS_CONFIG_FILE = 'PlusDeviceSet_Server_StealthLinkTracker_pyIGTLink.xml'
 
     # pyIGTLink settings
     PYIGTLINK_TCP_IP = '128.16.0.3'
