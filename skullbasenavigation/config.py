@@ -12,8 +12,6 @@ class BaseConfig(object):
     PATH_TO_PLUS_SETTINGS = 'PLUS_settings'
     PLUS_CONFIG_FILE = 'PlusDeviceSet_Server_StealthLinkTracker_pyIGTLink.xml'
     PLUS_EXEC_PATH = ''
-    PLUS_EXEC_WIN = 'PlusServer.exe'
-    PLUS_EXEC_ELSE = 'PlusServer'
 
     # pyIGTLink settings
     PYIGTLINK_TCP_IP = '128.16.0.3'
