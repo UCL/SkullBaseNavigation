@@ -19,7 +19,7 @@ class BaseConfig(object):
     PYIGTLINK_FPS = 25
 
     # IGTLink connector settings
-    IGTLINK_NAME = 'name'
+    IGTLINK_CONNECTOR_NAME = 'OpenIGT'
 
     # Transform names
     STYLUSTOREFERENCE_TF = 'StylusToReference'
