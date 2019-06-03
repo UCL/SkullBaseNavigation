@@ -20,6 +20,8 @@ def start_dependencies():
     # # PLUS Server (command will depend on the operating system)
     # NB: This assumes that the PlusServer executable is on the path,
     # and that we are in the root of the repository when running this!
+    
+    os.environ["PATH"] += r";C:\Users\SBN\PlusApp-2.6.0.20190221-StealthLink-Win32\bin;"
     os_name = platform.system()
     plus_exec = "PlusServer.exe" if os_name == "Windows" else "PlusServer"
     plus_config = os.path.join(
