@@ -1,7 +1,10 @@
 """ Slicelet for SBN Project """
 
 import logging  #pylint: disable=unused-import
-
+import time
+import datetime
+import json
+import os
 import ctk
 import qt
 import slicer
@@ -9,6 +12,10 @@ from slicer.ScriptedLoadableModule import *
 
 from config import Config
 from sbn import workflow, functions
+
+import pip
+pip.main(['install', 'scikit-surgerycore'])
+import sksurgerycore.configuration.configuration_manager as config
 
 #pylint: disable=useless-object-inheritance
 # Pylint thinks that passing 'object' as an argument is
@@ -20,6 +27,9 @@ class Slicelet(object):
     """
 
     def __init__(self):
+
+        configuration_manager = config.ConfigurationManager('config/default.json')
+        self.config = configuration_manager.get_copy()
 
         # GUI has a right panel for displaying models/images
         # and a left panel for controls/buttons etc.
@@ -44,21 +54,9 @@ class Slicelet(object):
         self.buttons.layout().addWidget(self.connect_btn)
         self.connect_btn.clicked.connect(self.try_connection)
 
-        # Collapsible button to hold OpenIGTLink Remote Module
-        self.ctk_model_box = ctk.ctkCollapsibleButton()
-        self.ctk_model_box.setText("OpenIGTLink Remote")
-        self.ctk_model_box.setChecked(False)
-
-        self.remote_layout = qt.QVBoxLayout()
-        self.remote_scroll_area = qt.QScrollArea()
-        self.remote = slicer.modules.openigtlinkremote.widgetRepresentation()
-
-        self.remote_scroll_area.setWidget(self.remote)
-        self.remote_scroll_area.setWidgetResizable(True)
-        self.remote_layout.addWidget(self.remote_scroll_area)
-        self.ctk_model_box.setLayout(self.remote_layout)
-
-        self.buttons.layout().addWidget(self.ctk_model_box)
+        self.get_model_btn = qt.QPushButton("Get Model From Remote")
+        self.get_model_btn.clicked.connect(self.get_ct_model)
+        self.buttons.layout().addWidget(self.get_model_btn)
 
         # Collapsible button to hole Pivot calibration module
         # Won't be active until the tools have been seen
@@ -79,6 +77,12 @@ class Slicelet(object):
         self.ctk_pivot_box.setLayout(self.pivot_layout)
         self.buttons.layout().addWidget(self.ctk_pivot_box)
 
+        # Set the default calibration duration to 10
+        calib_duration = 10
+        calib_duration_widget = self.buttons.findChild(
+                                ctk.ctkDoubleSpinBox(), u'durationTimerEdit')
+
+        calib_duration_widget.setValue(calib_duration)
         # Disable the button (enabled if wait_for_transforms returns
         # true)
         self.ctk_pivot_box.setEnabled(False)
@@ -93,15 +97,16 @@ class Slicelet(object):
         if len(btn) == 1:
             self.ctk_recon_box = btn[0]
         else:  # e.g. if no buttons found because their names are empty
-            self.ctk_recon_box = plus_wid[6]
+            # this is originally in position 6, but we have already taken
+            # something out, so the indices have changed
+            self.ctk_recon_box = plus_wid[5]
         self.buttons.layout().addWidget(self.ctk_recon_box)
+
+        self.ctk_recon_box.setChecked(False)
         # Disable until transforms are available
         self.ctk_recon_box.setEnabled(False)
 
-        self.advanced_options_checkbox = qt.QCheckBox("Show Advanced Settings")
-        self.buttons.layout().addWidget(self.advanced_options_checkbox)
-        self.advanced_options_checkbox.stateChanged.connect(
-            self.toggle_tab_panel)
+
 
         # Timer to check if CT model and ultrasound are available
         self.checkModelsTimer = qt.QTimer()
@@ -131,8 +136,38 @@ class Slicelet(object):
         # Button to save all transforms to file
         # Used for syncing with neuromonitoring data
         self.transform_save_btn = qt.QPushButton('Save Transforms')
-        self.transform_save_btn.clicked.connect(functions.save_transforms)
+        self.transform_save_btn.clicked.connect(self.save_transforms)
         self.buttons.layout().addWidget(self.transform_save_btn)
+
+        # Add QSlider to control opacity
+        self.opacity_layout = qt.QHBoxLayout()
+        self.opacity_label = qt.QLabel('Background Slice Opacity:')
+        self.opacity_label.setSizePolicy(qt.QSizePolicy.Fixed, qt.QSizePolicy.Fixed)
+        self.opacity_slider = qt.QSlider(qt.Qt.Horizontal)
+        self.opacity_slider.setValue(50)
+        self.opacity_slider.setTickInterval(50)
+        self.opacity_slider.valueChanged.connect(functions.set_slice_opacity)
+        self.opacity_layout.addWidget(self.opacity_label)
+        self.opacity_layout.addWidget(self.opacity_slider)
+        self.buttons.layout().addLayout(self.opacity_layout)
+        # Spacer to occupy excess space
+        self.vertical_spacer = qt.QSpacerItem(20, 40, qt.QSizePolicy.Minimum, qt.QSizePolicy.Expanding)
+        self.buttons.layout().addItem(self.vertical_spacer)
+
+        # Advanced settings
+        self.advanced_options_checkbox = qt.QCheckBox("Show Advanced Settings")
+        self.buttons.layout().addWidget(self.advanced_options_checkbox)
+        self.advanced_options_checkbox.stateChanged.connect(
+            self.toggle_tab_panel)
+
+        # Add status bar for info messages
+        self.status_layout = qt.QVBoxLayout()
+        self.status_label = qt.QLabel("Status Log:")
+        self.status_text = qt.QTextEdit()
+        self.status_text.setReadOnly(True)
+        self.status_layout.addWidget(self.status_label)
+        self.status_layout.addWidget(self.status_text)
+        self.buttons.layout().addLayout(self.status_layout)
 
         # Right side of splitter - 3D/Slice Viewer
         self.layoutManager = slicer.qMRMLLayoutWidget()
@@ -151,11 +186,9 @@ class Slicelet(object):
         self.connector = None  # the OpenIGTLink connector to be used
 
         # Launch dependencies
-        self.pyigtlink, self.plus = workflow.start_dependencies()
+        #self.plus = workflow.start_dependencies()
 
         self.parent.show()
-
-
 
     def check_if_models_exist(self):
         """ Check if the CT and ultrasound models have been
@@ -163,34 +196,36 @@ class Slicelet(object):
         """
 
         # The ultrasound name is defined in the PLUS xml config file.
-        # The CT doesn't have a name (not sure why) when it is sent from
-        # the StealthStation
+        # The CT node doesn't have a name in Slicer 4.8 when it is sent from
+        # the StealthStation. We rename the node after fetching it by ID.
         # TODO - tidy up - shouldn't hard code the variable names here,
         # better to read in from a file or something.
 
         ultrasound_name = Config.US_IMG
-        CT_name = Config.CT_IMG
-
         ultrasound_id = functions.get_item_id_by_name(ultrasound_name)
-        # ct_id = functions.get_item_id_by_name(CT_name)
-
         ultrasound_exists = functions.check_if_item_exists(ultrasound_id)
-        # ct_exists = functions.check_if_item_exists(ct_id)
-
-
-        # if (ultrasound_exists and ct_exists):
-        #     # Get the nodes
-        #     ultrasound_node = slicer.mrmlScene.GetNodeByID(str(ultrasound_id))
-        #     ct_node = slicer.mrmlScene.GetNodeByID(str(ct_id))
-        #     print(ultrasound_node, ct_node)
-        #     # workflow.set_visible(ultrasound_node, ct_node)
-        #     workflow.set_visible()
-        #     self.checkModelsTimer.stop()
         if ultrasound_exists:
             # Get the node
             ultrasound_node = slicer.mrmlScene.GetFirstNodeByName(
                 ultrasound_name)
             workflow.set_visible(ultrasound_node)
+
+        # Set the name
+        CT_node_name = Config.CT_IMG
+        CT_node_id = 'vtkMRMLScalarVolumeNode1' # Assuming the id remains always the same
+        volume_nodes_list = list(slicer.mrmlScene.GetNodesByClassByName('vtkMRMLScalarVolumeNode', ''))
+        if volume_nodes_list:
+
+            CT_node = volume_nodes_list[0]
+            CT_node.SetName(CT_node_name)
+            # Make the node visible in the volume rendering module
+            workflow.set_visible(CT_node)
+
+        # Stop the timer
+        if ultrasound_exists and volume_nodes_list:
+            self.status_text.append("Found Ultrasound Node: " + ultrasound_name)
+            self.status_text.append("Found CT_node: " + CT_node_name)
+            self.status_text.append("Waiting for tools to be visible to StealthStation")
             self.checkModelsTimer.stop()
 
 
@@ -199,14 +234,18 @@ class Slicelet(object):
         all_active = workflow.wait_for_transforms()
 
         if all_active:
+            self.status_text.append("Found expected transforms")
             workflow.setup_plus_remote(self.connector)
             workflow.create_models()
             workflow.prepare_pivot_cal()
             workflow.set_transform_hierarchy()
 
             self.ctk_pivot_box.setEnabled(True)
+            self.ctk_pivot_box.setChecked(True)
             self.ctk_recon_box.setEnabled(True)
             self.checkTranformsTimer.stop()
+            self.status_text.append("Enabling pivot calibration")
+
 
     def add_tab_widgets(self):
         """
@@ -218,13 +257,14 @@ class Slicelet(object):
             "data",
             "volumerendering",
             "openigtlinkif",
+            "openigtlinkremote",
             "createmodels",
             "transforms",
             "plusremote",
             "volumereslicedriver"]
 
         # Need to have a text label for each module tab
-        module_labels = ["Data", "Volumes", "IGTLink", "Models", "Transforms", \
+        module_labels = ["Data", "Volumes", "IGTLink", "IGTLinkRemote", "Models", "Transforms", \
                          "PLUS Remote", "Volume Reslice"]
 
         # Create a tab widget for each module
@@ -252,26 +292,83 @@ class Slicelet(object):
         self.connector = workflow.connect()
         success = functions.is_connected(self.connector)
         if success:
-            self.show_message("OpenIGTLink connection successful.")
+            self.status_text.append("OpenIGTLink connection successful.")
             self.connect_btn.setText("Connected")
         else:
-            self.show_message("Could not connect via OpenIGTLink.")
+            self.status_text.append("Could not connect via OpenIGTLink.")
             self.connect_btn.setText("Connect to OpenIGTLink")
             self.connect_btn.setEnabled("True")
         return success
 
-    def show_message(self, text):
-        """Display the given text to the user.
-
-        Current implementation shows a message box.
+    def get_ct_model(self):
         """
-        msg = qt.QMessageBox()
-        msg.setText(text)
-        # Note that the Qt method is properly called exec, but as this clashes
-        # with the reserved keyword in Python 2, the Python version is exec_.
-        # A method called exec also exists for backwards compatibility.
-        msg.exec_()
+        To load the CT model from the StealthStation, we use the
+        OpenIGTLinkRemote module. The openIGTLink connection node needs
+        to be set to the one we have already created.
 
+        Then click/select the relevant widget functions to load the CT model from remote.
+        Whenever a GUI element is clicked/selected, need to do a qApp.processEvents() call
+        so that QT reacts to the change.
+        """
+
+        # Need to get the QT Event loop to respond to the button clicks
+        # So call it manually - TODO: is there a better way to handle this?
+        app = qt.QApplication.instance()
+
+        self.status_text.append("Querying remote")
+        igt_remote_widget = slicer.modules.openigtlinkremote.widgetRepresentation()
+
+        connector_box = slicer.util.findChild(igt_remote_widget, 'connectorNodeSelector')
+        update_btn = slicer.util.findChildren(igt_remote_widget, 'updateButton')[0]
+        remote_data_table = slicer.util.findChildren(igt_remote_widget, 'remoteDataListTable')[0]
+        get_item_btn = slicer.util.findChildren(igt_remote_widget, 'getSelectedItemButton')[0]
+
+        # TODO Wrap the above in a try-catch in case node(s) don't exist
+        # (in case it changes in future versions)
+
+        # Set the connector node
+        connector_box.setCurrentNode(self.connector)
+        app.processEvents()
+
+        # Click 'Update' button and wait for the results to be received
+        update_btn.clicked()
+        time.sleep(1)
+        app.processEvents()
+        self.status_text.append("Received data from remote")
+
+        # Select the first item in results table
+        first_item = remote_data_table.item(0,0).text()
+        if not first_item.startswith('SLD'):
+            raise ValueError("Expecting first item in remote data query list to be SLD-*")
+        remote_data_table.selectRow(0)
+        app.processEvents()
+
+        # click the 'Get selected items' button
+        get_item_btn.clicked()
+        app.processEvents()
+
+        self.status_text.append("Loading model")
+
+    def save_transforms(self):
+        """ Write all transforms in the current hierarchy to a file,
+        where the filename contains a timestamp. """
+        current_time = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
+        transforms = functions.get_all_transforms()
+
+        if not transforms:
+            return
+
+        directory = 'outputs/'
+
+        # Create dir if it doesn't exist
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        filename = directory + 'transforms_' + current_time + '.json'
+        with open(filename, 'w') as f:
+            json.dump(transforms, f, indent=4)
+
+        self.status_text.append("Saving transforms to: " + filename)
 
 class TractographySlicelet(Slicelet):
     """ Creates the interface when module is run as a stand alone gui app.
@@ -283,7 +380,7 @@ class TractographySlicelet(Slicelet):
 
 class USReconstructionButton(qt.QPushButton):
     """A button that starts or stops ultrasound reconstruction when clicked."""
-    START_TEXT = "Start acquisition"
+    START_TEXT = "Visualse"
     STOP_TEXT = "Stop acquisition & reconstruct"
     VOLUME_NAME = "ReconVolReference"
 
@@ -300,32 +397,7 @@ class USReconstructionButton(qt.QPushButton):
 
     def react(self):
         """React to being clicked, depending on the current state."""
-        try:
-            node_id = self.slicelet.connector.GetID()
-        except AttributeError:  # something (connector) is None or missing
-            self.slicelet.show_message(
-                "Cannot find OpenIGT connection! You must first connect.")
-            return
-        if self.working:  # Send command to stop reconstruction
-            cmd = slicer.vtkSlicerOpenIGTLinkCommand()
-            cmd.SetCommandName("StopVolumeReconstruction")
-            # Specify the name of the output volume and a filename to store it
-            cmd.SetCommandAttribute("OutputVolDeviceName", self.VOLUME_NAME)
-            cmd.SetCommandAttribute("OutputVolFilename",
-                                    "output_reconstruction.mha")
-        else:  # Send command to start reconstruction
-            cmd = slicer.vtkSlicerOpenIGTLinkCommand()
-            cmd.SetCommandName("StartVolumeReconstruction")
-        # Sending the command returns True on success, False on failure
-        response = self.logic.SendCommand(cmd, node_id)
-        # TODO Maybe we should use an observer for the command completing
-        # instead of examining the response value.
-        if response:
-            # Toggle state and text
-            self.working = not self.working
-            self.setText(self.STOP_TEXT if self.working else self.START_TEXT)
-            # Change reslice settings after US reconstruction complete
-            self.change_reslice_settings()
+        self.change_reslice_settings()
 
     def change_reslice_settings(self):
         """After US reconstruction, the slice views are set
@@ -340,6 +412,11 @@ class USReconstructionButton(qt.QPushButton):
         liveReconstruction_name = 'liveReconstruction'
         liveReconstruction_node = slicer.mrmlScene.GetFirstNodeByName(
             liveReconstruction_name)
+
+        # Change the volume lookup table color settings
+        CT_node.GetDisplayNode().SetAndObserveColorNodeID('vtkMRMLColorTableNodeGrey')
+        liveReconstruction_node.GetDisplayNode().SetAndObserveColorNodeID('vtkMRMLColorTableNodeRed')
+
         # Get the slice view nodes and the logic
         red_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeRed')
         yellow_slice_node = slicer.mrmlScene.GetNodeByID(
@@ -356,13 +433,11 @@ class USReconstructionButton(qt.QPushButton):
         reslice_logic.SetModeForSlice(reslice_logic.MODE_CORONAL,
                                       green_slice_node)
         # Set the backgrounds
-        slicer.util.setSliceViewerLayers(background=CT_node)
+        slicer.util.setSliceViewerLayers(background=liveReconstruction_node)
         # Set the foregrounds
-        slicer.util.setSliceViewerLayers(foreground=liveReconstruction_node)
+        slicer.util.setSliceViewerLayers(foreground=CT_node)
         # Set the red slice view foreground value to 0.5
         slicer.util.setSliceViewerLayers(foregroundOpacity=0.5)
-
-
 
 if __name__ == "__main__":
 
@@ -376,3 +451,4 @@ if __name__ == "__main__":
     reslice_logic.SetModeForSlice(reslice_logic.MODE_TRANSVERSE, red_slice_node)
 
     slicelet = TractographySlicelet()
+    #slicelet.parent.showFullScreen()

@@ -6,7 +6,7 @@ import os.path
 import platform
 from subprocess import Popen, PIPE, STDOUT
 
-from sksurgerybk.interface import bk5000
+#from sksurgerybk.interface import bk5000
 import slicer
 
 from ..config import Config
@@ -24,6 +24,8 @@ def start_dependencies():
     # PLUS Server (command will depend on the operating system)
     # NB: This assumes that the PlusServer executable is on the path,
     # and that we are in the root of the repository when running this!
+
+    os.environ["PATH"] += r";C:\Users\SBN\PlusApp-2.6.0.20190221-StealthLink-Win32\bin;"
     os_name = platform.system()
     plus_exec = "PlusServer.exe" if os_name == "Windows" else "PlusServer"
     plus_exec_path = os.path.join(Config.PLUS_EXEC_PATH,
@@ -34,7 +36,7 @@ def start_dependencies():
     plus = Popen(plus_args, stdout=PIPE, stderr=STDOUT)
     # We may want to keep track of these connections/processes,
     # e.g. so we can stop them when the slicelet shuts down or crashes
-    return pyigtlink, plus
+    return plus
 
 
 def connect():
@@ -47,19 +49,9 @@ def connect():
     return igt_connector
 
 
-# def set_visible(ultrasound_node, ct_node):
 def set_visible(node):
     """ Set the US and CT data to visible """
-    # scene = slicer.mrmlScene
-    #
-    # ultrasound_volume_name = 'Image_Reference'
-    # ct_volume_name = ''
-    #
-    # ultrasound_node = scene.GetFirstNodeByName(ultrasound_volume_name)
-    # ct_node = scene.GetFirstNodeByName(ct_volume_name)
-
     functions.set_node_visible(node)
-    # functions.set_node_visible(ct_node)
 
 
 def wait_for_transforms():

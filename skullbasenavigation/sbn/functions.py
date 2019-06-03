@@ -101,7 +101,7 @@ def set_node_visible(node):
         set_ultrasound_visible(node)
 
     # 3D CT Model
-elif node.GetName() == Config.CT_IMG:
+    elif node.GetName() == Config.CT_IMG:
         set_CT_model_visible(node)
 
     else:
@@ -135,12 +135,11 @@ def set_CT_model_visible(node):
     CT Model is a 3D volume - set to visible.
     """
     logic = slicer.modules.volumerendering.logic()
-
     displayNode = logic.CreateVolumeRenderingDisplayNode()
     slicer.mrmlScene.AddNode(displayNode)
     displayNode.UnRegister(logic)
     logic.UpdateDisplayNodeFromVolumeNode(displayNode, node)
-
+    node.AddAndObserveDisplayNodeID(displayNode.GetID())
 
 def set_node_invisible(node):
     """
@@ -291,26 +290,6 @@ def set_pivot_transforms(input_transform, output_transform):
     input_combo_box.setCurrentNode(input_transform)
     output_combo_box.setCurrentNode(output_transform)
 
-
-def set_model_widget_connector(igtlink_node):
-    """
-    To load the CT model from the StealthStation, we use the
-    OpenIGTLinkRemote module. The openIGTLink connection node needs
-    to be set to the one we have already created.
-    """
-    igt_remote_widget = slicer.modules.openigtlinkremote.widgetRepresentation()
-
-    combo_box_type = slicer.qMRMLNodeComboBox()
-
-    combo_box_widgets = igt_remote_widget.findChildren(combo_box_type)
-
-    connector_combo_box_name = 'connectorNodeSelector'
-
-    for box in combo_box_widgets:
-        if box.name == connector_combo_box_name:
-            box.setCurrentNode(igtlink_node)
-
-
 def query_remote_list(igt_connector):
     """
     Query the OpenIGTLinkRemote node to get a list of available models.
@@ -361,25 +340,6 @@ def get_all_transforms():
 
     return transforms
 
-def save_transforms():
-    """ Write all transforms in the current hierarchy to a file,
-    where the filename contains a timestamp. """
-    current_time = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
-    transforms = get_all_transforms()
-
-    if not transforms:
-        return
-
-    directory = 'outputs/'
-
-    # Create dir if it doesn't exist
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-    filename = directory + 'transforms_' + current_time + '.json'
-    with open(filename, 'w') as f:
-        json.dump(transforms, f, indent=4)
-
 def get_vtkmartrix4x4_as_array(matrix4x4):
     """ Iterate through elements of vtkMatrix4x4 and call
     GetElement(i, j).
@@ -417,3 +377,11 @@ def remove_all_transforms():
     if tf_node:
         raise ValueError(
             "Tried to delete all transform nodes, but it didn't work!")
+
+def set_slice_opacity(opacity):
+    """ Set the opacity of the foreground volumes in slice view. """
+    slicer.util.setSliceViewerLayers(foregroundOpacity=opacity / 100.0)
+
+def get_ct_model(self):
+    """ Instead of clicking through all the options, activate the relevant
+    widgets automatically. """
