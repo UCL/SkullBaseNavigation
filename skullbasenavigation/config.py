@@ -13,11 +13,11 @@ class BaseConfig(object):
     PLUS_CONFIG_FILE = 'PlusDeviceSet_Server_StealthLinkTracker_pyIGTLink.xml'
     PLUS_EXEC_PATH = ''
 
-    # pyIGTLink settings
-    PYIGTLINK_TCP_IP = '128.16.0.3'
-    PYIGTLINK_TCP_PORT = 7915
-    PYIGTLINK_TIMEOUT = 5
-    PYIGTLINK_FPS = 25
+    # pyIGTLink settings for BK5000
+    BK_TCP_IP = '128.16.0.3'
+    BK_TCP_PORT = 7915
+    BK_TIMEOUT = 5
+    BK_FPS = 25
 
     # IGTLink connector settings
     IGTLINK_CONNECTOR_NAME = 'OpenIGT'
