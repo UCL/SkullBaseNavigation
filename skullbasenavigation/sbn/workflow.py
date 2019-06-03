@@ -25,10 +25,13 @@ def start_dependencies():
     # NB: This assumes that the PlusServer executable is on the path,
     # and that we are in the root of the repository when running this!
     os_name = platform.system()
-    plus_exec = "PlusServer.exe" if os_name == "Windows" else "PlusServer"
+    plus_exec = Config.PLUS_EXEC_WIN \
+        if os_name == "Windows" else Config.PLUS_EXEC_ELSE
+    plus_exec_path = os.path.join(Config.PLUS_EXEC_PATH,
+                                  plus_exec)
     plus_config = os.path.join(Config.PATH_TO_PLUS_SETTINGS,
                                Config.PLUS_CONFIG_FILE)
-    plus_args = [plus_exec, "--config-file=" + plus_config]
+    plus_args = [plus_exec_path, "--config-file=" + plus_config]
     plus = Popen(plus_args, stdout=PIPE, stderr=STDOUT)
     # We may want to keep track of these connections/processes,
     # e.g. so we can stop them when the slicelet shuts down or crashes
