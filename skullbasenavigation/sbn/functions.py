@@ -114,7 +114,7 @@ def set_ultrasound_visible(node):
     """
     slicer.util.setSliceViewerLayers(background=node)
     # Get all the red slice node
-    red_slice_node = slicer.mrmlScene.GetNodeByID(Config.SLICENODERED_ID)
+    red_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeRed')
     # Get the US node ID
     node_id = node.GetID()
     enable_volume_reslice(red_slice_node, node_id)
@@ -338,7 +338,7 @@ def get_all_transforms():
     :return: Dictionary of transforms, or None if no transforms in hierarchy.
     """
     transform_nodes = slicer.mrmlScene.GetNodesByClass(
-        Config.LINEARTRANSFORMNODE_CLS)
+        'vtkMRMLLinearTransformNode')
     transform_nodes.InitTraversal()
 
     tf_node = transform_nodes.GetNextItemAsObject()
@@ -400,7 +400,7 @@ def remove_all_transforms():
     """ Remove all transform nodes from scene/hierarchy. """
     logging.debug("Removing all transforms.")
     transform_nodes = slicer.mrmlScene.GetNodesByClass(
-        Config.LINEARTRANSFORMNODE_CLS)
+        'vtkMRMLLinearTransformNode')
     transform_nodes.InitTraversal()
     tf_node = transform_nodes.GetNextItemAsObject()
 
@@ -410,7 +410,7 @@ def remove_all_transforms():
 
     # Check that no nodes remain
     transform_nodes = slicer.mrmlScene.GetNodesByClass(
-        Config.LINEARTRANSFORMNODE_CLS)
+        'vtkMRMLLinearTransformNode')
     transform_nodes.InitTraversal()
     tf_node = transform_nodes.GetNextItemAsObject()
 

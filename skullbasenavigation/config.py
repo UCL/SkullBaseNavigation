@@ -41,10 +41,6 @@ class BaseConfig(object):
     STYLUS_MOD = 'StylusModel'
     PROBE_MOD = 'ProbeModel'
 
-    # Node IDs and classes
-    SLICENODERED_ID = 'vtkMRMLSliceNodeRed'
-    LINEARTRANSFORMNODE_CLS = 'vtkMRMLLinearTransformNode'
-
     # Output directory
     OUTPUT_DIR = 'name'
 
