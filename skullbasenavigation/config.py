@@ -29,7 +29,7 @@ class BaseConfig(object):
     REFERENCETORAS_TF = 'ReferenceToRas'
 
     # Image names
-    CT_IMG = 'CT_scan'
+    CT_IMG = 'SLD-001'
     US_IMG = 'Image_SureTrack2Tip'
     PROBE_IMG = 'BK_Probe'
 
