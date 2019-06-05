@@ -6,10 +6,10 @@ import os.path
 import platform
 from subprocess import Popen, PIPE, STDOUT
 
-#from sksurgerybk.interface import bk5000
+# from sksurgerybk.interface import bk5000
 import slicer
 
-from ..config import Config
+from skullbasenavigation.config import Config
 import functions
 
 

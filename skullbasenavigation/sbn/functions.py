@@ -8,7 +8,7 @@ import time
 
 import slicer
 
-from ..config import Config
+from skullbasenavigation.config import Config
 
 def connect_to_OpenIGTLink(name, host, port):
     """
