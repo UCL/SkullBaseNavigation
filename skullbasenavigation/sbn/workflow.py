@@ -16,11 +16,11 @@ import functions
 def start_dependencies():
     """Launch services on which the Slicelet depends."""
     # pyIGTLink server
-    pyigtlink = bk5000.BKpyIGTLink(Config.BK_TCP_IP,
-                                   Config.BK_TCP_PORT,
-                                   Config.BK_TIMEOUT,
-                                   Config.BK_FPS)
-    pyigtlink.start()
+    # pyigtlink = bk5000.BKpyIGTLink(Config.BK_TCP_IP,
+    #                                Config.BK_TCP_PORT,
+    #                                Config.BK_TIMEOUT,
+    #                                Config.BK_FPS)
+    # pyigtlink.start()
     # PLUS Server (command will depend on the operating system)
     # NB: This assumes that the PlusServer executable is on the path,
     # and that we are in the root of the repository when running this!
