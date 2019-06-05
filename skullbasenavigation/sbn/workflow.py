@@ -117,7 +117,7 @@ def set_transform_hierarchy():
                              Config.SURETRACK2TORAS_TF)
     tf_stylus2reference = scene.GetFirstNodeByName(
                                 Config.STYLUSTOREFERENCE_TF)
-    img = scene.GetFirstNodeByName(Config.US_NAME)
+    img = scene.GetFirstNodeByName(Config.US_IMG)
     ref = scene.GetFirstNodeByName(Config.REFERENCETORAS_TF)
 
     stylus = scene.GetFirstNodeByName(Config.STYLUS_MOD)
