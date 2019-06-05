@@ -42,6 +42,6 @@ class BaseConfig(object):
     PROBE_MOD = 'ProbeModel'
 
     # Output directory
-    OUTPUT_DIR = 'name'
+    OUTPUT_DIR = 'outputs/'
 
 Config = BaseConfig

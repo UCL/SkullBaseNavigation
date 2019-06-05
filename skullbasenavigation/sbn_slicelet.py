@@ -358,7 +358,7 @@ class Slicelet(object):
         if not transforms:
             return
 
-        directory = 'outputs/'
+        directory = Config.OUTPUT_DIR
 
         # Create dir if it doesn't exist
         if not os.path.exists(directory):
