@@ -41,7 +41,8 @@ class BaseConfig(object):
     STYLUS_MOD = 'StylusModel'
     PROBE_MOD = 'ProbeModel'
 
-    # Output directory
-    OUTPUT_DIR = 'outputs/'
+    # Output directories
+    TF_OUTPUT_DIR = 'outputs/transforms'
+    SCENE_OUTPUT_DIR = 'outputs/scenes'
 
 Config = BaseConfig
