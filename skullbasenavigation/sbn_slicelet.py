@@ -139,6 +139,11 @@ class Slicelet(object):
         self.transform_save_btn.clicked.connect(self.save_transforms)
         self.buttons.layout().addWidget(self.transform_save_btn)
 
+        # Button to save all (scene and transforms) to file
+        self.save_all_btn = qt.QPushButton('Save All')
+        self.save_all_btn.clicked.connect(self.save_all)
+        self.buttons.layout().addWidget(self.save_all_btn)
+
         # Add QSlider to control opacity
         self.opacity_layout = qt.QHBoxLayout()
         self.opacity_label = qt.QLabel('Background Slice Opacity:')
@@ -349,7 +354,20 @@ class Slicelet(object):
 
         self.status_text.append("Loading model")
 
-    def save_transforms(self):
+    def save_all(self):
+        """Save the current scene and transforms in timestamped files"""
+        current_time = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
+        directory = Config.SCENE_OUTPUT_DIR
+        # Create dir if inexistent
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        filename = directory + 'scene_' + current_time + '.mrml'
+        # Save the scene
+        slicer.util.saveScene(filename)
+        # Save the transforms with the same time stamp
+        self.save_transforms(current_time)
+
+    def save_transforms(self, current_time=None):
         """ Write all transforms in the current hierarchy to a file,
         where the filename contains a timestamp. """
         current_time = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
