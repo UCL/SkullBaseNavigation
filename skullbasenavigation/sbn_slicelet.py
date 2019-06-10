@@ -370,7 +370,8 @@ class Slicelet(object):
     def save_transforms(self, current_time=None):
         """ Write all transforms in the current hierarchy to a file,
         where the filename contains a timestamp. """
-        current_time = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
+        if current_time is None:
+            current_time = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
         transforms = functions.get_all_transforms()
 
         if not transforms:
