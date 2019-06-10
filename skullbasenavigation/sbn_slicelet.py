@@ -378,7 +378,7 @@ class TractographySlicelet(Slicelet):
 
 class USReconstructionButton(qt.QPushButton):
     """A button that starts or stops ultrasound reconstruction when clicked."""
-    START_TEXT = "Visualse"
+    START_TEXT = "Visualise"
     STOP_TEXT = "Stop acquisition & reconstruct"
     VOLUME_NAME = "ReconVolReference"
 
