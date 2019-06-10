@@ -42,7 +42,7 @@ class BaseConfig(object):
     PROBE_MOD = 'ProbeModel'
 
     # Output directories
-    TF_OUTPUT_DIR = 'outputs/transforms'
-    SCENE_OUTPUT_DIR = 'outputs/scenes'
+    TF_OUTPUT_DIR = 'outputs/transforms/'
+    SCENE_OUTPUT_DIR = 'outputs/scenes/'
 
 Config = BaseConfig
