@@ -361,9 +361,9 @@ class Slicelet(object):
         # Create dir if inexistent
         if not os.path.exists(directory):
             os.makedirs(directory)
-        filename = directory + 'scene_' + current_time + '.mrml'
+        path_to_file = os.path.join(directory, 'scene_' + current_time + '.mrml')
         # Save the scene
-        slicer.util.saveScene(filename)
+        slicer.util.saveScene(path_to_file)
         # Save the transforms with the same time stamp
         self.save_transforms(current_time)
 
@@ -383,11 +383,11 @@ class Slicelet(object):
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        filename = directory + 'transforms_' + current_time + '.json'
-        with open(filename, 'w') as f:
+        path_to_file = os.path.join(directory, 'transforms_' + current_time + '.json')
+        with open(path_to_file, 'w') as f:
             json.dump(transforms, f, indent=4)
 
-        self.status_text.append("Saving transforms to: " + filename)
+        self.status_text.append("Saving transforms to: " + path_to_file)
 
 class TractographySlicelet(Slicelet):
     """ Creates the interface when module is run as a stand alone gui app.
