@@ -10,8 +10,8 @@ import qt
 import slicer
 from slicer.ScriptedLoadableModule import *
 
-from config import Config
-from sbn import workflow, functions
+from sbn.config import Config
+from sbn import functions, workflow
 
 import pip
 pip.main(['install', 'scikit-surgerycore'])
