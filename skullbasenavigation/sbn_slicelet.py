@@ -364,14 +364,13 @@ class Slicelet(object):
         path_to_file = os.path.join(directory, 'scene_' + current_time + '.mrml')
         # Save the scene
         slicer.util.saveScene(path_to_file)
-        # Save the transforms with the same time stamp
-        self.save_transforms(current_time)
+        self.status_text.append("Saving transforms to: " + path_to_file)
 
-    def save_transforms(self, current_time=None):
+
+    def save_transforms(self):
         """ Write all transforms in the current hierarchy to a file,
         where the filename contains a timestamp. """
-        if current_time is None:
-            current_time = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
+        current_time = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
         transforms = functions.get_all_transforms()
 
         if not transforms:
