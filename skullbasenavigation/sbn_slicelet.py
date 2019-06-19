@@ -13,10 +13,6 @@ from slicer.ScriptedLoadableModule import *
 from sbn.config import Config
 from sbn import functions, workflow
 
-import pip
-pip.main(['install', 'scikit-surgerycore'])
-import sksurgerycore.configuration.configuration_manager as config
-
 #pylint: disable=useless-object-inheritance
 # Pylint thinks that passing 'object' as an argument is
 # unnecessary, but that is incorrect.
@@ -27,9 +23,6 @@ class Slicelet(object):
     """
 
     def __init__(self):
-
-        configuration_manager = config.ConfigurationManager('config/default.json')
-        self.config = configuration_manager.get_copy()
 
         # GUI has a right panel for displaying models/images
         # and a left panel for controls/buttons etc.
@@ -361,10 +354,10 @@ class Slicelet(object):
         # Create dir if inexistent
         if not os.path.exists(directory):
             os.makedirs(directory)
-        path_to_file = os.path.join(directory, 'scene_' + current_time + '.mrml')
+        path_to_file = os.path.join(directory, 'scene_' + current_time + '.mrb')
         # Save the scene
         slicer.util.saveScene(path_to_file)
-        self.status_text.append("Saving transforms to: " + path_to_file)
+        self.status_text.append("Saving scene to: " + path_to_file)
 
 
     def save_transforms(self):
