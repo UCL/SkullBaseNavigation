@@ -1,0 +1,2 @@
+/c/Users/SBN/PlusApp-2.6.0.20190221-StealthLink-Win32/bin/PlusServer.exe --config-file="/c/Users/SBN/Code/skullbasenavigation/PLUS_settings/PlusDeviceSet_Server_StealthLinkTracker_pyIGTLink.xml" --verbose=4
+$SHELL
