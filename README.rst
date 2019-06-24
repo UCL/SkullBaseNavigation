@@ -39,10 +39,23 @@ Requirements
 See the `wiki
 <https://weisslab.cs.ucl.ac.uk/WEISS/SoftwareRepositories/skullbasenavigation/wikis/home>`_.
 
-Running
+Start up guide and running
 ^^^^^^^^^^
 
-The below assumes that you are in the root directory of the **SkullBaseNavigation** repository.
+Since the **SkullBaseNavigation** slicelet is connected to different pieces of hardware, here is a quick user's guide to help with a smooth start up. These steps are to be executed in sequence:
+
+- Please check on every piece of hardware or computer is powered on. This includes the laptop, the BK5000 and StealthStation machines and the network switch which is an easy one to forget.
+- The first server to be started up is the one that allows the connection to the BK5000 (pyIGTLink server). This is done by double-clicking on the `launch_bk` icon.
+- The second server to be started up (PLUS server) is the one that allows the synchronous connection and collection of data between the BK5000 (ultrasound images) and the StealthStation (tracking and positioning data). This is done by double-clicking on the `launch_plus` icon.
+- Finally, the slicelet is to be started up. This is done by simply double-clicking on the `launch_slicelet` icon.
+- If everything runs well, the final steps to be executed within the slicelet are:
+  - Pull the US images from the BK500 by clicking on the `Connect to OpenIGTLink` button.
+  - Pull the CT model from the StealthStation by clicking on the `Get Model From Remote` button.
+  - After a short time, you will be able to visualise both the stream of US images and the CT model in the 3D view. Then, you are ready to perform the pivot and spin calibrations by clicking on the `Pivot Calibration` button.
+
+From this point on, the start up is finished. You should be able to visualise in real-time the stream of US images together with the CT scan and ready to perform the live reconstruction.
+
+NB. The following is for a direct start up of the slicelet. This is mostly intended for development purposes. The below assumes that you are in the root directory of the **SkullBaseNavigation** repository.
 
 Run the slicelet:
 ::
