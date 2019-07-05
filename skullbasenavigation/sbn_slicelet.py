@@ -148,6 +148,14 @@ class Slicelet(object):
         self.opacity_layout.addWidget(self.opacity_label)
         self.opacity_layout.addWidget(self.opacity_slider)
         self.buttons.layout().addLayout(self.opacity_layout)
+
+        # Choice of grid
+        self.neuro_layout = qt.QVBoxLayout()
+        self.layout_checkbox = qt.QCheckBox("Show additional 3D viewer")
+        self.layout_checkbox.clicked.connect(self.update_layout)
+        self.neuro_layout.addWidget(self.layout_checkbox)
+        self.buttons.layout().addLayout(self.neuro_layout)
+
         # Spacer to occupy excess space
         self.vertical_spacer = qt.QSpacerItem(20, 40, qt.QSizePolicy.Minimum, qt.QSizePolicy.Expanding)
         self.buttons.layout().addItem(self.vertical_spacer)
@@ -380,6 +388,15 @@ class Slicelet(object):
             json.dump(transforms, f, indent=4)
 
         self.status_text.append("Saving transforms to: " + path_to_file)
+
+    def update_layout(self):
+        """Set the layout according to the relevant checkbox."""
+        new_layout = (
+            slicer.vtkMRMLLayoutNode.SlicerLayoutDual3DView
+            if self.layout_checkbox.isChecked()
+            else slicer.vtkMRMLLayoutNode.SlicerLayoutFourUpView)
+        self.layoutManager.setLayout(new_layout)
+
 
 class TractographySlicelet(Slicelet):
     """ Creates the interface when module is run as a stand alone gui app.
