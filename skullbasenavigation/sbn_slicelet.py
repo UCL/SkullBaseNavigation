@@ -60,6 +60,25 @@ class Slicelet(object):
         self.ctk_pivot_box.setChecked(False)
 
         self.pivot_layout = qt.QVBoxLayout()
+        # Radio buttons to choose which instrument to calibrate
+        # QButtonGroup is just a logical grouping, not a widget!
+        self.pivot_mode_buttons = qt.QButtonGroup()
+        self.pivot_mode_probe = qt.QRadioButton("Ultrasound")
+        self.pivot_mode_probe.setChecked(True)
+        self.pivot_mode_probe.clicked.connect(self.choose_us_pivot)
+        self.pivot_mode_buttons.addButton(self.pivot_mode_probe)
+        self.pivot_mode_neuro = qt.QRadioButton("Neurostimulator")
+        self.pivot_mode_neuro.setChecked(False)
+        self.pivot_mode_neuro.clicked.connect(self.choose_neuro_pivot)
+        self.pivot_mode_buttons.addButton(self.pivot_mode_neuro)
+        # Set up the layout for these buttons
+        self.pivot_mode_buttons_box = qt.QGroupBox()
+        self.pivot_mode_buttons_layout = qt.QHBoxLayout()
+        for radio_button in self.pivot_mode_buttons.buttons():
+            self.pivot_mode_buttons_layout.addWidget(radio_button)
+        self.pivot_mode_buttons_box.setLayout(self.pivot_mode_buttons_layout)
+        self.pivot_layout.addWidget(self.pivot_mode_buttons_box)
+
         self.pivot_scroll_area = qt.QScrollArea()
         self.pivot = slicer.modules.pivotcalibration.widgetRepresentation()
 
@@ -318,6 +337,13 @@ class Slicelet(object):
             self.checkTranformsTimer.stop()
             self.status_text.append("Enabling pivot calibration")
 
+    def choose_us_pivot(self):
+        """Prepare transforms to calibrate ultrasound probe."""
+        workflow.set_calibration_mode("us")
+
+    def choose_neuro_pivot(self):
+        """Prepare transforms to calibrate neurostimulator probe."""
+        workflow.set_calibration_mode("neuro")
 
     def add_tab_widgets(self):
         """
@@ -523,6 +549,7 @@ class USReconstructionButton(qt.QPushButton):
         slicer.util.setSliceViewerLayers(foreground=CT_node)
         # Set the red slice view foreground value to 0.5
         slicer.util.setSliceViewerLayers(foregroundOpacity=0.5)
+
 
 if __name__ == "__main__":
 
