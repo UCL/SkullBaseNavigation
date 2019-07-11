@@ -58,7 +58,8 @@ def wait_for_transforms():
     placed in the StealthStation field of view have been created.
     """
 
-    transforms = [Config.STYLUS_TO_REFERENCE_TF, Config.US_TO_RAS_TF]
+    transforms = [Config.STYLUS_TO_REFERENCE_TF, Config.US_TO_RAS_TF,
+                  Config.CUSA_TO_RAS_TF, Config.NEUROSTIM_TO_RAS_TF]
 
     for transform in transforms:
         if not functions.does_node_exist_as_a_transform(transform):
