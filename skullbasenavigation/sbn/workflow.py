@@ -110,15 +110,23 @@ def prepare_probe_pivot_cal():
 
 
 def set_calibration_mode(mode="us"):
-    """Choose which instrument to calibrate."""
+    """Choose which instrument to calibrate.
+
+    Current choices are: "us" (ultrasound), "neuro" (neurostimulator).
+    """
     if mode == "us":
-        tf_us_to_us_tip = slicer.mrmlScene.GetFirstNodeByName(
+        output_transform = slicer.mrmlScene.GetFirstNodeByName(
             Config.US_TO_US_TIP_TF)
-        tf_us_to_ras = slicer.mrmlScene.GetFirstNodeByName(
+        input_transform = slicer.mrmlScene.GetFirstNodeByName(
             Config.US_TO_RAS_TF)
-        functions.set_pivot_transforms(tf_us_to_ras, tf_us_to_us_tip)
+    elif mode == "neuro":
+        output_transform = slicer.mrmlScene.GetFirstNodeByName(
+            Config.NEUROSTIM_TIP_TO_NEUROSTIM_TF)
+        input_transform = slicer.mrmlScene.GetFirstNodeByName(
+            Config.NEUROSTIM_TO_RAS_TF)
     else:
         raise ValueError("Unrecognised instrument to calibrate: " + mode)
+    functions.set_pivot_transforms(input_transform, output_transform)
 
 
 def set_transform_hierarchy():
