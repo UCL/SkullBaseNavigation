@@ -1,14 +1,12 @@
 """ Functions required to implement Slicer workflow. """
 
-import datetime
-import json
 import logging
 import os
 import time
 
 import slicer
 
-from config import Config
+from .config import Config
 
 def connect_to_OpenIGTLink(name, host, port):
     """
@@ -389,6 +387,7 @@ def remove_all_transforms():
 def set_slice_opacity(opacity):
     """ Set the opacity of the foreground volumes in slice view. """
     slicer.util.setSliceViewerLayers(foregroundOpacity=opacity / 100.0)
+
 
 def get_ct_model(self):
     """ Instead of clicking through all the options, activate the relevant
