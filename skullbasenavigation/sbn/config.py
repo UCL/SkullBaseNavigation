@@ -23,14 +23,25 @@ class BaseConfig(object):
     IGTLINK_CONNECTOR_NAME = 'OpenIGT'
 
     # Transform names
-    STYLUSTOREFERENCE_TF = 'StylusToReference'
-    SURETRACK2TORAS_TF = 'SureTrack2ToRas'
-    SURETRACK2TIPTOSURETRACK2_TF = 'SureTrack2TipToSureTrack2'
+    STYLUS_TO_REFERENCE_TF = 'StylusToReference'
+
+    # US
+    US_TO_RAS_TF = 'SureTrack2BlackToRas'
+    US_TO_US_TIP_TF = 'SureTrack2BlackTipToSureTrack2Black'
+
+    # CUSA
+    CUAS_TO_RAS_TF = 'SureTrack2OrangeToRas'
+
+    # Neurostim probe
+    NEUROSTIM_TO_RAS_TF = 'SureTrack2SilverToRas'
+    NEUROSTIM_TIP_TO_NEUROSTIM_TF = 'SureTrack2SilverToRas'
+
+
     REFERENCETORAS_TF = 'ReferenceToRas'
 
     # Image names
     CT_IMG = 'SLD-001'
-    US_IMG = 'Image_SureTrack2Tip'
+    US_IMG = 'Image_SureTrack2BlackTip'
     PROBE_IMG = 'BK_Probe'
 
     # Volume names

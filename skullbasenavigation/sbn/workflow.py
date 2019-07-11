@@ -58,7 +58,7 @@ def wait_for_transforms():
     placed in the StealthStation field of view have been created.
     """
 
-    transforms = [Config.STYLUSTOREFERENCE_TF, Config.SURETRACK2TORAS_TF]
+    transforms = [Config.STYLUS_TO_REFERENCE_TF, Config.US_TO_RAS_TF]
 
     for transform in transforms:
         if not functions.does_node_exist_as_a_transform(transform):
@@ -97,9 +97,9 @@ def create_models():
 def prepare_pivot_cal():
     """ Set some default values for pivot calibration """
     tf_tip2suretrack = functions.create_linear_transform_node(
-                                        Config.SURETRACK2TIPTOSURETRACK2_TF)
+                                        Config.US_TO_US_TIP_TF)
     tf_suretrack2ras = slicer.mrmlScene.GetFirstNodeByName(
-                                        Config.SURETRACK2TORAS_TF)
+                                        Config.US_TO_RAS_TF)
 
     functions.set_pivot_transforms(tf_suretrack2ras, tf_tip2suretrack)
 
@@ -111,11 +111,11 @@ def set_transform_hierarchy():
     scene = slicer.mrmlScene
 
     tf_tip2suretrack = scene.GetFirstNodeByName(
-                             Config.SURETRACK2TIPTOSURETRACK2_TF)
+                             Config.US_TO_US_TIP_TF)
     tf_suretrack2ras = scene.GetFirstNodeByName(
-                             Config.SURETRACK2TORAS_TF)
+                             Config.US_TO_RAS_TF)
     tf_stylus2reference = scene.GetFirstNodeByName(
-                                Config.STYLUSTOREFERENCE_TF)
+                                Config.STYLUS_TO_REFERENCE_TF)
     img = scene.GetFirstNodeByName(Config.US_IMG)
     ref = scene.GetFirstNodeByName(Config.REFERENCETORAS_TF)
 
