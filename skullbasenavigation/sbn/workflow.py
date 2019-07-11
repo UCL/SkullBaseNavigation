@@ -101,16 +101,24 @@ def create_models():
     functions.load_probe_image()
 
 
-def prepare_pivot_cal():
+def prepare_probe_pivot_cal():
     """ Set some default values for pivot calibration """
-    tf_us_to_us_tip = functions.create_linear_transform_node(
-                                        Config.US_TO_US_TIP_TF)
-    tf_us_to_ras = slicer.mrmlScene.GetFirstNodeByName(
-                                        Config.US_TO_RAS_TF)
-
-    functions.set_pivot_transforms(tf_us_to_ras, tf_us_to_us_tip)
-
+    functions.create_linear_transform_node(
+        Config.US_TO_US_TIP_TF)
+    set_calibration_mode("us")
     functions.remove_unused_widgets_from_pivot_calibration()
+
+
+def set_calibration_mode(mode="us"):
+    """Choose which instrument to calibrate."""
+    if mode == "us":
+        tf_us_to_us_tip = slicer.mrmlScene.GetFirstNodeByName(
+            Config.US_TO_US_TIP_TF)
+        tf_us_to_ras = slicer.mrmlScene.GetFirstNodeByName(
+            Config.US_TO_RAS_TF)
+        functions.set_pivot_transforms(tf_us_to_ras, tf_us_to_us_tip)
+    else:
+        raise ValueError("Unrecognised instrument to calibrate: " + mode)
 
 
 def set_transform_hierarchy():

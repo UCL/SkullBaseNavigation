@@ -295,7 +295,7 @@ class Slicelet(object):
             self.status_text.append("Found expected transforms")
             workflow.setup_plus_remote(self.connector)
             workflow.create_models()
-            workflow.prepare_pivot_cal()
+            workflow.prepare_probe_pivot_cal()
             workflow.set_transform_hierarchy()
 
             self.ctk_pivot_box.setEnabled(True)
