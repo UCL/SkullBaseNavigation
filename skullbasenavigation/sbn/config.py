@@ -1,9 +1,9 @@
+"""Configuration parameters for the Slicelet and workflow."""
+
 __all__ = ['BaseConfig', 'Config']
 
-import os
 
-
-class BaseConfig(object):
+class BaseConfig:
     """Base configuration settings for the skullbasenavigation project"""
 
     # PLUS settings

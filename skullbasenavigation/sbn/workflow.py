@@ -9,7 +9,7 @@ from subprocess import Popen, PIPE, STDOUT
 # from sksurgerybk.interface import bk5000
 import slicer
 
-from config import Config
+from .config import Config
 import functions
 
 def start_dependencies():
