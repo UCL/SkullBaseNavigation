@@ -93,6 +93,7 @@ class Slicelet(object):
             # this is originally in position 6, but we have already taken
             # something out, so the indices have changed
             self.ctk_recon_box = plus_wid[5]
+        self.check_add_timestamp_to_filename_box(self.ctk_recon_box)
         self.buttons.layout().addWidget(self.ctk_recon_box)
 
         self.ctk_recon_box.setChecked(False)
@@ -187,6 +188,21 @@ class Slicelet(object):
         #self.plus = workflow.start_dependencies()
 
         self.parent.show()
+
+    def check_add_timestamp_to_filename_box(self, ctk_recon_box):
+        """Check the 'Add timestamp to filename' box in
+        the Live Reconstruction widget to avoid overriding the output file
+        when multiple reconstructions are performed."""
+
+        # Go through the hierarchy of widgets and stuff
+        ctk_recon_box_widgets = ctk_recon_box.children()
+        live_recon_btn = [widget for widget in ctk_recon_box_widgets if widget.name == "LiveReconstructionAdvancedParametersWidget"]
+        live_adv_param_btn = live_recon_btn[0]
+        live_adv_param_children = live_adv_param_btn.children()
+        add_timestamp_checkbox = [child for child in live_adv_param_children if child.name == "LiveReconstructionAddTimestampToFilenameCheckBox"]
+        # Finally check that box
+        add_timestamp_checkbox.setChecked(True)
+
 
     def check_if_models_exist(self):
         """ Check if the CT and ultrasound models have been
