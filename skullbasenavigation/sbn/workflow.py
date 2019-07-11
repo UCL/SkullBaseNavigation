@@ -92,17 +92,19 @@ def create_models():
     """
     functions.create_needle_model(Config.STYLUS_MOD, 100, 1, 0.1)
     functions.create_needle_model(Config.PROBE_MOD, 100, 0.5, 0.2)
+    functions.create_needle_model(Config.CUSA_MOD, 100, 2, 0,1)
+    functions.create_needle_model(CONFIG.NEUROSTIM_MOD, 100, 3, 0.1)
     functions.load_probe_image()
 
 
 def prepare_pivot_cal():
     """ Set some default values for pivot calibration """
-    tf_tip2suretrack = functions.create_linear_transform_node(
+    tf_us_to_us_tip = functions.create_linear_transform_node(
                                         Config.US_TO_US_TIP_TF)
-    tf_suretrack2ras = slicer.mrmlScene.GetFirstNodeByName(
+    tf_us_to_ras = slicer.mrmlScene.GetFirstNodeByName(
                                         Config.US_TO_RAS_TF)
 
-    functions.set_pivot_transforms(tf_suretrack2ras, tf_tip2suretrack)
+    functions.set_pivot_transforms(tf_us_to_ras, tf_us_to_us_tip)
 
     functions.remove_unused_widgets_from_pivot_calibration()
 
@@ -111,32 +113,59 @@ def set_transform_hierarchy():
     """ Set the tranform hierarchy for the stylus and probe """
     scene = slicer.mrmlScene
 
-    tf_tip2suretrack = scene.GetFirstNodeByName(
+    # US
+    tf_us_to_us_tip = scene.GetFirstNodeByName(
                              Config.US_TO_US_TIP_TF)
-    tf_suretrack2ras = scene.GetFirstNodeByName(
+    tf_us_to_ras = scene.GetFirstNodeByName(
                              Config.US_TO_RAS_TF)
-    tf_stylus2reference = scene.GetFirstNodeByName(
+
+    # Neurostim
+    tf_neurostim_to_neurostim_tip = scene.GetFirstNodeByName(
+                                      Config.NEUROSTIM_TIP_TO_NEUROSTIM_TF)
+    tf_neurostim_to_ras = scene.GetFirstNodeByName(
+                            Config.NEUROSTIM_TO_RAS_TF)
+
+    # CUSA
+    tf_cusa_to_ras = scene.GetFirstNodeByName(Config.CUSA_TO_RAS_TF)
+    
+    # Stylus
+    tf_stylus_to_reference = scene.GetFirstNodeByName(
                                 Config.STYLUS_TO_REFERENCE_TF)
+
     img = scene.GetFirstNodeByName(Config.US_IMG)
     ref = scene.GetFirstNodeByName(Config.REFERENCETORAS_TF)
 
     stylus = scene.GetFirstNodeByName(Config.STYLUS_MOD)
     probe = scene.GetFirstNodeByName(Config.PROBE_MOD)
+    cusa = scene.GetFirstNodeByName(Config.CUSA_MOD)
+    neurostim = scene.GetFirstNodeByName(Config.NEUROSTIM_MOD)
     probe_img = scene.GetFirstNodeByName(Config.PROBE_IMG)
+    
     scout = scene.GetFirstNodeByName(Config.SCOUTSCAN_VOL)
     reconstruction = scene.GetFirstNodeByName(Config.LIVERECONSTRUCTION_VOL)
 
+    # Stylus
     functions.set_parent_of_transform_hierarchy_node(
-        stylus, tf_stylus2reference)
-    functions.set_parent_of_transform_hierarchy_node(probe, tf_tip2suretrack)
+        stylus, tf_stylus_to_reference)
+
+    # US
+    functions.set_parent_of_transform_hierarchy_node(probe, tf_us_to_us_tip)
     functions.set_parent_of_transform_hierarchy_node(
-        probe_img, tf_tip2suretrack)
+        probe_img, tf_us_to_us_tip)
     functions.set_parent_of_transform_hierarchy_node(
-        tf_tip2suretrack, tf_suretrack2ras)
-    functions.set_parent_of_transform_hierarchy_node(img, tf_tip2suretrack)
+        tf_us_to_us_tip, tf_us_to_ras)
+
+    # Neurostim
+    functions.set_parent_of_transform_hierarchy_node(
+        neurostim, tf_neurostim_to_neurostim_tip)
+    functions.set_parent_of_transform_hierarchy_node(
+        tf_neurostim_to_neurostim_tip, tf_neurostim_to_ras)
+    
+    # CUSA
+    functions.set_parent_of_transform_hierarchy_node(
+        cusa, tf_cusa_to_ras)
+
+    functions.set_parent_of_transform_hierarchy_node(img, tf_us_to_us_tip)
 
     functions.set_parent_of_transform_hierarchy_node(scout, ref)
     functions.set_parent_of_transform_hierarchy_node(reconstruction, ref)
-
-    # TODO Once we have the STL model of the probe loaded, we should set that
-    # under SureTrack2Tip2SureTrack2.

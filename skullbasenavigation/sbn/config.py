@@ -51,6 +51,8 @@ class BaseConfig(object):
     # Model names
     STYLUS_MOD = 'StylusModel'
     PROBE_MOD = 'ProbeModel'
+    CUSA_MOD = 'CusaModel'
+    NEUROSTIM_MOD = 'NeurostimModel'
 
     # Output directories
     TF_OUTPUT_DIR = 'outputs/transforms/'
