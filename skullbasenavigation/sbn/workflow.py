@@ -92,8 +92,8 @@ def create_models():
     """
     functions.create_needle_model(Config.STYLUS_MOD, 100, 1, 0.1)
     functions.create_needle_model(Config.PROBE_MOD, 100, 0.5, 0.2)
-    functions.create_needle_model(Config.CUSA_MOD, 100, 2, 0,1)
-    functions.create_needle_model(CONFIG.NEUROSTIM_MOD, 100, 3, 0.1)
+    functions.create_needle_model(Config.CUSA_MOD, 100, 2, 0.1)
+    functions.create_needle_model(Config.NEUROSTIM_MOD, 100, 3, 0.1)
     functions.load_probe_image()
 
 

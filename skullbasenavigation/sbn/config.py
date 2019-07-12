@@ -26,22 +26,21 @@ class BaseConfig(object):
     STYLUS_TO_REFERENCE_TF = 'StylusToReference'
 
     # US
-    US_TO_RAS_TF = 'SureTrack2BlackToRas'
-    US_TO_US_TIP_TF = 'SureTrack2BlackTipToSureTrack2Black'
+    US_TO_RAS_TF = 'USToRas'
+    US_TO_US_TIP_TF = 'USTipToUS'
 
     # CUSA
-    CUAS_TO_RAS_TF = 'SureTrack2OrangeToRas'
+    CUSA_TO_RAS_TF = 'CUSAToRas'
 
     # Neurostim probe
-    NEUROSTIM_TO_RAS_TF = 'SureTrack2SilverToRas'
-    NEUROSTIM_TIP_TO_NEUROSTIM_TF = 'SureTrack2SilverToRas'
-
+    NEUROSTIM_TO_RAS_TF = 'StimToRas'
+    NEUROSTIM_TIP_TO_NEUROSTIM_TF = 'StimToRas'
 
     REFERENCETORAS_TF = 'ReferenceToRas'
 
     # Image names
     CT_IMG = 'SLD-001'
-    US_IMG = 'Image_SureTrack2BlackTip'
+    US_IMG = 'Image_USTip'
     PROBE_IMG = 'BK_Probe'
 
     # Volume names
