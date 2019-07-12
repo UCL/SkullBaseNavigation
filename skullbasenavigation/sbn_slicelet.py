@@ -196,10 +196,10 @@ class Slicelet(object):
 
         # Go through the hierarchy of widgets and stuff
         ctk_recon_box_widgets = ctk_recon_box.children()
-        live_recon_btn = [widget for widget in ctk_recon_box_widgets if widget.name == "LiveReconstructionAdvancedParametersWidget"]
-        live_adv_param_btn = live_recon_btn[0]
-        live_adv_param_children = live_adv_param_btn.children()
-        add_timestamp_checkbox = [child for child in live_adv_param_children if child.name == "LiveReconstructionAddTimestampToFilenameCheckBox"]
+        # Return all the check boxes by class name
+        chk_box = [child for child in ctk_recon_box_widgets if child.className() == "QCheckBox"]
+        # Searching in Slicer, the check box we need is in position 2
+        add_timestamp_checkbox = chk_box[2]
         # Finally check that box
         add_timestamp_checkbox.setChecked(True)
 
