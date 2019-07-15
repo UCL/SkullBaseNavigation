@@ -30,7 +30,7 @@ class BaseConfig(object):
     US_TO_US_TIP_TF = 'USTipToUS'
 
     # CUSA
-    CUSA_TO_RAS_TF = 'CUSAToRas'
+    #CUSA_TO_RAS_TF = 'CUSAToRas'
 
     # Neurostim probe
     NEUROSTIM_TO_RAS_TF = 'StimToRas'
@@ -50,7 +50,7 @@ class BaseConfig(object):
     # Model names
     STYLUS_MOD = 'StylusModel'
     PROBE_MOD = 'ProbeModel'
-    CUSA_MOD = 'CusaModel'
+    #CUSA_MOD = 'CusaModel'
     NEUROSTIM_MOD = 'NeurostimModel'
 
     # Output directories
