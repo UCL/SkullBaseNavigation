@@ -105,6 +105,8 @@ def prepare_probe_pivot_cal():
     """ Set some default values for pivot calibration """
     functions.create_linear_transform_node(
         Config.US_TO_US_TIP_TF)
+    functions.create_linear_transform_node(
+        Config.NEUROSTIM_TIP_TO_NEUROSTIM_TF)
     set_calibration_mode("us")
     functions.remove_unused_widgets_from_pivot_calibration()
 
