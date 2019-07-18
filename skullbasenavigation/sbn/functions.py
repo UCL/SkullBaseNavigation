@@ -340,6 +340,13 @@ def get_all_transforms():
 
     return transforms
 
+def get_neurostim_transform():
+    """Return a specific neurostim transform"""
+    # TODO: Check this is working as my PLUS server isn't compiled with
+    # the Stealthlink
+    neurostim_transform_node = slicer.mrmlScene.GetNodesByName('StimTipToStim')
+    return neurostim_transform_node
+
 def get_vtkmartrix4x4_as_array(matrix4x4):
     """ Iterate through elements of vtkMatrix4x4 and call
     GetElement(i, j).
