@@ -100,6 +100,7 @@ class Slicelet(object):
         self.neurostim_layout.addWidget(self.neurostim_response_b2)
 
         self.neurostim_save_and_display_btn = qt.QPushButton("Save and display neurostim point")
+        self.neurostim_save_and_display_btn.clicked.connect(self.save_and_display_neurostim_pt)
         self.neurostim_layout.addWidget(self.neurostim_save_and_display_btn)
 
         self.neurostim_box.setLayout(self.neurostim_layout)
@@ -227,6 +228,32 @@ class Slicelet(object):
         add_timestamp_checkbox = chk_box[2]
         # Finally check that box
         add_timestamp_checkbox.setChecked(True)
+    def save_and_display_neurostim_pt(self):
+        """Save the neurostim transform in a timestamped file and
+        under the scene. Display the model accordingly."""
+        self.status_text.append("Transformed saved!")
+        self.save_neurostim_transform()
+
+    def save_neurostim_transform(self):
+        """ Write the current neurostim transforms in the current hierarchy to a file,
+        where the filename contains a timestamp. """
+        current_time = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
+        neurostim_transform = functions.get_neurostim_transform()
+
+        if not neurostim_transform:
+            return
+
+        directory = Config.TF_OUTPUT_DIR
+
+        # Create dir if it doesn't exist
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        path_to_file = os.path.join(directory, 'neurostim_transform_' + current_time + '.json')
+        with open(path_to_file, 'w') as f:
+            json.dump(neurostim_transform, f, indent=4)
+
+        self.status_text.append("Saving neurostim transform to: " + path_to_file)
 
 
     def check_if_models_exist(self):
