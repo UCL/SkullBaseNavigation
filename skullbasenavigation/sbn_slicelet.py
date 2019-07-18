@@ -80,6 +80,31 @@ class Slicelet(object):
         # true)
         self.ctk_pivot_box.setEnabled(False)
 
+        # Neurostimulation button to save the neurostim points and save the
+        # tracking location to a file
+        self.neurostim_box = ctk.ctkCollapsibleButton()
+        self.neurostim_box.setText("Neurostimulation")
+        self.neurostim_box.setChecked(False)
+
+        self.neurostim_layout = qt.QVBoxLayout()
+
+        self.neurostim_voltage_label = qt.QLabel("Voltage in mA:")
+        self.neurostim_voltage_text = qt.QLineEdit()
+        self.neurostim_layout.addWidget(self.neurostim_voltage_label)
+        self.neurostim_layout.addWidget(self.neurostim_voltage_text)
+
+        self.neurostim_response_b1 = qt.QRadioButton("Neurostimulation response")
+        self.neurostim_response_b2 = qt.QRadioButton("No neurostimulation response")
+        self.neurostim_response_b2.setChecked(True)
+        self.neurostim_layout.addWidget(self.neurostim_response_b1)
+        self.neurostim_layout.addWidget(self.neurostim_response_b2)
+
+        self.neurostim_save_and_display_btn = qt.QPushButton("Save and display neurostim point")
+        self.neurostim_layout.addWidget(self.neurostim_save_and_display_btn)
+
+        self.neurostim_box.setLayout(self.neurostim_layout)
+        self.buttons.layout().addWidget(self.neurostim_box)
+
         # Ultrasound reconstruction buttons from PlusRemote module
         plus_wid = slicer.modules.plusremote.widgetRepresentation().children()
         # In recent versions of the module, the collapsible button we want can
