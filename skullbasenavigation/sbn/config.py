@@ -35,6 +35,7 @@ class BaseConfig(object):
     # Neurostim probe
     NEUROSTIM_TO_RAS_TF = 'StimToRas'
     NEUROSTIM_TIP_TO_NEUROSTIM_TF = 'StimTipToStim'
+    NEUROSTIM_TIP_TO_RAS = 'StimTipToRas'
 
     REFERENCETORAS_TF = 'ReferenceToRas'
 
