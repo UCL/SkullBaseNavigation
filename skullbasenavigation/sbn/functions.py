@@ -392,3 +392,31 @@ def set_slice_opacity(opacity):
 def get_ct_model(self):
     """ Instead of clicking through all the options, activate the relevant
     widgets automatically. """
+
+
+def display_neurostim_point(response, timestamp):
+    """Mark the location of neurostimulation in the 3D viewer.
+
+    Show in green if there was a response, otherwise in red.
+
+    :param response: bool indicating whether there was a response.
+    :param timestamp: string containing a timestamp used to label the model.
+    """
+    # Get location and fail if not found
+    tf = get_neurostim_transform()
+    if not tf:
+        raise RuntimeError("Could not find neurostim transform node!")
+    # Create a new transform to hold this location
+    # We don't need a Linear need specifically (and it's becoming deprecated),
+    # but since we have a function for creating nodes already...
+    new_tf = create_linear_transform_node("NeurostimTransform_" + timestamp)
+    new_tf.SetMatrixTransformToParent(tf.GetMatrixTransformToParent())
+    # Create a model to display the location
+    sphere = slicer.modules.createmodels.CreateSphere(5)  # radius = 5
+    sphere.SetName("NeurostimModel_" + timestamp)
+    colour = (0, 255, 0) if response else (255, 0, 0)
+    sphere.GetDisplayNode().SetColor(*colour)  # takes colour as RGB
+    # Place the model according to the transform
+    set_parent_of_transform_hierarchy_node(sphere, new_tf)
+    # To show sphere outline in slice viewers, if desired, use:
+    # sphere.GetDisplayNode().SetSliceIntersectionVisibility(True)

@@ -230,13 +230,19 @@ class Slicelet(object):
         add_timestamp_checkbox.setChecked(True)
     def save_and_display_neurostim_pt(self):
         """Save the neurostim transform in a timestamped file and
-        under the scene. Display the model accordingly."""
-        self.save_neurostim_transform()
+        under the scene. Display the point in the 3D viewer."""
+        current_time = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
+        self.save_neurostim_transform(current_time)
+        try:
+            functions.display_neurostim_point(
+                response=self.neurostim_response_b1.isChecked(),
+                timestamp=current_time)
+        except RuntimeError:
+            self.status_text.append("Could not display neurostim point.")
 
-    def save_neurostim_transform(self):
+    def save_neurostim_transform(self, timestamp):
         """ Write the current neurostim transforms in the current hierarchy to a file,
         where the filename contains a timestamp. """
-        current_time = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
         neurostim_transform = functions.get_neurostim_transform()
 
         if not neurostim_transform:
@@ -249,7 +255,7 @@ class Slicelet(object):
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        path_to_file = os.path.join(directory, 'neurostim_transform_' + current_time + '.json')
+        path_to_file = os.path.join(directory, 'neurostim_transform_' + timestamp + '.json')
         with open(path_to_file, 'w') as f:
             json.dump(neurostim_transform, f, indent=4)
 
