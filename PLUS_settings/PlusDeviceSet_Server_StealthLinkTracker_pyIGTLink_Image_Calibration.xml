@@ -14,15 +14,15 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
       <DataSources>
         <DataSource Type="Tool" Id="Stylus" PortName="Passive Planar, Blunt" AlwaysTrack="TRUE"/>
         <DataSource Type="Tool" Id="Reference" PortName="Small Passive Cranial Frame"  />
-        <DataSource Type="Tool" Id="Ras"      PortName="RasRegistration" />
-	      <DataSource Type="Tool" Id="SureTrack2"      PortName="SureTrak2 Black Passive" AlwaysTrack="TRUE"/>
+        <!-- <DataSource Type="Tool" Id="Ras"      PortName="RasRegistration" /> -->
+	    <DataSource Type="Tool" Id="SureTrack2"      PortName="SureTrak2 Black Passive" AlwaysTrack="TRUE"/>
       </DataSources>
       <OutputChannels>
         <OutputChannel Id="TrackerStream">
           <DataSource  Id="SureTrack2" />
           <DataSource  Id="Stylus" />
           <DataSource  Id="Reference" />
-          <DataSource  Id="Ras" />
+          <!-- <DataSource  Id="Ras" /> -->
         </OutputChannel>
       </OutputChannels>
     </Device>
@@ -61,13 +61,13 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
       Type="VirtualCapture"
       BaseFilename="Recording.mhd"
       EnableCapturingOnStart="FALSE"
-      RequestedFrameRate="15" >
+      RequestedFrameRate="5" >
       <InputChannels>
         <InputChannel Id="TrackedVideoStream" />
       </InputChannels>
     </Device>
 
-
+<!--
 	<Device
       Id="VolumeReconstructorDevice"
       Type="VirtualVolumeReconstructor"
@@ -88,7 +88,7 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
         </HoleFilling>
 		</VolumeReconstruction>
     </Device>
- 
+ -->
 </DataCollection>
 
   <CoordinateDefinitions>
@@ -129,7 +129,7 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
 	0 0 0 1 
 	" /> 
 
-	<Transform From="SureTrack2Tip" To="SureTrack2"
+	<!-- <Transform From="SureTrack2Tip" To="SureTrack2"
 	Matrix="
 0.999884 0 -0.0152069 -3.00666 
 -0.0151821 -0.0571077 -0.998253 -109.564 
@@ -143,8 +143,9 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
         -1  0  0  0
          0 -1  0  0
          0  0  1  0
-         0  0  0  1" />
-
+         0  0  0  1" />-->
+		 
+	<Transform From="StylusTip" To="Stylus" Matrix="1 0 0 0   0 1 0 0   0 0 1 0   0 0 0 1" /> 
 
   </CoordinateDefinitions>
 
@@ -163,12 +164,13 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
       <TransformNames>
         <!-- To avoid "Transform path not found" warnings, remove transforms for tools that are not defined by the StealthStation -->
         <Transform Name="StylusToReference" />
-        <Transform Name="SureTrack2ToRas"  />
-		<Transform Name="SureTrack2ToReference"  />
-		<Transform Name="StylusToSureTrack2Tip"  />
-		<Transform Name="SureTrack2TipToSureTrack2"  />
-		<Transform Name="ReferenceToRas" />
-       <!-- <Transform Name="StylusToRas"  /> -->
+		<Transform Name="SureTrack2ToReference" />
+       <!-- <Transform Name="StylusToRas"  />
+<Transform Name="SureTrack2ToRas"  />
+<Transform Name="SureTrack2TipToSureTrack2"  />
+<Transform Name="ReferenceToRas" />
+<Transform Name="StylusToSureTrack2Tip"  />
+	   -->
       </TransformNames>
       <ImageNames>
         <Image Name="Image" EmbeddedTransformToFrame="Reference" />
@@ -180,5 +182,128 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
       </StringNames>
     </DefaultClientInfo>
   </PlusOpenIGTLinkServer>
+
+	<Rendering WorldCoordinateFrame="Reference">
+    <DisplayableObject Type="Model" ObjectCoordinateFrame="Reference" Id="Volume"/>
+    <DisplayableObject Type="Model" ObjectCoordinateFrame="StylusTip" Id="StylusModel" File="Stylus_Example.stl" />
+    <DisplayableObject Id="PhantomModel" Type="Model" ObjectCoordinateFrame="Phantom"
+      Opacity="0.6"
+      File="fCal_2.1.stl" />
+      <!-- ModelToObjectTransform="
+        1 0 0 -35.0
+        0 1 0 -10.0
+        0 0 1 -5.0
+        0 0 0 1" />
+    <DisplayableObject Type="Image" ObjectCoordinateFrame="Image" Id="LiveImage"/> -->
+	</Rendering>
+
+<PhantomDefinition>
+    <Description
+      Name="fCAL"
+      Type="Multi-N"
+      Version="2.1"
+      WiringVersion="2.0"
+      Institution="Queen's University PerkLab"
+    />
+    <Geometry>
+      <Pattern Type="NWire">
+		<Wire Name="1:A1_a1" EndPointFront="0.0 0.0 20.0" EndPointBack="0.0 40.0 20.0" />
+        <Wire Name="2:C1_b1" EndPointFront="10.0 0.0 20.0" EndPointBack="5.0 40.0 20.0" />
+        <Wire Name="3:D1_d1" EndPointFront="15.0 0.0 20.0" EndPointBack="15.0 40.0 20.0" />
+      </Pattern>
+      <Pattern Type="NWire">
+       	<Wire Name="4:A2_a2" EndPointFront="0.0 0.0 15.0" EndPointBack="0.0 40.0 15.0" />
+        <Wire Name="5:B2_c2" EndPointFront="5.0 0.0 15.0" EndPointBack="10.0 40.0 15.0" />
+        <Wire Name="6:D2_d2" EndPointFront="15.0 0.0 15.0" EndPointBack="15.0 40.0 15.0" />
+      </Pattern>
+      <Pattern Type="NWire">
+        <Wire Name="7:A3_a3" EndPointFront="0.0 0.0 10.0" EndPointBack="0.0 40.0 10.0" />
+        <Wire Name="8:C3_b3" EndPointFront="10.0 0.0 10.0" EndPointBack="5.0 40.0 10.0" />
+        <Wire Name="9:D3_d3" EndPointFront="15.0 0.0 10.0" EndPointBack="15.0 40.0 10.0" />
+      </Pattern>
+	  
+      <Landmarks>
+        
+       <Landmark Name="#1"  Position="-32.53 -5.25 45.0" />
+
+        <Landmark Name="#2"  Position="-32.53 -5.25  5.0" />
+
+        <Landmark Name="#3"  Position="-32.53 19.75 -5.0" />
+
+        <Landmark Name="#4"  Position="-32.53 19.75 45.0" />        
+
+        <Landmark Name="#5"  Position="105.47 -5.25 -5.0" />
+
+        <Landmark Name="#6"  Position="105.47 -5.25 45.0" />
+
+        <Landmark Name="#7"  Position="105.47 14.75 -5.0" />
+
+        <Landmark Name="#8"  Position="105.47 19.75 45.0" />
+<!--
+        <Landmark Name="#9"  Position=" -3.53 -9.25 45.0" />
+
+        <Landmark Name="#10" Position=" 41.47 -9.25 45.0" />
+
+        <Landmark Name="#11" Position=" 86.47 -9.25 45.0" />
+
+        <Landmark Name="#12" Position=" 96.47 -9.25 30.0" />        
+
+        <Landmark Name="#13" Position=" 86.47 -9.25 -5.0" />
+
+        <Landmark Name="#14" Position=" 21.47 -9.25 -5.0" />
+
+        <Landmark Name="#15" Position=" -3.53 -9.25 -5.0" />
+
+        <Landmark Name="#16" Position="-13.53 -9.25 10.0" />
+		-->
+      </Landmarks>
+	  
+    </Geometry>
+  </PhantomDefinition>
   
+<VolumeReconstruction OutputSpacing="0.5 0.5 0.5"
+    ClipRectangleOrigin="0 0" ClipRectangleSize="820 616"
+    Interpolation="LINEAR" Optimization="FULL" CompoundingMode="MEAN" FillHoles="OFF" />
+  <fCal
+    PhantomModelId="PhantomModel"
+    ReconstructedVolumeId="Volume"
+    TransducerModelId="ProbeModel"
+    StylusModelId="StylusModel"
+    ImageDisplayableObjectId="LiveImage"
+    NumberOfCalibrationImagesToAcquire="200"
+    NumberOfValidationImagesToAcquire="100"
+    NumberOfStylusCalibrationPointsToAcquire="200"
+    RecordingIntervalMs="100"
+    MaxTimeSpentWithProcessingMs="70"
+    ImageCoordinateFrame="Image"
+    ProbeCoordinateFrame="Probe"
+    ReferenceCoordinateFrame="Reference"
+    TransducerOriginCoordinateFrame="TransducerOrigin"
+    TransducerOriginPixelCoordinateFrame="TransducerOriginPixel"
+    TemporalCalibrationDurationSec="10" 
+    FixedChannelId="VideoStream" 
+    FixedSourceId="Video"
+    MovingChannelId="TrackerStream"
+    MovingSourceId="ProbeToTracker"
+    DefaultSelectedChannelId="TrackedVideoStream" 
+    FreeHandStartupDelaySec="5" />
+
+  <vtkPlusPivotCalibrationAlgo
+    ObjectMarkerCoordinateFrame="Stylus"
+    ReferenceCoordinateFrame="Reference"
+    ObjectPivotPointCoordinateFrame="StylusTip" />
+
+  <vtkPlusPhantomLandmarkRegistrationAlgo
+    PhantomCoordinateFrame="Phantom"
+    ReferenceCoordinateFrame="Reference"
+    StylusTipCoordinateFrame="StylusTip" 
+    DetectionTimeSec="1.0"
+    StylusTipMaximumDisplacementThresholdMm="1.8" />
+
+  <vtkPlusProbeCalibrationAlgo
+    ImageCoordinateFrame="Image"
+    ProbeCoordinateFrame="Probe"
+    PhantomCoordinateFrame="Phantom"
+    ReferenceCoordinateFrame="Reference" />
+
 </PlusConfiguration>
