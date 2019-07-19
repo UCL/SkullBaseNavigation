@@ -344,7 +344,8 @@ def get_neurostim_transform():
     """Return a specific neurostim transform"""
     # TODO: Check this is working as my PLUS server isn't compiled with
     # the Stealthlink. Assuming there is only one element
-    neurostim_transform_node = slicer.mrmlScene.GetNodesByName('StimTipToStim')
+    neurostim_transform_node = slicer.mrmlScene.GetNodesByName(
+        Config.NEUROSTIM_TIP_TO_RAS)
     return neurostim_transform_node[0]
 
 def get_vtkmartrix4x4_as_array(matrix4x4):
