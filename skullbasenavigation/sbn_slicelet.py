@@ -231,7 +231,6 @@ class Slicelet(object):
     def save_and_display_neurostim_pt(self):
         """Save the neurostim transform in a timestamped file and
         under the scene. Display the model accordingly."""
-        self.status_text.append("Transformed saved!")
         self.save_neurostim_transform()
 
     def save_neurostim_transform(self):
@@ -241,6 +240,7 @@ class Slicelet(object):
         neurostim_transform = functions.get_neurostim_transform()
 
         if not neurostim_transform:
+            self.status_text.append("Could not find neurostim transform.")
             return
 
         directory = Config.TF_OUTPUT_DIR
