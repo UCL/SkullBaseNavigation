@@ -58,8 +58,12 @@ def wait_for_transforms():
     placed in the StealthStation field of view have been created.
     """
 
+    # USE BELOW FOR CUSA
+    #transforms = [Config.STYLUS_TO_REFERENCE_TF, Config.US_TO_RAS_TF,
+    #              Config.CUSA_TO_RAS_TF, Config.NEUROSTIM_TO_RAS_TF]
+
     transforms = [Config.STYLUS_TO_REFERENCE_TF, Config.US_TO_RAS_TF,
-                  Config.CUSA_TO_RAS_TF, Config.NEUROSTIM_TO_RAS_TF]
+                  Config.NEUROSTIM_TO_RAS_TF]
 
     for transform in transforms:
         if not functions.does_node_exist_as_a_transform(transform):
@@ -92,7 +96,7 @@ def create_models():
     """
     functions.create_needle_model(Config.STYLUS_MOD, 100, 1, 0.1)
     functions.create_needle_model(Config.PROBE_MOD, 100, 0.5, 0.2)
-    functions.create_needle_model(Config.CUSA_MOD, 100, 2, 0.1)
+    #functions.create_needle_model(Config.CUSA_MOD, 100, 2, 0.1)
     functions.create_needle_model(Config.NEUROSTIM_MOD, 100, 3, 0.1)
     functions.load_probe_image()
 
@@ -126,7 +130,7 @@ def set_transform_hierarchy():
                             Config.NEUROSTIM_TO_RAS_TF)
 
     # CUSA
-    tf_cusa_to_ras = scene.GetFirstNodeByName(Config.CUSA_TO_RAS_TF)
+    #tf_cusa_to_ras = scene.GetFirstNodeByName(Config.CUSA_TO_RAS_TF)
     
     # Stylus
     tf_stylus_to_reference = scene.GetFirstNodeByName(
@@ -137,7 +141,7 @@ def set_transform_hierarchy():
 
     stylus = scene.GetFirstNodeByName(Config.STYLUS_MOD)
     probe = scene.GetFirstNodeByName(Config.PROBE_MOD)
-    cusa = scene.GetFirstNodeByName(Config.CUSA_MOD)
+    #cusa = scene.GetFirstNodeByName(Config.CUSA_MOD)
     neurostim = scene.GetFirstNodeByName(Config.NEUROSTIM_MOD)
     probe_img = scene.GetFirstNodeByName(Config.PROBE_IMG)
     
@@ -162,8 +166,8 @@ def set_transform_hierarchy():
         tf_neurostim_to_neurostim_tip, tf_neurostim_to_ras)
     
     # CUSA
-    functions.set_parent_of_transform_hierarchy_node(
-        cusa, tf_cusa_to_ras)
+    #functions.set_parent_of_transform_hierarchy_node(
+    #    cusa, tf_cusa_to_ras)
 
     functions.set_parent_of_transform_hierarchy_node(img, tf_us_to_us_tip)
 
