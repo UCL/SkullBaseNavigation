@@ -338,22 +338,24 @@ def get_all_transforms():
 
     return transforms
 
-def get_neurostim_transform():
+def get_neurostim_transform(return_flag=False):
     """Return a specific neurostim transform"""
     # TODO: Check this is working as my PLUS server isn't compiled with
     # the Stealthlink. Assuming there is only one element
     neurostim_transform_nodes = slicer.mrmlScene.GetNodesByName(
         Config.NEUROSTIM_TIP_TO_RAS)
+    neurostim_transform_nodes.InitTraversal()
     # Assuming there is only one node with that name
-    neurostim_transform_node = neurostim_transform_nodes[0]
+    neurostim_transform_node = neurostim_transform_nodes.GetNextItemAsObject()
     # Check if node exists
     if neurostim_transform_node is None:
         return None
+    elif return_flag:
+        return neurostim_transform_node
     # Reformat under a 4x4 matrix
     neurostim_tf = neurostim_transform_node.GetTransformToParent()
     matrix4x4 = neurostim_tf.GetMatrix()
     array = get_vtkmartrix4x4_as_array(matrix4x4)
-
     return array
 
 def get_vtkmartrix4x4_as_array(matrix4x4):
@@ -413,7 +415,7 @@ def display_neurostim_point(response, timestamp):
     :param timestamp: string containing a timestamp used to label the model.
     """
     # Get location and fail if not found
-    tf = get_neurostim_transform()
+    tf = get_neurostim_transform(return_flag=True)
     if not tf:
         raise RuntimeError("Could not find neurostim transform node!")
     # Create a new transform to hold this location
@@ -422,7 +424,7 @@ def display_neurostim_point(response, timestamp):
     new_tf = create_linear_transform_node("NeurostimTransform_" + timestamp)
     new_tf.SetMatrixTransformToParent(tf.GetMatrixTransformToParent())
     # Create a model to display the location
-    sphere = slicer.modules.createmodels.CreateSphere(5)  # radius = 5
+    sphere = slicer.modules.createmodels.logic().CreateSphere(5)  # radius = 5
     sphere.SetName("NeurostimModel_" + timestamp)
     colour = (0, 255, 0) if response else (255, 0, 0)
     sphere.GetDisplayNode().SetColor(*colour)  # takes colour as RGB
