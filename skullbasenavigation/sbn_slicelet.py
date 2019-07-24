@@ -51,9 +51,15 @@ class Slicelet(object):
         self.get_model_btn.clicked.connect(self.get_ct_model)
         self.buttons.layout().addWidget(self.get_model_btn)
 
-        self.load_mri_btn = qt.QPushButton("Load MRI From File")
+        # Buttons to load and align volumes from file
+        self.ctk_data_box = ctk.ctkCollapsibleButton()
+        self.ctk_data_box.setText("Local Data Files")
+        self.data_layout = qt.QHBoxLayout()
+        self.load_mri_btn = qt.QPushButton("Load MRI")
         self.load_mri_btn.clicked.connect(self.load_mri_model)
-        self.buttons.layout().addWidget(self.load_mri_btn)
+        self.data_layout.addWidget(self.load_mri_btn)
+        self.ctk_data_box.setLayout(self.data_layout)
+        self.buttons.layout().addWidget(self.ctk_data_box)
 
         # Collapsible button to hole Pivot calibration module
         # Won't be active until the tools have been seen
