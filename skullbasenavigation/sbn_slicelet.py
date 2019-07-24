@@ -484,14 +484,20 @@ class Slicelet(object):
     def load_mri_model(self):
         """Load an MRI model from a file."""
         self.mri_node = functions.load_volume_from_file("MRI")
+        if self.mri_node:
+            self.status_text.append("Loaded MRI from file")
 
     def load_ct_model(self):
         """Load an MRI model from a file."""
         self.ct_node = functions.load_volume_from_file("CT")
+        if self.ct_node:
+            self.status_text.append("Loaded CT from file")
 
     def load_colourmap(self):
         """Load a colourmap from a file."""
         self.cm_node = functions.load_volume_from_file("Colourmap")
+        if self.cm_node:
+            self.status_text.append("Loaded colourmap from file")
 
     def align_volumes(self):
         """Apply appropriate transforms to ensure all volumes are aligned."""
