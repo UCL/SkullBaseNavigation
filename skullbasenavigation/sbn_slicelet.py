@@ -54,10 +54,21 @@ class Slicelet(object):
         # Buttons to load and align volumes from file
         self.ctk_data_box = ctk.ctkCollapsibleButton()
         self.ctk_data_box.setText("Local Data Files")
-        self.data_layout = qt.QHBoxLayout()
+        self.data_layout = qt.QGridLayout()
         self.load_mri_btn = qt.QPushButton("Load MRI")
         self.load_mri_btn.clicked.connect(self.load_mri_model)
-        self.data_layout.addWidget(self.load_mri_btn)
+        self.load_ct_btn = qt.QPushButton("Load CT")
+        self.load_ct_btn.clicked.connect(self.load_ct_model)
+        self.load_cm_btn = qt.QPushButton("Load Colourmap")
+        self.load_cm_btn.clicked.connect(self.load_colourmap)
+        self.align_btn = qt.QPushButton("Align Data")
+        self.align_btn.clicked.connect(self.align_volumes)
+        # Add volume buttons to one row
+        self.data_layout.addWidget(self.load_mri_btn, 0, 0)
+        self.data_layout.addWidget(self.load_ct_btn, 0, 1)
+        self.data_layout.addWidget(self.load_cm_btn, 0, 2)
+        # Let the alignment button span the whole bottom row
+        self.data_layout.addWidget(self.align_btn, 1, 0, 1, -1)
         self.ctk_data_box.setLayout(self.data_layout)
         self.buttons.layout().addWidget(self.ctk_data_box)
 
@@ -238,6 +249,8 @@ class Slicelet(object):
         # Non-visual members:
         self.connector = None  # the OpenIGTLink connector to be used
         self.mri_node = None  # the node holding the MRI scan
+        self.cm_node = None  # the node holding a CT scan loaded from a file
+        self.ct_node = None  # The node holding a colourmap to optionally apply
 
         # Launch dependencies
         #self.plus = workflow.start_dependencies()
@@ -457,6 +470,20 @@ class Slicelet(object):
     def load_mri_model(self):
         """Load an MRI model from a file."""
         self.mri_node = functions.load_volume_from_file("MRI")
+
+    def load_ct_model(self):
+        """Load an MRI model from a file."""
+        self.ct_node = functions.load_volume_from_file("CT")
+
+    def load_colourmap(self):
+        """Load a colourmap from a file."""
+        self.cm_node = functions.load_volume_from_file("Colourmap")
+
+    def align_volumes(self):
+        """Apply appropriate transforms to ensure all volumes are aligned."""
+        for node in [self.mri_node, self.ct_node, self.cm_node]:
+            if node is not None:
+                pass  # TODO Fill in
 
     def save_all(self):
         """Save the current scene and transforms in timestamped files"""
