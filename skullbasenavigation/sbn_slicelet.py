@@ -501,9 +501,14 @@ class Slicelet(object):
 
     def align_volumes(self):
         """Apply appropriate transforms to ensure all volumes are aligned."""
+        aligned = True
         for node in [self.mri_node, self.ct_node, self.cm_node]:
             if node is not None:
-                pass  # TODO Fill in
+                aligned = aligned and workflow.align_volume_to_model(node)
+        if aligned:
+            self.status_text.append("All available volumes aligned")
+        else:
+            self.status_text.append("Failed to align some volumes")
 
     def save_all(self):
         """Save the current scene and transforms in timestamped files"""
