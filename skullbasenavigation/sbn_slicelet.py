@@ -51,6 +51,10 @@ class Slicelet(object):
         self.get_model_btn.clicked.connect(self.get_ct_model)
         self.buttons.layout().addWidget(self.get_model_btn)
 
+        self.load_mri_btn = qt.QPushButton("Load MRI From File")
+        self.load_mri_btn.clicked.connect(self.load_mri_model)
+        self.buttons.layout().addWidget(self.load_mri_btn)
+
         # Collapsible button to hole Pivot calibration module
         # Won't be active until the tools have been seen
         # by the StealthStation - i.e. the Stylus and SureTrack
@@ -227,6 +231,7 @@ class Slicelet(object):
 
         # Non-visual members:
         self.connector = None  # the OpenIGTLink connector to be used
+        self.mri_node = None  # the node holding the MRI scan
 
         # Launch dependencies
         #self.plus = workflow.start_dependencies()
@@ -442,6 +447,16 @@ class Slicelet(object):
         app.processEvents()
 
         self.status_text.append("Loading model")
+
+    def load_mri_model(self):
+        """Load an MRI model from a file."""
+        dialog = qt.QFileDialog()
+        dialog.setFileMode(dialog.ExistingFile)
+        # This has to be set after the file mode, or it will be overwritten
+        dialog.setLabelText(dialog.Accept, "Load MRI")
+        # Display dialog and load the first selected file (if multiple)
+        if dialog.exec_():
+            self.mri_node = slicer.util.loadVolume(dialog.selectedFiles()[0])
 
     def save_all(self):
         """Save the current scene and transforms in timestamped files"""
