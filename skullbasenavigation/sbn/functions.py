@@ -4,6 +4,7 @@ import logging
 import os
 import time
 
+import qt
 import slicer
 
 from .config import Config
@@ -432,3 +433,21 @@ def display_neurostim_point(response, timestamp):
     set_parent_of_transform_hierarchy_node(sphere, new_tf)
     # To show sphere outline in slice viewers, if desired, use:
     # sphere.GetDisplayNode().SetSliceIntersectionVisibility(True)
+
+
+def load_volume_from_file(volume_type):
+    """Choose a file containing a volume and return the resulting node.
+
+    :param volume_type: string describing the volume (shown in dialog)
+    :return: the node containing the loaded volume, or None if no file
+    is selected.
+    """
+    dialog = qt.QFileDialog()
+    dialog.setFileMode(dialog.ExistingFile)
+    # This has to be set after the file mode, or it will be overwritten
+    dialog.setLabelText(dialog.Accept, "Load " + volume_type)
+    # Display dialog and load the first selected file (if multiple)
+    if dialog.exec_():
+        return slicer.util.loadVolume(dialog.selectedFiles()[0])
+    else:
+        return None

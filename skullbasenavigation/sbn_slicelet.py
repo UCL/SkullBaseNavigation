@@ -464,13 +464,7 @@ class Slicelet(object):
 
     def load_mri_model(self):
         """Load an MRI model from a file."""
-        dialog = qt.QFileDialog()
-        dialog.setFileMode(dialog.ExistingFile)
-        # This has to be set after the file mode, or it will be overwritten
-        dialog.setLabelText(dialog.Accept, "Load MRI")
-        # Display dialog and load the first selected file (if multiple)
-        if dialog.exec_():
-            self.mri_node = slicer.util.loadVolume(dialog.selectedFiles()[0])
+        self.mri_node = functions.load_volume_from_file("MRI")
 
     def save_all(self):
         """Save the current scene and transforms in timestamped files"""
