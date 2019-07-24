@@ -237,17 +237,21 @@ class Slicelet(object):
         """Save the neurostim transform in a timestamped file and
         under the scene. Display the point in the 3D viewer."""
         current_time = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
-        self.save_neurostim_transform(current_time)
+        neurostim_response = self.neurostim_response_b1.isChecked()
+        self.save_neurostim_transform(timestamp=current_time,
+                                      response=neurostim_response)
         try:
             functions.display_neurostim_point(
-                response=self.neurostim_response_b1.isChecked(),
+                response=neurostim_response,
                 timestamp=current_time)
         except RuntimeError:
             self.status_text.append("Could not display neurostim point.")
 
-    def save_neurostim_transform(self, timestamp):
+    def save_neurostim_transform(self, timestamp, response):
         """ Write the current neurostim transforms in the current hierarchy to a file,
         where the filename contains a timestamp. """
+        # NB: as opposed to the get_all_transforms which returns a
+        # dictionary, this one only returns an array.
         neurostim_transform = functions.get_neurostim_transform()
 
         if not neurostim_transform:
@@ -260,9 +264,15 @@ class Slicelet(object):
         if not os.path.exists(directory):
             os.makedirs(directory)
 
+        # Fill the Dictionary
+        neurostim_data = {}
+        neurostim_data['Voltage in mA'] = self.neurostim_voltage_text.text
+        neurostim_data['Neurostim response'] = response
+        neurostim_data['Neurostim transform'] = neurostim_transform
+
         path_to_file = os.path.join(directory, 'neurostim_transform_' + timestamp + '.json')
         with open(path_to_file, 'w') as f:
-            json.dump(neurostim_transform, f, indent=4)
+            json.dump(neurostim_data, f, indent=4)
 
         self.status_text.append("Saving neurostim transform to: " + path_to_file)
 
