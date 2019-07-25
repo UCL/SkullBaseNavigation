@@ -199,8 +199,9 @@ def align_volumes_to_model(volumes):
     :param volumes: an iterable of vtkMRMLVolumeNode
     :returns: True if all the volumes were aligned, else False
     """
-    aligned = True
-    for volume in volumes:
-        if volume is not None:
-            aligned = aligned and functions.align_volume_to_model(volume)
+    # Keep this in a list comprehension rather than a generator to make sure
+    # that we try to align all the volumes!
+    aligned = all([functions.align_volume_to_model(volume)
+                   for volume in volumes
+                   if volume is not None])
     return aligned
