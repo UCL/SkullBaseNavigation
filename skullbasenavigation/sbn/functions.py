@@ -451,3 +451,17 @@ def load_volume_from_file(volume_type):
         return slicer.util.loadVolume(dialog.selectedFiles()[0])
     else:
         return None
+
+
+def align_volume_to_model(volume):
+    """Apply the ReferenceToRas transform to a given volume node.
+
+    :param volume: A vtkMRMLVolumeNode
+    :returns: False if the transform was not found, otherwise True
+    """
+    ref_to_ras = slicer.util.getNode(Config.REFERENCETORAS_TF)
+    if ref_to_ras is not None:
+        set_parent_of_transform_hierarchy_node(volume, ref_to_ras)
+        return True
+    else:
+        return False
