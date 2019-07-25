@@ -193,15 +193,14 @@ def set_transform_hierarchy():
     functions.set_parent_of_transform_hierarchy_node(reconstruction, ref)
 
 
-def align_volume_to_model(volume):
-    """Apply the ReferenceToRas transform to a given volume node.
+def align_volumes_to_model(volumes):
+    """Align a list of volumes to the model that was loaded from the Stealth.
 
-    :param volume: A vtkMRMLVolumeNode
-    :returns: False if the transform was not found, otherwise True
+    :param volumes: an iterable of vtkMRMLVolumeNode
+    :returns: True if all the volumes were aligned, else False
     """
-    ref_to_ras = slicer.util.getNode(Config.REFERENCETORAS_TF)
-    if ref_to_ras is not None:
-        functions.set_parent_of_transform_hierarchy_node(volume, ref_to_ras)
-        return True
-    else:
-        return False
+    aligned = True
+    for volume in volumes:
+        if volume is not None:
+            aligned = aligned and functions.align_volume_to_model(volume)
+    return aligned

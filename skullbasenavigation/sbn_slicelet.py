@@ -501,10 +501,8 @@ class Slicelet(object):
 
     def align_volumes(self):
         """Apply appropriate transforms to ensure all volumes are aligned."""
-        aligned = True
-        for node in [self.mri_node, self.ct_node, self.cm_node]:
-            if node is not None:
-                aligned = aligned and workflow.align_volume_to_model(node)
+        to_align = [self.mri_node, self.ct_node, self.cm_node]
+        aligned = workflow.align_volumes_to_model(to_align)
         if aligned:
             self.status_text.append("All available volumes aligned")
         else:
