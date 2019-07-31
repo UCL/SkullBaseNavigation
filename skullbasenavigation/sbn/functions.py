@@ -452,9 +452,11 @@ def load_data_from_file(data_type, segmentation=False):
     # Display dialog and load the first selected file (if multiple)
     if dialog.exec_():
         # Use the appropriate Slicer method depending on what we are loading
+        # These methods return a tuple (success::bool, node), but only if
+        # returnNode is explicitly specified
         loader = (slicer.util.loadSegmentation if segmentation
                   else slicer.util.loadVolume)
-        return loader(dialog.selectedFiles()[0])
+        return loader(dialog.selectedFiles()[0], returnNode=True)[1]
     else:
         return None
 
