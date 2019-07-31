@@ -487,13 +487,3 @@ def load_registration_tf():
         return tf_node
     else:
         return None
-
-
-def align_volume_to_model(volume, tf):
-    """Apply the ReferenceToRas transform to a given volume node.
-
-    :param volume: A vtkMRMLVolumeNode
-    :param tf: A vtkMRMLTransform to apply to the volume
-    :returns: False if the transform was not found, otherwise True
-    """
-    set_parent_of_transform_hierarchy_node(volume, tf)
