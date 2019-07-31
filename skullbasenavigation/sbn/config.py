@@ -39,6 +39,9 @@ class BaseConfig:
 
     REFERENCETORAS_TF = 'ReferenceToRas'
 
+    # Name of the transform to be loaded from file
+    REGISTRATION_TF = 'StealthToUpsampled'
+
     # Image names
     CT_IMG = 'SLD-001'
     US_IMG = 'Image_USTip'
