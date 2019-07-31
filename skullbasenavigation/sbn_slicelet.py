@@ -61,14 +61,21 @@ class Slicelet(object):
         self.load_ct_btn.clicked.connect(self.load_ct_model)
         self.load_cm_btn = qt.QPushButton("Load Colourmap")
         self.load_cm_btn.clicked.connect(self.load_colourmap)
+        self.load_tum_seg_btn = qt.QPushButton("Load Tumour Seg")
+        self.load_tum_seg_btn.clicked.connect(self.load_tumour_segmentation)
+        self.load_ner_seg_btn = qt.QPushButton("Load Nerve Seg")
+        self.load_ner_seg_btn.clicked.connect(self.load_nerve_segmentation)
         self.align_btn = qt.QPushButton("Align Data")
         self.align_btn.clicked.connect(self.align_volumes)
         # Add volume buttons to one row
         self.data_layout.addWidget(self.load_mri_btn, 0, 0)
         self.data_layout.addWidget(self.load_ct_btn, 0, 1)
         self.data_layout.addWidget(self.load_cm_btn, 0, 2)
+        # Add segmentation buttons to the next row
+        self.data_layout.addWidget(self.load_tum_seg_btn, 1, 0)
+        self.data_layout.addWidget(self.load_ner_seg_btn, 1, 1)
         # Let the alignment button span the whole bottom row
-        self.data_layout.addWidget(self.align_btn, 1, 0, 1, -1)
+        self.data_layout.addWidget(self.align_btn, 2, 0, 1, -1)
         self.ctk_data_box.setLayout(self.data_layout)
         self.buttons.layout().addWidget(self.ctk_data_box)
 
