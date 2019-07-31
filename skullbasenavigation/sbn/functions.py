@@ -6,6 +6,7 @@ import time
 
 import qt
 import slicer
+import vtk
 
 from .config import Config
 
@@ -453,15 +454,35 @@ def load_volume_from_file(volume_type):
         return None
 
 
-def align_volume_to_model(volume):
+def load_registration_tf():
+    dialog = qt.QFileDialog()
+    dialog.setFileMode(dialog.ExistingFile)
+    # This has to be set after the file mode, or it will be overwritten
+    dialog.setLabelText(dialog.Accept, "Load Transform")
+    # Display dialog
+    if dialog.exec_():
+        # Read the chosen file (or the first, if multiple are chosen)
+        tf_file = slicer.util.loadVolume(dialog.selectedFiles()[0])
+        with open(tf_file, 'r') as infile:
+            data = [line.split(" ") for line in infile.readlines()]
+            # TODO Check if correct!
+        tf_node = slicer.util.getNode(Config.REGISTRATION_TF)
+        if not tf_node:  # Create the transform if it doesn't exist already
+            tf_node = create_linear_transform_node(Config.REGISTRATION_TF)
+        # Create a VTK matrix from the data and use it for the transform
+        m = vtk.vtkMatrix4x4()
+        m.DeepCopy(sum(data, []))  # need a flattened list
+        tf_node.SetMatrixTransformToParent(m)
+        return tf_node
+    else:
+        return None
+
+
+def align_volume_to_model(volume, tf):
     """Apply the ReferenceToRas transform to a given volume node.
 
     :param volume: A vtkMRMLVolumeNode
+    :param tf: A vtkMRMLTransform to apply to the volume
     :returns: False if the transform was not found, otherwise True
     """
-    ref_to_ras = slicer.util.getNode(Config.REFERENCETORAS_TF)
-    if ref_to_ras is not None:
-        set_parent_of_transform_hierarchy_node(volume, ref_to_ras)
-        return True
-    else:
-        return False
+    set_parent_of_transform_hierarchy_node(volume, tf)
