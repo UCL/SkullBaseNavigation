@@ -197,14 +197,12 @@ def align_volumes_to_model(volumes):
     """Align a list of volumes to the model that was loaded from the Stealth.
 
     :param volumes: an iterable of vtkMRMLVolumeNode
-    :returns: True if all the volumes were aligned, else False
+    :returns: True if all available volumes were aligned, else False
     """
     transform = functions.load_registration_tf()
     if not transform:
         return False
-    # Keep this in a list comprehension rather than a generator to make sure
-    # that we try to align all the volumes!
-    aligned = all([functions.align_volume_to_model(volume, transform)
-                   for volume in volumes
-                   if volume is not None])
-    return aligned
+    for volume in volumes:
+        if volume is not None:
+            functions.set_parent_of_transform_hierarchy_node(volume, transform)
+    return True
