@@ -469,16 +469,20 @@ def load_registration_tf():
     # Display dialog
     if dialog.exec_():
         # Read the chosen file (or the first, if multiple are chosen)
-        tf_file = slicer.util.loadVolume(dialog.selectedFiles()[0])
+        tf_file = dialog.selectedFiles()[0]
+        # Slicer's loadTransform method doesn't seem to like the format of
+        # our transform files, so we have to read them ourselves.
         with open(tf_file, 'r') as infile:
-            data = [line.split(" ") for line in infile.readlines()]
-            # TODO Check if correct!
+            data = [line.strip().split(" ") for line in infile]
+        # Data is now a list of lists of strings.
+        # Flatten the list as the VTK method requires, and convert to numbers
+        data = map(float, sum(data, []))
         tf_node = slicer.util.getNode(Config.REGISTRATION_TF)
         if not tf_node:  # Create the transform if it doesn't exist already
             tf_node = create_linear_transform_node(Config.REGISTRATION_TF)
         # Create a VTK matrix from the data and use it for the transform
         m = vtk.vtkMatrix4x4()
-        m.DeepCopy(sum(data, []))  # need a flattened list
+        m.DeepCopy(data)
         tf_node.SetMatrixTransformToParent(m)
         return tf_node
     else:
