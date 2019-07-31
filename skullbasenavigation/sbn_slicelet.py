@@ -258,7 +258,9 @@ class Slicelet(object):
         self.connector = None  # the OpenIGTLink connector to be used
         self.mri_node = None  # the node holding the MRI scan
         self.cm_node = None  # the node holding a CT scan loaded from a file
-        self.ct_node = None  # The node holding a colourmap to optionally apply
+        self.ct_node = None  # the node holding a colourmap to optionally apply
+        self.tum_seg_node = None  # the node holding the tumour segmentation
+        self.ner_seg_node = None  # the node holding the nerve segmentation
 
         # Launch dependencies
         #self.plus = workflow.start_dependencies()
@@ -505,6 +507,20 @@ class Slicelet(object):
         self.cm_node = functions.load_data_from_file("Colourmap")
         if self.cm_node:
             self.status_text.append("Loaded colourmap from file")
+
+    def load_tumour_segmentation(self):
+        """Load a tumour segmentation from a file."""
+        self.tum_seg_node = functions.load_data_from_file(
+            "Tumour Segmentation", segmentation=True)
+        if self.tum_seg_node:
+            self.status_text.append("Loaded tumour segmentation from file")
+
+    def load_nerve_segmentation(self):
+        """Load a nerve segmentation from a file."""
+        self.ner_seg_node = functions.load_data_from_file(
+            "Nerve Segmentation", segmentation=True)
+        if self.ner_seg_node:
+            self.status_text.append("Loaded nerve segmentation from file")
 
     def align_volumes(self):
         """Apply appropriate transforms to ensure all volumes are aligned."""
