@@ -436,20 +436,25 @@ def display_neurostim_point(response, timestamp):
     # sphere.GetDisplayNode().SetSliceIntersectionVisibility(True)
 
 
-def load_volume_from_file(volume_type):
-    """Choose a file containing a volume and return the resulting node.
+def load_data_from_file(data_type, segmentation=False):
+    """Choose a file containing a volume or segmentation and return the
+    resulting node.
 
-    :param volume_type: string describing the volume (shown in dialog)
-    :return: the node containing the loaded volume, or None if no file
+    :param data_type: string describing the data (shown in dialog)
+    :param segmentation: True if loading a segmentation, or False for a volume
+    :return: the node containing the loaded data, or None if no file
     is selected.
     """
     dialog = qt.QFileDialog()
     dialog.setFileMode(dialog.ExistingFile)
     # This has to be set after the file mode, or it will be overwritten
-    dialog.setLabelText(dialog.Accept, "Load " + volume_type)
+    dialog.setLabelText(dialog.Accept, "Load " + data_type)
     # Display dialog and load the first selected file (if multiple)
     if dialog.exec_():
-        return slicer.util.loadVolume(dialog.selectedFiles()[0])
+        # Use the appropriate Slicer method depending on what we are loading
+        loader = (slicer.util.loadSegmentation if segmentation
+                  else slicer.util.loadVolume)
+        return loader(dialog.selectedFiles()[0])
     else:
         return None
 
