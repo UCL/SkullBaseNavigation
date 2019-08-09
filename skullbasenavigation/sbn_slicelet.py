@@ -197,7 +197,15 @@ class Slicelet(object):
 
         # Button to visualise US reconstruction in the 2D slice views
         self.visualise_btn = VisualiseButton(self)
-        self.buttons.layout().addWidget(self.visualise_btn)
+
+        # Visualise box containing the above button
+        self.ctk_visualise_box = ctk.ctkCollapsibleButton()
+        self.ctk_visualise_box.setText("Visualise")
+        self.ctk_visualise_box.setChecked(False)
+        self.visualise_layout = qt.QVBoxLayout()
+        self.visualise_layout.addWidget(self.visualise_btn)
+        self.ctk_visualise_box.setLayout(self.visualise_layout)
+        self.buttons.layout().addWidget(self.ctk_visualise_box)
 
         # Button to save all transforms to file
         # Used for syncing with neuromonitoring data
