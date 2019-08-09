@@ -195,6 +195,25 @@ class Slicelet(object):
 
         self.control_panel.insertWidget(tab_widget_index, self.tabWidget)
 
+        # Radio buttons to toggle between the different backgrounds
+        # from the loaded files
+        self.T1 = qt.QRadioButton('T1')
+        self.T2 = qt.QRadioButton('T2')
+        self.CT = qt.QRadioButton('CT')
+        self.CT.setChecked(True)
+        self.background_group = qt.QButtonGroup()
+        self.background_group.addButton(self.T1)
+        self.background_group.addButton(self.T2)
+        self.background_group.addButton(self.CT)
+
+        # Radio buttons to choose the colourmap
+        self.colormap_applied_b1 = qt.QRadioButton("Colormap")
+        self.colormap_applied_b2 = qt.QRadioButton("No Colormap")
+        self.colormap_applied_b2.setChecked(True)
+        self.colormap_group = qt.QButtonGroup()
+        self.colormap_group.addButton(self.colormap_applied_b1)
+        self.colormap_group.addButton(self.colormap_applied_b2)
+
         # Button to visualise US reconstruction in the 2D slice views
         self.visualise_btn = VisualiseButton(self)
 
@@ -202,8 +221,13 @@ class Slicelet(object):
         self.ctk_visualise_box = ctk.ctkCollapsibleButton()
         self.ctk_visualise_box.setText("Visualise")
         self.ctk_visualise_box.setChecked(False)
-        self.visualise_layout = qt.QVBoxLayout()
-        self.visualise_layout.addWidget(self.visualise_btn)
+        self.visualise_layout = qt.QGridLayout()
+        self.visualise_layout.addWidget(self.T1, 0, 0)
+        self.visualise_layout.addWidget(self.T2, 0, 1)
+        self.visualise_layout.addWidget(self.CT, 0, 2)
+        self.visualise_layout.addWidget(self.colormap_applied_b1, 1, 0)
+        self.visualise_layout.addWidget(self.colormap_applied_b2, 1, 1)
+        self.visualise_layout.addWidget(self.visualise_btn, 2, 0, 1, -1)
         self.ctk_visualise_box.setLayout(self.visualise_layout)
         self.buttons.layout().addWidget(self.ctk_visualise_box)
 
