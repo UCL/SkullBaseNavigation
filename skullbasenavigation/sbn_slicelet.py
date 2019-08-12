@@ -195,7 +195,7 @@ class Slicelet(object):
 
         self.control_panel.insertWidget(tab_widget_index, self.tabWidget)
 
-        # Radio buttons to toggle between the different backgrounds
+        # Radio button group to toggle between the different backgrounds
         # from the loaded files
         self.T1 = qt.QRadioButton('T1')
         self.T2 = qt.QRadioButton('T2')
@@ -206,7 +206,7 @@ class Slicelet(object):
         self.background_group.addButton(self.T2)
         self.background_group.addButton(self.CT)
 
-        # Radio buttons to choose the colourmap
+        # Radio button group to apply the colourmap
         self.colormap_applied_b1 = qt.QRadioButton("Colormap")
         self.colormap_applied_b2 = qt.QRadioButton("No Colormap")
         self.colormap_applied_b2.setChecked(True)
@@ -594,8 +594,6 @@ class TractographySlicelet(Slicelet):
 class VisualiseButton(qt.QPushButton):
     """A button that projects ultrasound reconstruction on the 2D slicer views."""
     START_TEXT = "Visualise"
-    STOP_TEXT = "Stop acquisition & reconstruct"
-    VOLUME_NAME = "ReconVolReference"
 
     def __init__(self, parent_slicelet):
         """Create a new button belonging to the given slicelet."""
