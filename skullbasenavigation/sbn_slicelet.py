@@ -159,7 +159,7 @@ class Slicelet(object):
         # be identified by name. In older versions, the names are empty, so we
         # have to hardcode the position we expect (and hope it is right!)
         self.ctk_recon_box = ctk.ctkCollapsibleButton()
-        self.ctk_recon_box.setText("US Reconstruction")
+        self.ctk_recon_box.setText("Ultrasound Reconstruction")
         self.ctk_recon_layout = qt.QVBoxLayout()
         btn = [widget for widget in plus_wid
                if widget.name == "VolumeReconstructionCollapsibleButton"]
@@ -224,11 +224,9 @@ class Slicelet(object):
         self.colormap_group.addButton(self.colormap_applied_b1)
         self.colormap_group.addButton(self.colormap_applied_b2)
 
-
-
         # Visualise box containing the above button
         self.ctk_visualise_box = ctk.ctkCollapsibleButton()
-        self.ctk_visualise_box.setText("Visualise")
+        self.ctk_visualise_box.setText("Choose Image")
         self.ctk_visualise_box.setChecked(False)
         self.visualise_layout = qt.QGridLayout()
         self.visualise_layout.addWidget(self.T1, 0, 0)
@@ -236,6 +234,8 @@ class Slicelet(object):
         self.visualise_layout.addWidget(self.CT, 0, 2)
         self.visualise_layout.addWidget(self.colormap_applied_b1, 1, 0)
         self.visualise_layout.addWidget(self.colormap_applied_b2, 1, 1)
+        self.toggle_btn = ToggleButton(self)
+        self.visualise_layout.addWidget(self.toggle_btn, 2, 0, 1, -1)
         self.ctk_visualise_box.setLayout(self.visualise_layout)
         self.buttons.layout().addWidget(self.ctk_visualise_box)
 
@@ -597,6 +597,16 @@ class TractographySlicelet(Slicelet):
     #pylint: disable=useless-super-delegation
     def __init__(self):
         super(TractographySlicelet, self).__init__()
+
+class ToggleButton(qt.QPushButton):
+    """A button to toggle the slice views foregrounds between the loaded images
+    from files.
+    """
+    BUTTON_TEXT = "Toggle"
+
+    def __init__(self, parent_slicelet):
+        """Create a button belonging to the slicelet"""
+        super(ToggleButton, self).__init__(self.BUTTON_TEXT)
 
 
 class VisualiseButton(qt.QPushButton):
