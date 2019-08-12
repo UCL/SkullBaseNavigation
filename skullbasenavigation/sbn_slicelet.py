@@ -133,22 +133,22 @@ class Slicelet(object):
         self.neurostim_box.setText("Neurostimulation")
         self.neurostim_box.setChecked(False)
 
-        self.neurostim_layout = qt.QVBoxLayout()
+        self.neurostim_layout = qt.QGridLayout()
 
         self.neurostim_voltage_label = qt.QLabel("Voltage in mA:")
         self.neurostim_voltage_text = qt.QLineEdit()
-        self.neurostim_layout.addWidget(self.neurostim_voltage_label)
-        self.neurostim_layout.addWidget(self.neurostim_voltage_text)
+        self.neurostim_layout.addWidget(self.neurostim_voltage_label, 0, 0)
+        self.neurostim_layout.addWidget(self.neurostim_voltage_text, 0, 1)
 
         self.neurostim_response_b1 = qt.QRadioButton("Neurostimulation response")
         self.neurostim_response_b2 = qt.QRadioButton("No neurostimulation response")
         self.neurostim_response_b2.setChecked(True)
-        self.neurostim_layout.addWidget(self.neurostim_response_b1)
-        self.neurostim_layout.addWidget(self.neurostim_response_b2)
+        self.neurostim_layout.addWidget(self.neurostim_response_b1, 1, 0)
+        self.neurostim_layout.addWidget(self.neurostim_response_b2, 1, 1)
 
         self.neurostim_save_and_display_btn = qt.QPushButton("Save and display neurostim point")
         self.neurostim_save_and_display_btn.clicked.connect(self.save_and_display_neurostim_pt)
-        self.neurostim_layout.addWidget(self.neurostim_save_and_display_btn)
+        self.neurostim_layout.addWidget(self.neurostim_save_and_display_btn, 2, 0, 1, -1)
 
         self.neurostim_box.setLayout(self.neurostim_layout)
         self.buttons.layout().addWidget(self.neurostim_box)
@@ -158,19 +158,29 @@ class Slicelet(object):
         # In recent versions of the module, the collapsible button we want can
         # be identified by name. In older versions, the names are empty, so we
         # have to hardcode the position we expect (and hope it is right!)
+        self.ctk_recon_box = ctk.ctkCollapsibleButton()
+        self.ctk_recon_box.setText("US Reconstruction")
+        self.ctk_recon_layout = qt.QVBoxLayout()
         btn = [widget for widget in plus_wid
                if widget.name == "VolumeReconstructionCollapsibleButton"]
         if len(btn) == 1:
-            self.ctk_recon_box = btn[0]
+            self.ctk_recon_layout.addWidget(btn[0])
         else:  # e.g. if no buttons found because their names are empty
             # this is originally in position 6, but we have already taken
             # something out, so the indices have changed
-            self.ctk_recon_box = plus_wid[5]
+            self.ctk_recon_layout.addWidget(plus_wid[5])
+
+        # Button to visualise US reconstruction in the 2D slice views
+        self.visualise_btn = VisualiseButton(self)
+
+        self.ctk_recon_layout.addWidget(self.visualise_btn)
+        self.ctk_recon_box.setLayout(self.ctk_recon_layout)
+
         self.buttons.layout().addWidget(self.ctk_recon_box)
 
-        self.ctk_recon_box.setChecked(False)
+        self.ctk_recon_box.setChecked(True)
         # Disable until transforms are available
-        self.ctk_recon_box.setEnabled(False)
+        self.ctk_recon_box.setEnabled(True)
 
 
 
@@ -214,8 +224,7 @@ class Slicelet(object):
         self.colormap_group.addButton(self.colormap_applied_b1)
         self.colormap_group.addButton(self.colormap_applied_b2)
 
-        # Button to visualise US reconstruction in the 2D slice views
-        self.visualise_btn = VisualiseButton(self)
+
 
         # Visualise box containing the above button
         self.ctk_visualise_box = ctk.ctkCollapsibleButton()
@@ -227,7 +236,6 @@ class Slicelet(object):
         self.visualise_layout.addWidget(self.CT, 0, 2)
         self.visualise_layout.addWidget(self.colormap_applied_b1, 1, 0)
         self.visualise_layout.addWidget(self.colormap_applied_b2, 1, 1)
-        self.visualise_layout.addWidget(self.visualise_btn, 2, 0, 1, -1)
         self.ctk_visualise_box.setLayout(self.visualise_layout)
         self.buttons.layout().addWidget(self.ctk_visualise_box)
 
