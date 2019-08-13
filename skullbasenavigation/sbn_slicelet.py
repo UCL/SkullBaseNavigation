@@ -182,8 +182,6 @@ class Slicelet(object):
         # Disable until transforms are available
         self.ctk_recon_box.setEnabled(True)
 
-
-
         # Timer to check if CT model and ultrasound are available
         self.checkModelsTimer = qt.QTimer()
         self.checkModelsTimer.setInterval(1000)
@@ -234,7 +232,8 @@ class Slicelet(object):
         self.visualise_layout.addWidget(self.CT, 0, 2)
         self.visualise_layout.addWidget(self.colormap_applied_b1, 1, 0)
         self.visualise_layout.addWidget(self.colormap_applied_b2, 1, 1)
-        self.toggle_btn = ToggleButton(self)
+        self.toggle_btn = qt.QPushButton("Toggle")
+        self.toggle_btn.clicked.connect(self.toggle_image)
         self.visualise_layout.addWidget(self.toggle_btn, 2, 0, 1, -1)
         self.ctk_visualise_box.setLayout(self.visualise_layout)
         self.buttons.layout().addWidget(self.ctk_visualise_box)
@@ -319,6 +318,36 @@ class Slicelet(object):
         add_timestamp_checkbox = chk_box[2]
         # Finally check that box
         add_timestamp_checkbox.setChecked(True)
+    def toggle_image(self):
+        """A button to toggle the slice views foregrounds between the loaded images
+        from files"""
+        if self.T1.isChecked():
+            node_name = 'T1stealth'
+            self.change_slice_views_settings(node_name)
+        elif self.T2.isChecked():
+            node_name = 'T2'
+            self.change_slice_views_settings(node_name)
+        elif self.CT.isChecked():
+            # For testing purposes, all images are loaded from files.
+            # TODO: change this node name to the one that comes from the
+            # Stealth (see visualise btn)
+            node_name = 'CT_to_T1stealth'
+            self.change_slice_views_settings(node_name)
+
+    def change_slice_views_settings(self, node_name):
+        """Change the slice views foregrounds according to the selection"""
+        selected_node = self.get_node_from_selection(node_name)
+        # Set the foregrounds accordingly
+        slicer.util.setSliceViewerLayers(foreground=selected_node)
+
+    def get_node_from_selection(self, node_name):
+        """Get the selected node by name"""
+        selected_node = slicer.mrmlScene.GetFirstNodeByName(node_name)
+        if selected_node:
+            return selected_node
+        else:
+            self.status_text.append(node_name + " node is not found.")
+
     def save_and_display_neurostim_pt(self):
         """Save the neurostim transform in a timestamped file and
         under the scene. Display the point in the 3D viewer."""
@@ -610,16 +639,6 @@ class TractographySlicelet(Slicelet):
     #pylint: disable=useless-super-delegation
     def __init__(self):
         super(TractographySlicelet, self).__init__()
-
-class ToggleButton(qt.QPushButton):
-    """A button to toggle the slice views foregrounds between the loaded images
-    from files.
-    """
-    BUTTON_TEXT = "Toggle"
-
-    def __init__(self, parent_slicelet):
-        """Create a button belonging to the slicelet"""
-        super(ToggleButton, self).__init__(self.BUTTON_TEXT)
 
 
 class VisualiseButton(qt.QPushButton):
