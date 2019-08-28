@@ -55,8 +55,8 @@ class Slicelet(object):
         self.ctk_data_box = ctk.ctkCollapsibleButton()
         self.ctk_data_box.setText("Local Data Files")
         self.data_layout = qt.QGridLayout()
-        self.load_mri_btn = qt.QPushButton("Load MRI")
-        self.load_mri_btn.clicked.connect(self.load_mri_model)
+        self.load_t1_btn = qt.QPushButton("Load T1")
+        self.load_t1_btn.clicked.connect(self.load_t1_model)
         self.load_ct_btn = qt.QPushButton("Load CT")
         self.load_ct_btn.clicked.connect(self.load_ct_model)
         self.load_cm_btn = qt.QPushButton("Load Colourmap")
@@ -68,7 +68,7 @@ class Slicelet(object):
         self.align_btn = qt.QPushButton("Align Data")
         self.align_btn.clicked.connect(self.align_volumes)
         # Add volume buttons to one row
-        self.data_layout.addWidget(self.load_mri_btn, 0, 0)
+        self.data_layout.addWidget(self.load_t1_btn, 0, 0)
         self.data_layout.addWidget(self.load_ct_btn, 0, 1)
         self.data_layout.addWidget(self.load_cm_btn, 0, 2)
         # Add segmentation buttons to the next row
@@ -294,7 +294,7 @@ class Slicelet(object):
 
         # Non-visual members:
         self.connector = None  # the OpenIGTLink connector to be used
-        self.mri_node = None  # the node holding the MRI scan
+        self.t1_node = None  # the node holding the T1 MRI scan
         self.cm_node = None  # the node holding a CT scan loaded from a file
         self.ct_node = None  # the node holding a colourmap to optionally apply
         self.tum_seg_node = None  # the node holding the tumour segmentation
@@ -558,11 +558,11 @@ class Slicelet(object):
 
         self.status_text.append("Loading model")
 
-    def load_mri_model(self):
-        """Load an MRI model from a file."""
-        self.mri_node = functions.load_data_from_file("MRI")
-        if self.mri_node:
-            self.status_text.append("Loaded MRI from file")
+    def load_t1_model(self):
+        """Load a T1 MRI model from a file."""
+        self.t1_node = functions.load_data_from_file("T1 MRI")
+        if self.t1_node:
+            self.status_text.append("Loaded T1 MRI from file")
 
     def load_ct_model(self):
         """Load an MRI model from a file."""
@@ -592,7 +592,7 @@ class Slicelet(object):
 
     def align_volumes(self):
         """Apply appropriate transforms to ensure all volumes are aligned."""
-        to_align = [self.mri_node, self.ct_node, self.cm_node]
+        to_align = [self.t1_node, self.ct_node, self.cm_node]
         aligned = workflow.align_volumes_to_model(to_align)
         if aligned:
             self.status_text.append("All available volumes aligned")
