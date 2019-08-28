@@ -314,6 +314,13 @@ class Slicelet(object):
         self.tum_seg_node = None  # the node holding the tumour segmentation
         self.ner_seg_node = None  # the node holding the nerve segmentation
 
+        # A mapping between image options and which node to choose:
+        self.button_to_node = {
+            "T1stealth": self.t1_node,
+            "T2": self.t2_node,
+            "CT_to_T1stealth": self.ct_node
+        }
+
         # Launch dependencies
         #self.plus = workflow.start_dependencies()
 
@@ -322,32 +329,18 @@ class Slicelet(object):
     def toggle_image(self):
         """A button to toggle the slice views foregrounds between the loaded images
         from files"""
-        if self.T1.isChecked():
-            node_name = 'T1stealth'
-            self.change_slice_views_settings(node_name)
-        elif self.T2.isChecked():
-            node_name = 'T2'
-            self.change_slice_views_settings(node_name)
-        elif self.CT.isChecked():
-            # For testing purposes, all images are loaded from files.
-            # TODO: change this node name to the one that comes from the
-            # Stealth (see visualise btn)
-            node_name = 'CT_to_T1stealth'
-            self.change_slice_views_settings(node_name)
-
-    def change_slice_views_settings(self, node_name):
-        """Change the slice views foregrounds according to the selection"""
-        selected_node = self.get_node_from_selection(node_name)
-        # Set the foregrounds accordingly
-        slicer.util.setSliceViewerLayers(foreground=selected_node)
-
-    def get_node_from_selection(self, node_name):
-        """Get the selected node by name"""
-        selected_node = slicer.mrmlScene.GetFirstNodeByName(node_name)
-        if selected_node:
-            return selected_node
-        else:
+        node_name = ('T1stealth' if self.T1.isChecked()
+                     else 'T2' if self.T2.isChecked()
+                     # For testing purposes, all images are loaded from files.
+                     # TODO: change this node name to the one that comes from the
+                     # Stealth (see visualise btn)
+                     else 'CT_to_T1stealth'
+                     )
+        selected_node = self.button_to_node[node_name]
+        if not selected_node:
             self.status_text.append(node_name + " node is not found.")
+        # Set the foregrounds accordingly (or remove them if node not found)
+        slicer.util.setSliceViewerLayers(foreground=selected_node)
 
     def save_and_display_neurostim_pt(self):
         """Save the neurostim transform in a timestamped file and
