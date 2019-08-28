@@ -216,6 +216,8 @@ class Slicelet(object):
         self.background_group.addButton(self.T1)
         self.background_group.addButton(self.T2)
         self.background_group.addButton(self.CT)
+        # Toggle the displayed image when any button in this group is clicked
+        self.background_group.buttonClicked.connect(self.toggle_image)
 
         # Checkbox to apply the colourmap or not
         self.colormap_applied_btn = qt.QCheckBox("Show Colourmap")
@@ -245,10 +247,7 @@ class Slicelet(object):
             self.images_layout.addWidget(button)
         self.images_group_box.setLayout(self.images_layout)
         self.visualise_layout.addWidget(self.images_group_box, 1, 0, 1, -1)
-        # And finally a button to update the view
-        self.toggle_btn = qt.QPushButton("Toggle")
-        self.toggle_btn.clicked.connect(self.toggle_image)
-        self.visualise_layout.addWidget(self.toggle_btn, 2, 0, 1, -1)
+        # Update and assign layout
         self.ctk_visualise_box.setLayout(self.visualise_layout)
         self.buttons.layout().addWidget(self.ctk_visualise_box)
 
