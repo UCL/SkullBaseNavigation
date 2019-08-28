@@ -239,9 +239,13 @@ class Slicelet(object):
         for i, button in enumerate(self.view_group.buttons()):
             self.visualise_layout.addWidget(button, 0, 2*i)
         # Then the buttons for selecting what images to show
-        self.visualise_layout.addWidget(self.T1, 1, 0)
-        self.visualise_layout.addWidget(self.T2, 1, 1)
-        self.visualise_layout.addWidget(self.CT, 1, 2)
+        # (with the volume selection radio buttons in a sub-group for clarity)
+        self.images_group_box = qt.QGroupBox("Displayed image")
+        self.images_layout = qt.QHBoxLayout()
+        for button in [self.T1, self.T2, self.CT]:
+            self.images_layout.addWidget(button)
+        self.images_group_box.setLayout(self.images_layout)
+        self.visualise_layout.addWidget(self.images_group_box, 1, 0, 1, 3)
         self.visualise_layout.addWidget(self.colormap_applied_btn, 1, 3)
         # And finally a button to update the view
         self.toggle_btn = qt.QPushButton("Toggle")
