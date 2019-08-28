@@ -316,9 +316,9 @@ class Slicelet(object):
 
         # A mapping between image options and which node to choose:
         self.button_to_node = {
-            "T1stealth": self.t1_node,
+            "T1": self.t1_node,
             "T2": self.t2_node,
-            "CT_to_T1stealth": self.ct_node
+            "CT": self.ct_node
         }
 
         # Launch dependencies
@@ -326,19 +326,17 @@ class Slicelet(object):
 
         self.parent.show()
 
-    def toggle_image(self):
-        """A button to toggle the slice views foregrounds between the loaded images
-        from files"""
-        node_name = ('T1stealth' if self.T1.isChecked()
-                     else 'T2' if self.T2.isChecked()
-                     # For testing purposes, all images are loaded from files.
-                     # TODO: change this node name to the one that comes from the
-                     # Stealth (see visualise btn)
-                     else 'CT_to_T1stealth'
-                     )
-        selected_node = self.button_to_node[node_name]
+    def toggle_image(self, clicked_button):
+        """
+        Toggle the slice view foregrounds between the loaded images from files.
+
+        Note: the argument to this is the button that was clicked, and is
+        received by Qt.
+        """
+        image_name = clicked_button.text
+        selected_node = self.button_to_node[image_name]
         if not selected_node:
-            self.status_text.append(node_name + " node is not found.")
+            self.status_text.append(image_name + " node is not found.")
         # Set the foregrounds accordingly (or remove them if node not found)
         slicer.util.setSliceViewerLayers(foreground=selected_node)
 
