@@ -217,13 +217,9 @@ class Slicelet(object):
         self.background_group.addButton(self.T2)
         self.background_group.addButton(self.CT)
 
-        # Radio button group to apply the colourmap
-        self.colormap_applied_b1 = qt.QRadioButton("Colormap")
-        self.colormap_applied_b2 = qt.QRadioButton("No Colormap")
-        self.colormap_applied_b2.setChecked(True)
-        self.colormap_group = qt.QButtonGroup()
-        self.colormap_group.addButton(self.colormap_applied_b1)
-        self.colormap_group.addButton(self.colormap_applied_b2)
+        # Checkbox to apply the colourmap or not
+        self.colormap_applied_btn = qt.QCheckBox("Show Colourmap")
+        self.colormap_applied_btn.setChecked(False)
 
         # Visualise box containing the above button
         self.ctk_visualise_box = ctk.ctkCollapsibleButton()
@@ -233,8 +229,7 @@ class Slicelet(object):
         self.visualise_layout.addWidget(self.T1, 0, 0)
         self.visualise_layout.addWidget(self.T2, 0, 1)
         self.visualise_layout.addWidget(self.CT, 0, 2)
-        self.visualise_layout.addWidget(self.colormap_applied_b1, 1, 0)
-        self.visualise_layout.addWidget(self.colormap_applied_b2, 1, 1)
+        self.visualise_layout.addWidget(self.colormap_applied_btn, 1, 0)
         self.toggle_btn = qt.QPushButton("Toggle")
         self.toggle_btn.clicked.connect(self.toggle_image)
         self.visualise_layout.addWidget(self.toggle_btn, 2, 0, 1, -1)
