@@ -221,15 +221,29 @@ class Slicelet(object):
         self.colormap_applied_btn = qt.QCheckBox("Show Colourmap")
         self.colormap_applied_btn.setChecked(False)
 
-        # Visualise box containing the above button
+        # Radio buttons to choose between ultrasound or neurostimulation "view"
+        self.view_group = qt.QButtonGroup()
+        self.us_view_btn = qt.QRadioButton("Ultrasound view")
+        self.us_view_btn.setChecked(True)  # US view is the default
+        self.view_group.addButton(self.us_view_btn)
+        self.neuro_view_btn = qt.QRadioButton("Neurostimulation view")
+        self.neuro_view_btn.setChecked(False)
+        self.view_group.addButton(self.neuro_view_btn)
+
+        # Visualise box containing the above buttons
         self.ctk_visualise_box = ctk.ctkCollapsibleButton()
         self.ctk_visualise_box.setText("Choose Image")
         self.ctk_visualise_box.setChecked(False)
         self.visualise_layout = qt.QGridLayout()
-        self.visualise_layout.addWidget(self.T1, 0, 0)
-        self.visualise_layout.addWidget(self.T2, 0, 1)
-        self.visualise_layout.addWidget(self.CT, 0, 2)
-        self.visualise_layout.addWidget(self.colormap_applied_btn, 1, 0)
+        # First a row with the overall view choices
+        for i, button in enumerate(self.view_group.buttons()):
+            self.visualise_layout.addWidget(button, 0, 2*i)
+        # Then the buttons for selecting what images to show
+        self.visualise_layout.addWidget(self.T1, 1, 0)
+        self.visualise_layout.addWidget(self.T2, 1, 1)
+        self.visualise_layout.addWidget(self.CT, 1, 2)
+        self.visualise_layout.addWidget(self.colormap_applied_btn, 1, 3)
+        # And finally a button to update the view
         self.toggle_btn = qt.QPushButton("Toggle")
         self.toggle_btn.clicked.connect(self.toggle_image)
         self.visualise_layout.addWidget(self.toggle_btn, 2, 0, 1, -1)
