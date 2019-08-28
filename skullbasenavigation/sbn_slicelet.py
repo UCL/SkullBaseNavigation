@@ -57,6 +57,8 @@ class Slicelet(object):
         self.data_layout = qt.QGridLayout()
         self.load_t1_btn = qt.QPushButton("Load T1")
         self.load_t1_btn.clicked.connect(self.load_t1_model)
+        self.load_t2_btn = qt.QPushButton("Load T2")
+        self.load_t2_btn.clicked.connect(self.load_t2_model)
         self.load_ct_btn = qt.QPushButton("Load CT")
         self.load_ct_btn.clicked.connect(self.load_ct_model)
         self.load_cm_btn = qt.QPushButton("Load Colourmap")
@@ -69,11 +71,12 @@ class Slicelet(object):
         self.align_btn.clicked.connect(self.align_volumes)
         # Add volume buttons to one row
         self.data_layout.addWidget(self.load_t1_btn, 0, 0)
-        self.data_layout.addWidget(self.load_ct_btn, 0, 1)
-        self.data_layout.addWidget(self.load_cm_btn, 0, 2)
-        # Add segmentation buttons to the next row
+        self.data_layout.addWidget(self.load_t2_btn, 0, 1)
+        self.data_layout.addWidget(self.load_ct_btn, 0, 2)
+        # Add segmentation and colourmap buttons to the next row
         self.data_layout.addWidget(self.load_tum_seg_btn, 1, 0)
         self.data_layout.addWidget(self.load_ner_seg_btn, 1, 1)
+        self.data_layout.addWidget(self.load_cm_btn, 1, 2)
         # Let the alignment button span the whole bottom row
         self.data_layout.addWidget(self.align_btn, 2, 0, 1, -1)
         self.ctk_data_box.setLayout(self.data_layout)
@@ -295,6 +298,7 @@ class Slicelet(object):
         # Non-visual members:
         self.connector = None  # the OpenIGTLink connector to be used
         self.t1_node = None  # the node holding the T1 MRI scan
+        self.t2_node = None  # the node holding the T2 MRI scan
         self.cm_node = None  # the node holding a CT scan loaded from a file
         self.ct_node = None  # the node holding a colourmap to optionally apply
         self.tum_seg_node = None  # the node holding the tumour segmentation
@@ -564,8 +568,14 @@ class Slicelet(object):
         if self.t1_node:
             self.status_text.append("Loaded T1 MRI from file")
 
+    def load_t2_model(self):
+        """Load a T2 MRI model from a file."""
+        self.t2_node = functions.load_data_from_file("T2 MRI")
+        if self.t2_node:
+            self.status_text.append("Loaded T2 MRI from file")
+
     def load_ct_model(self):
-        """Load an MRI model from a file."""
+        """Load a CT model from a file."""
         self.ct_node = functions.load_data_from_file("CT")
         if self.ct_node:
             self.status_text.append("Loaded CT from file")
