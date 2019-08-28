@@ -237,16 +237,14 @@ class Slicelet(object):
         self.visualise_layout = qt.QGridLayout()
         # First a row with the overall view choices
         for i, button in enumerate(self.view_group.buttons()):
-            self.visualise_layout.addWidget(button, 0, 2*i)
-        # Then the buttons for selecting what images to show
-        # (with the volume selection radio buttons in a sub-group for clarity)
+            self.visualise_layout.addWidget(button, 0, i)
+        # Then the buttons for selecting what images to show, shown in a group
         self.images_group_box = qt.QGroupBox("Displayed image")
         self.images_layout = qt.QHBoxLayout()
-        for button in [self.T1, self.T2, self.CT]:
+        for button in [self.T1, self.T2, self.CT, self.colormap_applied_btn]:
             self.images_layout.addWidget(button)
         self.images_group_box.setLayout(self.images_layout)
-        self.visualise_layout.addWidget(self.images_group_box, 1, 0, 1, 3)
-        self.visualise_layout.addWidget(self.colormap_applied_btn, 1, 3)
+        self.visualise_layout.addWidget(self.images_group_box, 1, 0, 1, -1)
         # And finally a button to update the view
         self.toggle_btn = qt.QPushButton("Toggle")
         self.toggle_btn.clicked.connect(self.toggle_image)
