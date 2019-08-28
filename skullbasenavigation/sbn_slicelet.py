@@ -319,19 +319,6 @@ class Slicelet(object):
 
         self.parent.show()
 
-    def check_add_timestamp_to_filename_box(self, ctk_recon_box):
-        """Check the 'Add timestamp to filename' box in
-        the Live Reconstruction widget to avoid overriding the output file
-        when multiple reconstructions are performed."""
-
-        # Go through the hierarchy of widgets and stuff
-        ctk_recon_box_widgets = ctk_recon_box.children()
-        # Return all the check boxes by class name
-        chk_box = [child for child in ctk_recon_box_widgets if child.className() == "QCheckBox"]
-        # Searching in Slicer, the check box we need is in position 2
-        add_timestamp_checkbox = chk_box[2]
-        # Finally check that box
-        add_timestamp_checkbox.setChecked(True)
     def toggle_image(self):
         """A button to toggle the slice views foregrounds between the loaded images
         from files"""
