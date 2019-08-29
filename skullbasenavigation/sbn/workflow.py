@@ -9,8 +9,8 @@ from subprocess import Popen, PIPE, STDOUT
 # from sksurgerybk.interface import bk5000
 import slicer
 
-from .config import Config
 import functions
+from .config import Config
 
 def start_dependencies():
     """Launch services on which the Slicelet depends."""
@@ -136,23 +136,20 @@ def set_transform_hierarchy():
     scene = slicer.mrmlScene
 
     # US
-    tf_us_to_us_tip = scene.GetFirstNodeByName(
-                             Config.US_TO_US_TIP_TF)
-    tf_us_to_ras = scene.GetFirstNodeByName(
-                             Config.US_TO_RAS_TF)
+    tf_us_to_us_tip = scene.GetFirstNodeByName(Config.US_TO_US_TIP_TF)
+    tf_us_to_ras = scene.GetFirstNodeByName(Config.US_TO_RAS_TF)
 
     # Neurostim
     tf_neurostim_to_neurostim_tip = scene.GetFirstNodeByName(
-                                      Config.NEUROSTIM_TIP_TO_NEUROSTIM_TF)
-    tf_neurostim_to_ras = scene.GetFirstNodeByName(
-                            Config.NEUROSTIM_TO_RAS_TF)
+        Config.NEUROSTIM_TIP_TO_NEUROSTIM_TF)
+    tf_neurostim_to_ras = scene.GetFirstNodeByName(Config.NEUROSTIM_TO_RAS_TF)
 
     # CUSA
     #tf_cusa_to_ras = scene.GetFirstNodeByName(Config.CUSA_TO_RAS_TF)
-    
+
     # Stylus
     tf_stylus_to_reference = scene.GetFirstNodeByName(
-                                Config.STYLUS_TO_REFERENCE_TF)
+        Config.STYLUS_TO_REFERENCE_TF)
 
     img = scene.GetFirstNodeByName(Config.US_IMG)
     ref = scene.GetFirstNodeByName(Config.REFERENCETORAS_TF)
@@ -162,7 +159,7 @@ def set_transform_hierarchy():
     #cusa = scene.GetFirstNodeByName(Config.CUSA_MOD)
     neurostim = scene.GetFirstNodeByName(Config.NEUROSTIM_MOD)
     probe_img = scene.GetFirstNodeByName(Config.PROBE_IMG)
-    
+
     scout = scene.GetFirstNodeByName(Config.SCOUTSCAN_VOL)
     reconstruction = scene.GetFirstNodeByName(Config.LIVERECONSTRUCTION_VOL)
 
@@ -182,7 +179,7 @@ def set_transform_hierarchy():
         neurostim, tf_neurostim_to_neurostim_tip)
     functions.set_parent_of_transform_hierarchy_node(
         tf_neurostim_to_neurostim_tip, tf_neurostim_to_ras)
-    
+
     # CUSA
     #functions.set_parent_of_transform_hierarchy_node(
     #    cusa, tf_cusa_to_ras)
@@ -251,8 +248,10 @@ def setup_ultrasound_view():
         Config.LIVERECONSTRUCTION_VOL)
 
     # Change the volume lookup table color settings
-    CT_node.GetDisplayNode().SetAndObserveColorNodeID('vtkMRMLColorTableNodeGrey')
-    recon_node.GetDisplayNode().SetAndObserveColorNodeID('vtkMRMLColorTableNodeRed')
+    CT_node.GetDisplayNode().SetAndObserveColorNodeID(
+        'vtkMRMLColorTableNodeGrey')
+    recon_node.GetDisplayNode().SetAndObserveColorNodeID(
+        'vtkMRMLColorTableNodeRed')
 
     # Set the backgrounds
     slicer.util.setSliceViewerLayers(background=recon_node)

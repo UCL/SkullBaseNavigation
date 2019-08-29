@@ -122,8 +122,8 @@ class Slicelet(object):
 
         # Set the default calibration duration to 10
         calib_duration = 10
-        calib_duration_widget = self.buttons.findChild(
-                                ctk.ctkDoubleSpinBox(), u'durationTimerEdit')
+        calib_duration_widget = self.buttons.findChild(ctk.ctkDoubleSpinBox(),
+                                                       u'durationTimerEdit')
 
         calib_duration_widget.setValue(calib_duration)
         # Disable the button (enabled if wait_for_transforms returns
@@ -365,8 +365,8 @@ class Slicelet(object):
             self.status_text.append("Could not display neurostim point.")
 
     def save_neurostim_transform(self, timestamp, response):
-        """ Write the current neurostim transforms in the current hierarchy to a file,
-        where the filename contains a timestamp. """
+        """Write the current neurostim transforms in the current hierarchy
+        to a file, where the filename contains a timestamp."""
         # NB: as opposed to the get_all_transforms which returns a
         # dictionary, this one only returns an array.
         neurostim_transform = functions.get_neurostim_transform()
@@ -475,7 +475,8 @@ class Slicelet(object):
             "volumereslicedriver"]
 
         # Need to have a text label for each module tab
-        module_labels = ["Data", "Volumes", "IGTLink", "IGTLinkRemote", "Models", "Transforms", \
+        module_labels = ["Data", "Volumes", "IGTLink", "IGTLinkRemote",
+                         "Models", "Transforms",
                          "PLUS Remote", "Volume Reslice"]
 
         # Create a tab widget for each module
@@ -548,7 +549,7 @@ class Slicelet(object):
         self.status_text.append("Received data from remote")
 
         # Select the first item in results table
-        first_item = remote_data_table.item(0,0).text()
+        first_item = remote_data_table.item(0, 0).text()
         if not first_item.startswith('SLD'):
             raise ValueError("Expecting first item in remote data query list to be SLD-*")
         remote_data_table.selectRow(0)
@@ -618,7 +619,6 @@ class Slicelet(object):
         # Save the scene
         slicer.util.saveScene(path_to_file)
         self.status_text.append("Saving scene to: " + path_to_file)
-
 
     def save_transforms(self):
         """ Write all transforms in the current hierarchy to a file,

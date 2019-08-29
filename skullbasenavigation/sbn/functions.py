@@ -10,6 +10,7 @@ import vtk
 
 from .config import Config
 
+
 def connect_to_OpenIGTLink(name, host, port):
     """
     Create an link to a OpenIGTLink server.
@@ -120,6 +121,7 @@ def set_ultrasound_visible(node):
     enable_volume_reslice(red_slice_node, node_id)
     slicer.util.setSliceViewerLayers(background=node)
 
+
 def enable_volume_reslice(slice_node, node_id):
     """Use the Volume Reslice Driver module to display the correct US slice in
     the 3D viewer
@@ -129,6 +131,7 @@ def enable_volume_reslice(slice_node, node_id):
     reslice_logic.SetDriverForSlice(node_id, slice_node)
     # Make the slice visible in the 3D viewer
     slice_node.SetSliceVisible(True)
+
 
 def set_CT_model_visible(node):
     """
@@ -140,6 +143,7 @@ def set_CT_model_visible(node):
     displayNode.UnRegister(logic)
     logic.UpdateDisplayNodeFromVolumeNode(displayNode, node)
     node.AddAndObserveDisplayNodeID(displayNode.GetID())
+
 
 def set_node_invisible(node):
     """
@@ -300,7 +304,8 @@ def check_add_timestamp_to_filename_box(ctk_recon_box):
     # Go through the hierarchy of widgets and stuff
     ctk_recon_box_widgets = ctk_recon_box.children()
     # Return all the check boxes by class name
-    chk_box = [child for child in ctk_recon_box_widgets if child.className() == "QCheckBox"]
+    chk_box = [child for child in ctk_recon_box_widgets
+               if child.className() == "QCheckBox"]
     # Searching in Slicer, the check box we need is in position 2
     add_timestamp_checkbox = chk_box[2]
     # Finally check that box
@@ -327,6 +332,7 @@ def query_remote_item():
     igt_query = slicer.vtkMRMLIGTQueryNode()
 
     return igt_query
+
 
 def get_all_transforms():
     """ Return a dictionary of all the transforms in the
@@ -357,6 +363,7 @@ def get_all_transforms():
 
     return transforms
 
+
 def get_neurostim_transform(return_flag=False):
     """Return a specific neurostim transform"""
     # TODO: Check this is working as my PLUS server isn't compiled with
@@ -369,13 +376,14 @@ def get_neurostim_transform(return_flag=False):
     # Check if node exists
     if neurostim_transform_node is None:
         return None
-    elif return_flag:
+    if return_flag:
         return neurostim_transform_node
     # Reformat under a 4x4 matrix
     neurostim_tf = neurostim_transform_node.GetTransformToParent()
     matrix4x4 = neurostim_tf.GetMatrix()
     array = get_vtkmartrix4x4_as_array(matrix4x4)
     return array
+
 
 def get_vtkmartrix4x4_as_array(matrix4x4):
     """ Iterate through elements of vtkMatrix4x4 and call
@@ -392,6 +400,7 @@ def get_vtkmartrix4x4_as_array(matrix4x4):
             array[i][j] = elem
 
     return array
+
 
 def remove_all_transforms():
     """ Remove all transform nodes from scene/hierarchy. """
@@ -415,14 +424,10 @@ def remove_all_transforms():
         raise ValueError(
             "Tried to delete all transform nodes, but it didn't work!")
 
+
 def set_slice_opacity(opacity):
     """ Set the opacity of the foreground volumes in slice view. """
     slicer.util.setSliceViewerLayers(foregroundOpacity=opacity / 100.0)
-
-
-def get_ct_model(self):
-    """ Instead of clicking through all the options, activate the relevant
-    widgets automatically. """
 
 
 def display_neurostim_point(response, timestamp):
@@ -474,11 +479,15 @@ def load_data_from_file(data_type, segmentation=False):
         loader = (slicer.util.loadSegmentation if segmentation
                   else slicer.util.loadVolume)
         return loader(dialog.selectedFiles()[0], returnNode=True)[1]
-    else:
-        return None
+    return None
 
 
 def load_registration_tf():
+    """Choose a file and load the transform contained therein.
+
+    This is intended for reading the particular format of transforms
+    that is produced by the image registration pipeline.
+    """
     dialog = qt.QFileDialog()
     dialog.setFileMode(dialog.ExistingFile)
     # This has to be set after the file mode, or it will be overwritten
