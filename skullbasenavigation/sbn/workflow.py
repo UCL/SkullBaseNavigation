@@ -208,22 +208,18 @@ def align_volumes_to_model(volumes):
     return True
 
 
-def track_probe_in_slice_viewers(enable_tracking):
+def track_probe_in_slice_viewers(probe_type):
     """
-    Change the slice viewer settings to start or stop tracking the US probe.
+    Change the slice viewer settings to track the US or neurostimulation probe.
 
-    :param enable_tracking: True to start tracking, or False to stop.
+    :param probe_type: "us" or "neuro", to specify which probe to track.
     """
-    if enable_tracking:
-        # Find the ID of the transform corresponding to the US probe tip
-        node_id = slicer.mrmlScene.GetFirstNodeByName(
-            Config.US_TO_US_TIP_TF).GetID()
-    else:
-        # There is no method to remove the driver. However, passing the ID
-        # of a non-existent node results in the driver being removed,
-        # so we can use that to indirectly stop tracking.
-        # (see the code for the logic on https://git.io/fjxuQ)
-        node_id = "NOT_A_REAL_NODE"
+    if probe_type not in ["us", "neuro"]:
+        raise ValueError("Unrecognised instrument to track: " + probe_type)
+    # Find the ID of the transform corresponding to the probe tip
+    tf_name = (Config.US_TO_US_TIP_TF if probe_type == "us"
+               else Config.NEUROSTIM_TIP_TO_NEUROSTIM_TF)
+    node_id = slicer.mrmlScene.GetFirstNodeByName(tf_name).GetID()
     # Get the slice view nodes and the logic
     red_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeRed')
     yellow_slice_node = slicer.mrmlScene.GetNodeByID(
@@ -244,7 +240,7 @@ def track_probe_in_slice_viewers(enable_tracking):
 def setup_ultrasound_view():
     """Change settings to prepare for showing the ultrasound."""
     # Track the probe in the slice viewers
-    track_probe_in_slice_viewers(True)
+    track_probe_in_slice_viewers("us")
 
     # Update the layers: Show the reconstruction in the background,
     # and the CT (as received from the Stealth) in the foreground.
@@ -268,5 +264,5 @@ def setup_ultrasound_view():
 
 def setup_neurostim_view():
     """Change settings to prepare for showing the neurostimulation points."""
-    # For now, just stop the tracking
-    track_probe_in_slice_viewers(False)
+    # For now, just track the neurostimulation probe
+    track_probe_in_slice_viewers("neuro")
