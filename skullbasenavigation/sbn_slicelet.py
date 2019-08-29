@@ -173,10 +173,6 @@ class Slicelet(object):
             # something out, so the indices have changed
             self.ctk_recon_layout.addWidget(plus_wid[5])
 
-        # Button to visualise US reconstruction in the 2D slice views
-        self.visualise_btn = VisualiseButton(self)
-
-        self.ctk_recon_layout.addWidget(self.visualise_btn)
         self.ctk_recon_box.setLayout(self.ctk_recon_layout)
 
         self.buttons.layout().addWidget(self.ctk_recon_box)
@@ -650,44 +646,6 @@ class TractographySlicelet(Slicelet):
     #pylint: disable=useless-super-delegation
     def __init__(self):
         super(TractographySlicelet, self).__init__()
-
-
-class VisualiseButton(qt.QPushButton):
-    """A button that projects ultrasound reconstruction on the 2D slicer views."""
-    START_TEXT = "Visualise"
-
-    def __init__(self, parent_slicelet):
-        """Create a new button belonging to the given slicelet."""
-        super(VisualiseButton, self).__init__(self.START_TEXT)
-        self.working = False  # are we currently doing a reconstruction?
-        self.slicelet = parent_slicelet  # the parent slicelet
-        self.clicked.connect(self.change_reslice_settings)  # change settings when clicked
-        self.logic = slicer.modules.openigtlinkremote.logic()
-        # It seems we need to connect to this signal to avoid a segmentation
-        # fault when the slicelet is closed
-        self.destroyed.connect(lambda: 0)
-
-    def change_reslice_settings(self):
-        """After US reconstruction, the slice views are set
-        to show projections."""
-        # Get the necessary nodes
-        CT_name = 'SLD-*'
-        CT_node = slicer.util.getNode(CT_name)
-        recon_node = slicer.mrmlScene.GetFirstNodeByName(
-            Config.LIVERECONSTRUCTION_VOL)
-
-        # Change the volume lookup table color settings
-        CT_node.GetDisplayNode().SetAndObserveColorNodeID('vtkMRMLColorTableNodeGrey')
-        recon_node.GetDisplayNode().SetAndObserveColorNodeID('vtkMRMLColorTableNodeRed')
-
-        # Have the slice viewers track the probe and update accordingly
-        workflow.track_probe_in_slice_viewers(True)
-        # Set the backgrounds
-        slicer.util.setSliceViewerLayers(background=recon_node)
-        # Set the foregrounds
-        slicer.util.setSliceViewerLayers(foreground=CT_node)
-        # Set the red slice view foreground value to 0.5
-        slicer.util.setSliceViewerLayers(foregroundOpacity=0.5)
 
 
 if __name__ == "__main__":
