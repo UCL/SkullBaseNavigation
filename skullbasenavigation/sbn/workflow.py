@@ -208,9 +208,22 @@ def align_volumes_to_model(volumes):
     return True
 
 
-def track_probe_in_slice_viewers():
-    """Set up the slice viewers to track the US probe."""
-    us_tf_node = slicer.mrmlScene.GetFirstNodeByName(Config.US_TO_US_TIP_TF)
+def track_probe_in_slice_viewers(enable_tracking):
+    """
+    Change the slice viewer settings to start or stop tracking the US probe.
+
+    :param enable_tracking: True to start tracking, or False to stop.
+    """
+    if enable_tracking:
+        # Find the ID of the transform corresponding to the US probe tip
+        node_id = slicer.mrmlScene.GetFirstNodeByName(
+            Config.US_TO_US_TIP_TF).GetID()
+    else:
+        # There is no method to remove the driver. However, passing the ID
+        # of a non-existent node results in the driver being removed,
+        # so we can use that to indirectly stop tracking.
+        # (see the code for the logic on https://git.io/fjxuQ)
+        node_id = "NOT_A_REAL_NODE"
     # Get the slice view nodes and the logic
     red_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeRed')
     yellow_slice_node = slicer.mrmlScene.GetNodeByID(
@@ -219,7 +232,7 @@ def track_probe_in_slice_viewers():
     reslice_logic = slicer.modules.volumereslicedriver.logic()
     # Set the drivers
     for node in [red_slice_node, yellow_slice_node, green_slice_node]:
-        reslice_logic.SetDriverForSlice(us_tf_node.GetID(), node)
+        reslice_logic.SetDriverForSlice(node_id.GetID(), node)
     # Set the modes
     reslice_logic.SetModeForSlice(reslice_logic.MODE_AXIAL, red_slice_node)
     reslice_logic.SetModeForSlice(reslice_logic.MODE_SAGITTAL,

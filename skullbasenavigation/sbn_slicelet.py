@@ -668,7 +668,7 @@ class VisualiseButton(qt.QPushButton):
         recon_node.GetDisplayNode().SetAndObserveColorNodeID('vtkMRMLColorTableNodeRed')
 
         # Have the slice viewers track the probe and update accordingly
-        workflow.track_probe_in_slice_viewers()
+        workflow.track_probe_in_slice_viewers(True)
         # Set the backgrounds
         slicer.util.setSliceViewerLayers(background=recon_node)
         # Set the foregrounds
