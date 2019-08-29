@@ -213,6 +213,10 @@ class Slicelet(object):
         # Checkbox to apply the colourmap or not
         self.colormap_applied_btn = qt.QCheckBox("Show Colourmap")
         self.colormap_applied_btn.setChecked(False)
+        # TODO: Specify behaviour when clicked. In neurostimulation view,
+        # it should show/hide the colourmap in the foreground. In US view,
+        # the foreground should switch between the colourmap and whatever
+        # image type is selected from the radio button group.
 
         # Radio buttons to choose between ultrasound or neurostimulation "view"
         self.view_group = qt.QButtonGroup()
@@ -342,6 +346,8 @@ class Slicelet(object):
         if not selected_node:
             self.status_text.append(image_name + " node is not found.")
         # Set the foregrounds accordingly (or remove them if node not found)
+        # TODO: Should check whether are in US view AND colourmap is selected
+        # (in that case, the colourmap should stay as the foreground)
         slicer.util.setSliceViewerLayers(foreground=selected_node)
 
     def save_and_display_neurostim_pt(self):

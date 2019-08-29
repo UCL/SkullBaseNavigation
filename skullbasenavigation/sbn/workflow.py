@@ -261,8 +261,13 @@ def setup_ultrasound_view():
     # Set the red slice view foreground value to 0.5
     slicer.util.setSliceViewerLayers(foregroundOpacity=0.5)
 
+    # TODO: Show the reconstruction in the 3D viewer and hide current contents
+
 
 def setup_neurostim_view():
     """Change settings to prepare for showing the neurostimulation points."""
     # For now, just track the neurostimulation probe
     track_probe_in_slice_viewers("neuro")
+    # TODO: Hide the reconstruction if shown in 3D viewer
+    # TODO: Show the segmentations and neurostimulation points in the 3D viewer
+    # TODO: Set background according to selected options
