@@ -393,7 +393,6 @@ class Slicelet(object):
 
         self.status_text.append("Saving neurostim transform to: " + path_to_file)
 
-
     def check_if_models_exist(self):
         """ Check if the CT and ultrasound models have been
         loaded.
@@ -431,7 +430,6 @@ class Slicelet(object):
             self.status_text.append("Found CT_node: " + CT_node_name)
             self.status_text.append("Waiting for tools to be visible to StealthStation")
             self.checkModelsTimer.stop()
-
 
     def check_if_transforms_active(self):
         """ Check if the transform is active"""
@@ -640,6 +638,7 @@ class Slicelet(object):
             json.dump(transforms, f, indent=4)
 
         self.status_text.append("Saving transforms to: " + path_to_file)
+
 
 class TractographySlicelet(Slicelet):
     """ Creates the interface when module is run as a stand alone gui app.
