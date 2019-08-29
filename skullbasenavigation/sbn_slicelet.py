@@ -648,15 +648,11 @@ class VisualiseButton(qt.QPushButton):
         super(VisualiseButton, self).__init__(self.START_TEXT)
         self.working = False  # are we currently doing a reconstruction?
         self.slicelet = parent_slicelet  # the parent slicelet
-        self.clicked.connect(self.react)  # call the react method when clicked
+        self.clicked.connect(self.change_reslice_settings)  # change settings when clicked
         self.logic = slicer.modules.openigtlinkremote.logic()
         # It seems we need to connect to this signal to avoid a segmentation
         # fault when the slicelet is closed
         self.destroyed.connect(lambda: 0)
-
-    def react(self):
-        """React to being clicked, depending on the current state."""
-        self.change_reslice_settings()
 
     def change_reslice_settings(self):
         """After US reconstruction, the slice views are set
@@ -664,17 +660,13 @@ class VisualiseButton(qt.QPushButton):
         # Get the necessary nodes
         CT_name = 'SLD-*'
         CT_node = slicer.util.getNode(CT_name)
-        SureTrack2TipToSureT_name = Config.US_TO_US_TIP_TF
-        SureTrack2TipToSureT_node = slicer.mrmlScene.GetFirstNodeByName(
-            SureTrack2TipToSureT_name)
-        SureTrack2TipToSureT_node_id = SureTrack2TipToSureT_node.GetID()
-        liveReconstruction_name = Config.LIVERECONSTRUCTION_VOL
-        liveReconstruction_node = slicer.mrmlScene.GetFirstNodeByName(
-            liveReconstruction_name)
+        us_tf_node = slicer.mrmlScene.GetFirstNodeByName(Config.US_TO_US_TIP_TF)
+        recon_node = slicer.mrmlScene.GetFirstNodeByName(
+            Config.LIVERECONSTRUCTION_VOL)
 
         # Change the volume lookup table color settings
         CT_node.GetDisplayNode().SetAndObserveColorNodeID('vtkMRMLColorTableNodeGrey')
-        liveReconstruction_node.GetDisplayNode().SetAndObserveColorNodeID('vtkMRMLColorTableNodeRed')
+        recon_node.GetDisplayNode().SetAndObserveColorNodeID('vtkMRMLColorTableNodeRed')
 
         # Get the slice view nodes and the logic
         red_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeRed')
@@ -684,7 +676,7 @@ class VisualiseButton(qt.QPushButton):
         reslice_logic = slicer.modules.volumereslicedriver.logic()
         # Set the drivers
         for node in [red_slice_node, yellow_slice_node, green_slice_node]:
-            reslice_logic.SetDriverForSlice(SureTrack2TipToSureT_node_id, node)
+            reslice_logic.SetDriverForSlice(us_tf_node.GetID(), node)
         # Set the modes
         reslice_logic.SetModeForSlice(reslice_logic.MODE_AXIAL, red_slice_node)
         reslice_logic.SetModeForSlice(reslice_logic.MODE_SAGITTAL,
@@ -692,7 +684,7 @@ class VisualiseButton(qt.QPushButton):
         reslice_logic.SetModeForSlice(reslice_logic.MODE_CORONAL,
                                       green_slice_node)
         # Set the backgrounds
-        slicer.util.setSliceViewerLayers(background=liveReconstruction_node)
+        slicer.util.setSliceViewerLayers(background=recon_node)
         # Set the foregrounds
         slicer.util.setSliceViewerLayers(foreground=CT_node)
         # Set the red slice view foreground value to 0.5
