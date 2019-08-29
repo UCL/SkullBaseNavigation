@@ -664,11 +664,11 @@ class VisualiseButton(qt.QPushButton):
         # Get the necessary nodes
         CT_name = 'SLD-*'
         CT_node = slicer.util.getNode(CT_name)
-        SureTrack2TipToSureT_name = 'SureTrack2TipToSureTrack2'
+        SureTrack2TipToSureT_name = Config.US_TO_US_TIP_TF
         SureTrack2TipToSureT_node = slicer.mrmlScene.GetFirstNodeByName(
             SureTrack2TipToSureT_name)
         SureTrack2TipToSureT_node_id = SureTrack2TipToSureT_node.GetID()
-        liveReconstruction_name = 'liveReconstruction'
+        liveReconstruction_name = Config.LIVERECONSTRUCTION_VOL
         liveReconstruction_node = slicer.mrmlScene.GetFirstNodeByName(
             liveReconstruction_name)
 
