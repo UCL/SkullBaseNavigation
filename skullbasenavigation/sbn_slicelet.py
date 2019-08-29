@@ -231,6 +231,7 @@ class Slicelet(object):
         self.neuro_view_btn = qt.QRadioButton("Neurostimulation view")
         self.neuro_view_btn.setChecked(False)
         self.view_group.addButton(self.neuro_view_btn)
+        self.view_group.buttonClicked.connect(self.toggle_view)
 
         # Visualise box containing the above buttons
         self.ctk_visualise_box = ctk.ctkCollapsibleButton()
@@ -325,6 +326,18 @@ class Slicelet(object):
         #self.plus = workflow.start_dependencies()
 
         self.parent.show()
+
+    def toggle_view(self, clicked_button):
+        """
+        Switch between the ultrasound and neurostimulation "views".
+
+        Note: the argument to this is the button that was clicked, and is
+        received by Qt.
+        """
+        if clicked_button.text.startswith("Ultrasound"):
+            workflow.setup_ultrasound_view()
+        else:
+            workflow.setup_neurostim_view()
 
     def toggle_image(self, clicked_button):
         """

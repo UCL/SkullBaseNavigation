@@ -239,3 +239,34 @@ def track_probe_in_slice_viewers(enable_tracking):
                                   yellow_slice_node)
     reslice_logic.SetModeForSlice(reslice_logic.MODE_CORONAL,
                                   green_slice_node)
+
+
+def setup_ultrasound_view():
+    """Change settings to prepare for showing the ultrasound."""
+    # Track the probe in the slice viewers
+    track_probe_in_slice_viewers(True)
+
+    # Update the layers: Show the reconstruction in the background,
+    # and the CT (as received from the Stealth) in the foreground.
+    # Get the necessary nodes
+    CT_name = 'SLD-*'
+    CT_node = slicer.util.getNode(CT_name)
+    recon_node = slicer.mrmlScene.GetFirstNodeByName(
+        Config.LIVERECONSTRUCTION_VOL)
+
+    # Change the volume lookup table color settings
+    CT_node.GetDisplayNode().SetAndObserveColorNodeID('vtkMRMLColorTableNodeGrey')
+    recon_node.GetDisplayNode().SetAndObserveColorNodeID('vtkMRMLColorTableNodeRed')
+
+    # Set the backgrounds
+    slicer.util.setSliceViewerLayers(background=recon_node)
+    # Set the foregrounds
+    slicer.util.setSliceViewerLayers(foreground=CT_node)
+    # Set the red slice view foreground value to 0.5
+    slicer.util.setSliceViewerLayers(foregroundOpacity=0.5)
+
+
+def setup_neurostim_view():
+    """Change settings to prepare for showing the neurostimulation points."""
+    # For now, just stop the tracking
+    track_probe_in_slice_viewers(False)
