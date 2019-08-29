@@ -660,7 +660,6 @@ class VisualiseButton(qt.QPushButton):
         # Get the necessary nodes
         CT_name = 'SLD-*'
         CT_node = slicer.util.getNode(CT_name)
-        us_tf_node = slicer.mrmlScene.GetFirstNodeByName(Config.US_TO_US_TIP_TF)
         recon_node = slicer.mrmlScene.GetFirstNodeByName(
             Config.LIVERECONSTRUCTION_VOL)
 
@@ -668,21 +667,8 @@ class VisualiseButton(qt.QPushButton):
         CT_node.GetDisplayNode().SetAndObserveColorNodeID('vtkMRMLColorTableNodeGrey')
         recon_node.GetDisplayNode().SetAndObserveColorNodeID('vtkMRMLColorTableNodeRed')
 
-        # Get the slice view nodes and the logic
-        red_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeRed')
-        yellow_slice_node = slicer.mrmlScene.GetNodeByID(
-            'vtkMRMLSliceNodeYellow')
-        green_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeGreen')
-        reslice_logic = slicer.modules.volumereslicedriver.logic()
-        # Set the drivers
-        for node in [red_slice_node, yellow_slice_node, green_slice_node]:
-            reslice_logic.SetDriverForSlice(us_tf_node.GetID(), node)
-        # Set the modes
-        reslice_logic.SetModeForSlice(reslice_logic.MODE_AXIAL, red_slice_node)
-        reslice_logic.SetModeForSlice(reslice_logic.MODE_SAGITTAL,
-                                      yellow_slice_node)
-        reslice_logic.SetModeForSlice(reslice_logic.MODE_CORONAL,
-                                      green_slice_node)
+        # Have the slice viewers track the probe and update accordingly
+        workflow.track_probe_in_slice_viewers()
         # Set the backgrounds
         slicer.util.setSliceViewerLayers(background=recon_node)
         # Set the foregrounds
