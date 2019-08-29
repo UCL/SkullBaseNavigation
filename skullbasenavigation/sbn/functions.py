@@ -493,7 +493,7 @@ def load_registration_tf():
     # This has to be set after the file mode, or it will be overwritten
     dialog.setLabelText(dialog.Accept, "Load Transform")
     # Display dialog
-    if dialog.exec_():
+    if dialog.exec_(): # pylint: disable=no-else-return
         # Read the chosen file (or the first, if multiple are chosen)
         tf_file = dialog.selectedFiles()[0]
         # Slicer's loadTransform method doesn't seem to like the format of
