@@ -161,25 +161,20 @@ class Slicelet(object):
         # In recent versions of the module, the collapsible button we want can
         # be identified by name. In older versions, the names are empty, so we
         # have to hardcode the position we expect (and hope it is right!)
-        self.ctk_recon_box = ctk.ctkCollapsibleButton()
-        self.ctk_recon_box.setText("Ultrasound Reconstruction")
-        self.ctk_recon_layout = qt.QVBoxLayout()
         btn = [widget for widget in plus_wid
                if widget.name == "VolumeReconstructionCollapsibleButton"]
         if len(btn) == 1:
-            self.ctk_recon_layout.addWidget(btn[0])
+            self.ctk_recon_box = btn[0]
         else:  # e.g. if no buttons found because their names are empty
             # this is originally in position 6, but we have already taken
             # something out, so the indices have changed
-            self.ctk_recon_layout.addWidget(plus_wid[5])
-
-        self.ctk_recon_box.setLayout(self.ctk_recon_layout)
-
+            self.ctk_recon_box = plus_wid[5]
+        self.check_add_timestamp_to_filename_box(self.ctk_recon_box)
         self.buttons.layout().addWidget(self.ctk_recon_box)
 
-        self.ctk_recon_box.setChecked(True)
+        self.ctk_recon_box.setChecked(False)
         # Disable until transforms are available
-        self.ctk_recon_box.setEnabled(True)
+        self.ctk_recon_box.setEnabled(False)
 
         # Timer to check if CT model and ultrasound are available
         self.checkModelsTimer = qt.QTimer()
