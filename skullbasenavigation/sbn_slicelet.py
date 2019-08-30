@@ -217,6 +217,7 @@ class Slicelet(object):
         # it should show/hide the colourmap in the foreground. In US view,
         # the foreground should switch between the colourmap and whatever
         # image type is selected from the radio button group.
+        self.colormap_applied_btn.toggled.connect(self.toggle_colormap)
 
         # Radio buttons to choose between ultrasound or neurostimulation "view"
         self.view_group = qt.QButtonGroup()
@@ -371,6 +372,30 @@ class Slicelet(object):
             "T2": self.t2_node,
             "CT": self.ct_node
         }[image_name]
+
+    def toggle_colormap(self, checked):
+        """Show or hide the colourmap, depending on what view is selected."""
+        if self.view() == "us":
+            # In US view, selecting the colourmap means showing only that
+            # in the foreground, regardless of what base layer is selected.
+            # We also disable the other radio buttons to make that clear.
+            # This is because we can only show two layers, and the ultrasound
+            # reconstruction will take up the background.
+            if checked:
+                for button in self.background_group.buttons():
+                    button.setEnabled(False)
+                slicer.util.setSliceViewerLayers(foreground=self.cm_node)
+            else:
+                # Re-enable buttons in case they were previously disabled...
+                for button in self.background_group.buttons():
+                    button.setEnabled(True)
+                # ...and show the appropriate image
+                self.toggle_image(self.background_group.checkedButton())
+        else:
+            # In neurostimulation view, the base image is in the background,
+            # so we just need to show or hide the colourmap in the foreground.
+            fg_node = self.cm_node if checked else None
+            slicer.util.setSliceViewerLayers(foreground=fg_node)
 
     def save_and_display_neurostim_pt(self):
         """Save the neurostim transform in a timestamped file and
