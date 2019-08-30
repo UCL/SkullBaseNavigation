@@ -328,6 +328,10 @@ class Slicelet(object):
         Note: the argument to this is the button that was clicked, and is
         received by Qt.
         """
+        # When switching views, first check whether the colourmap should be
+        # displayed, and update accordingly. This is because the colourmap
+        # is shown differently in the two views.
+        self.toggle_colormap(self.colormap_applied_btn.isChecked())
         # See what is exclusive to a view and so needs to be shown or hidden
         neurostim_data = (
                 self.neurostim_points
