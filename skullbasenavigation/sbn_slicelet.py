@@ -316,6 +316,10 @@ class Slicelet(object):
 
         self.parent.show()
 
+    def view(self):
+        """Get the Slicelet's current view mode, as either "us" or "neuro"."""
+        return "us" if self.us_view_btn.isChecked() else "neuro"
+
     def toggle_view(self, clicked_button):
         """
         Switch between the ultrasound and neurostimulation "views".
