@@ -310,13 +310,6 @@ class Slicelet(object):
         self.tum_seg_node = None  # the node holding the tumour segmentation
         self.ner_seg_node = None  # the node holding the nerve segmentation
 
-        # A mapping between image options and which node to choose:
-        self.button_to_node = {
-            "T1": self.t1_node,
-            "T2": self.t2_node,
-            "CT": self.ct_node
-        }
-
         # Launch dependencies
         #self.plus = workflow.start_dependencies()
 
@@ -342,13 +335,21 @@ class Slicelet(object):
         received by Qt.
         """
         image_name = clicked_button.text
-        selected_node = self.button_to_node[image_name]
+        selected_node = self._button_to_node(image_name)
         if not selected_node:
             self.status_text.append(image_name + " node is not found.")
         # Set the foregrounds accordingly (or remove them if node not found)
         # TODO: Should check whether are in US view AND colourmap is selected
         # (in that case, the colourmap should stay as the foreground)
         slicer.util.setSliceViewerLayers(foreground=selected_node)
+
+    def _button_to_node(self, image_name):
+        """Map between image options and which node to choose."""
+        return {
+            "T1": self.t1_node,
+            "T2": self.t2_node,
+            "CT": self.ct_node
+        }[image_name]
 
     def save_and_display_neurostim_pt(self):
         """Save the neurostim transform in a timestamped file and
