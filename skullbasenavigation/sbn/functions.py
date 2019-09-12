@@ -476,9 +476,16 @@ def load_data_from_file(data_type, segmentation=False):
         # Use the appropriate Slicer method depending on what we are loading
         # These methods return a tuple (success::bool, node), but only if
         # returnNode is explicitly specified
-        loader = (slicer.util.loadSegmentation if segmentation
-                  else slicer.util.loadVolume)
-        return loader(dialog.selectedFiles()[0], returnNode=True)[1]
+        if segmentation:
+            _, node = slicer.util.loadSegmentation(dialog.selectedFiles()[0],
+                                                   returnNode=True)
+        else:
+            # When loading a volume, we can pass an extra parameter so Slicer
+            # doesn't display it in the slice viewers automatically
+            _, node = slicer.util.loadVolume(dialog.selectedFiles()[0],
+                                             {"show": False},
+                                             returnNode=True)
+        return node
     return None
 
 
