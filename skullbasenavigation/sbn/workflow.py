@@ -225,7 +225,7 @@ def track_probe_in_slice_viewers(probe_type):
     reslice_logic = slicer.modules.volumereslicedriver.logic()
     # Set the drivers
     for node in [red_slice_node, yellow_slice_node, green_slice_node]:
-        reslice_logic.SetDriverForSlice(node_id.GetID(), node)
+        reslice_logic.SetDriverForSlice(node_id, node)
     # Set the modes
     reslice_logic.SetModeForSlice(reslice_logic.MODE_AXIAL, red_slice_node)
     reslice_logic.SetModeForSlice(reslice_logic.MODE_SAGITTAL,

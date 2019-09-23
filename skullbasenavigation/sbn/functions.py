@@ -99,8 +99,9 @@ def set_node_visible(node):
 
     # UltraSound
     if node.GetName() == Config.US_IMG:
-        set_ultrasound_visible(node)
-
+        # no longer needed
+        # set_ultrasound_visible(node)
+        pass
     # 3D CT Model
     elif node.GetName() == Config.CT_IMG:
         set_CT_model_visible(node)
