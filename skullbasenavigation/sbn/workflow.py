@@ -239,8 +239,8 @@ def setup_ultrasound_view():
     # Track the probe in the slice viewers
     track_probe_in_slice_viewers("us")
 
-    # Update the layers: Show the reconstruction in the background,
-    # and the CT (as received from the Stealth) in the foreground.
+    # Update the layers: Show the reconstruction in the foreground,
+    # and the CT (as received from the Stealth) in the background.
     # Get the necessary nodes
     CT_name = 'SLD-*'
     CT_node = slicer.util.getNode(CT_name)
@@ -253,10 +253,10 @@ def setup_ultrasound_view():
     recon_node.GetDisplayNode().SetAndObserveColorNodeID(
         'vtkMRMLColorTableNodeRed')
 
-    # Set the backgrounds
-    slicer.util.setSliceViewerLayers(background=recon_node)
     # Set the foregrounds
-    slicer.util.setSliceViewerLayers(foreground=CT_node)
+    slicer.util.setSliceViewerLayers(foreground=recon_node)
+    # Set the backgrounds
+    slicer.util.setSliceViewerLayers(background=CT_node)
     # Set the red slice view foreground value to 0.5
     slicer.util.setSliceViewerLayers(foregroundOpacity=0.5)
 

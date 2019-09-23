@@ -329,7 +329,7 @@ class Slicelet(object):
 
     def toggle_image(self, clicked_button):
         """
-        Toggle the slice view foregrounds between the loaded images from files.
+        Toggle the slice view backgrounds between the loaded images from files.
 
         Note: the argument to this is the button that was clicked, and is
         received by Qt.
@@ -341,7 +341,7 @@ class Slicelet(object):
         # Set the foregrounds accordingly (or remove them if node not found)
         # TODO: Should check whether are in US view AND colourmap is selected
         # (in that case, the colourmap should stay as the foreground)
-        slicer.util.setSliceViewerLayers(foreground=selected_node)
+        slicer.util.setSliceViewerLayers(background=selected_node)
 
     def _button_to_node(self, image_name):
         """Map between image options and which node to choose."""
