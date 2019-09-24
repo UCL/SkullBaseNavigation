@@ -438,6 +438,7 @@ def display_neurostim_point(response, timestamp):
 
     :param response: bool indicating whether there was a response.
     :param timestamp: string containing a timestamp used to label the model.
+    :return: the node representing the response point.
     """
     # Get location and fail if not found
     tf = get_neurostim_transform(return_flag=True)
@@ -457,6 +458,7 @@ def display_neurostim_point(response, timestamp):
     set_parent_of_transform_hierarchy_node(sphere, new_tf)
     # To show sphere outline in slice viewers, if desired, use:
     # sphere.GetDisplayNode().SetSliceIntersectionVisibility(True)
+    return sphere
 
 
 def load_data_from_file(data_type, segmentation=False):

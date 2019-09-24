@@ -309,6 +309,7 @@ class Slicelet(object):
         self.ct_node = None  # the node holding a colourmap to optionally apply
         self.tum_seg_node = None  # the node holding the tumour segmentation
         self.ner_seg_node = None  # the node holding the nerve segmentation
+        self.neurostim_points = []  # list of nodes of neurostim locations
 
         # Launch dependencies
         #self.plus = workflow.start_dependencies()
@@ -359,11 +360,13 @@ class Slicelet(object):
         self.save_neurostim_transform(timestamp=current_time,
                                       response=neurostim_response)
         try:
-            functions.display_neurostim_point(
+            point = functions.display_neurostim_point(
                 response=neurostim_response,
                 timestamp=current_time)
         except RuntimeError:
             self.status_text.append("Could not display neurostim point.")
+        else:
+            self.neurostim_points.append(point)
 
     def save_neurostim_transform(self, timestamp, response):
         """Write the current neurostim transforms in the current hierarchy
