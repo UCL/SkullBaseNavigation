@@ -431,13 +431,15 @@ def set_slice_opacity(opacity):
     slicer.util.setSliceViewerLayers(foregroundOpacity=opacity / 100.0)
 
 
-def display_neurostim_point(response, timestamp):
+def create_neurostim_point(response, timestamp, show):
     """Mark the location of neurostimulation in the 3D viewer.
 
-    Show in green if there was a response, otherwise in red.
+    Show in green if there was a response, otherwise in red. If show=False
+    is spedcified, the point will not be displayed automatically.
 
     :param response: bool indicating whether there was a response.
     :param timestamp: string containing a timestamp used to label the model.
+    :param show: bool indicating whether to display the point or not.
     :return: the node representing the response point.
     """
     # Get location and fail if not found
@@ -456,6 +458,8 @@ def display_neurostim_point(response, timestamp):
     sphere.GetDisplayNode().SetColor(*colour)  # takes colour as RGB
     # Place the model according to the transform
     set_parent_of_transform_hierarchy_node(sphere, new_tf)
+    # The sphere is shown by default; hide it if that is not desired
+    sphere.SetDisplayVisibility(show)
     # To show sphere outline in slice viewers, if desired, use:
     # sphere.GetDisplayNode().SetSliceIntersectionVisibility(True)
     return sphere

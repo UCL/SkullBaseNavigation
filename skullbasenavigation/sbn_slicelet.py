@@ -354,17 +354,20 @@ class Slicelet(object):
 
     def save_and_display_neurostim_pt(self):
         """Save the neurostim transform in a timestamped file and
-        under the scene. Display the point in the 3D viewer."""
+        under the scene. Display the point in the 3D viewer if appropriate."""
         current_time = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
         neurostim_response = self.neurostim_response_b1.isChecked()
         self.save_neurostim_transform(timestamp=current_time,
                                       response=neurostim_response)
+        # If we are in ultrasound view, we don't want to show the point yet.
+        show_point = self.neuro_view_btn.isChecked()
         try:
-            point = functions.display_neurostim_point(
+            point = functions.create_neurostim_point(
                 response=neurostim_response,
-                timestamp=current_time)
+                timestamp=current_time,
+                show=show_point)
         except RuntimeError:
-            self.status_text.append("Could not display neurostim point.")
+            self.status_text.append("Could not create neurostim point.")
         else:
             self.neurostim_points.append(point)
 
