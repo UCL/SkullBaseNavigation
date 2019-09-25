@@ -234,8 +234,11 @@ def track_probe_in_slice_viewers(probe_type):
                                   green_slice_node)
 
 
-def setup_ultrasound_view():
+def setup_ultrasound_view(to_show=[], to_hide=[]):
     """Change settings to prepare for showing the ultrasound."""
+    # TODO: Show the reconstruction in the 3D viewer and hide current contents
+    for node in to_hide:
+        node.GetDisplayNode().SetVisibility(False)
     # Track the probe in the slice viewers
     track_probe_in_slice_viewers("us")
 
@@ -260,13 +263,15 @@ def setup_ultrasound_view():
     # Set the red slice view foreground value to 0.5
     slicer.util.setSliceViewerLayers(foregroundOpacity=0.5)
 
-    # TODO: Show the reconstruction in the 3D viewer and hide current contents
 
 
-def setup_neurostim_view():
+def setup_neurostim_view(to_show=[], to_hide=[]):
     """Change settings to prepare for showing the neurostimulation points."""
-    # For now, just track the neurostimulation probe
-    track_probe_in_slice_viewers("neuro")
     # TODO: Hide the reconstruction if shown in 3D viewer
     # TODO: Show the segmentations and neurostimulation points in the 3D viewer
+    for node in to_show:
+        node.GetDisplayNode().SetVisibility(True)
+    # Track the neurostimulation probe
+    track_probe_in_slice_viewers("neuro")
     # TODO: Set background according to selected options
+

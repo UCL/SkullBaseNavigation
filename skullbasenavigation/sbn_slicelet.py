@@ -324,9 +324,9 @@ class Slicelet(object):
         received by Qt.
         """
         if clicked_button.text.startswith("Ultrasound"):
-            workflow.setup_ultrasound_view()
+            workflow.setup_ultrasound_view(to_hide=self.neurostim_points)
         else:
-            workflow.setup_neurostim_view()
+            workflow.setup_neurostim_view(to_show=self.neurostim_points)
 
     def toggle_image(self, clicked_button):
         """
