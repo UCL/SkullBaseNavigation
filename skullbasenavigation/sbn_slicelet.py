@@ -323,10 +323,16 @@ class Slicelet(object):
         Note: the argument to this is the button that was clicked, and is
         received by Qt.
         """
+        # See what is exclusive to a view and so needs to be shown or hidden
+        neurostim_data = (self.neurostim_points
+                          + [seg
+                             for seg in [self.ner_seg_node, self.tum_seg_node]
+                             if seg is not None]
+                          )
         if clicked_button.text.startswith("Ultrasound"):
-            workflow.setup_ultrasound_view(to_hide=self.neurostim_points)
+            workflow.setup_ultrasound_view(to_hide=neurostim_data)
         else:
-            workflow.setup_neurostim_view(to_show=self.neurostim_points)
+            workflow.setup_neurostim_view(to_show=neurostim_data)
 
     def toggle_image(self, clicked_button):
         """
