@@ -329,10 +329,21 @@ class Slicelet(object):
                              for seg in [self.ner_seg_node, self.tum_seg_node]
                              if seg is not None]
                           )
+        recon_node = slicer.util.getNode(Config.LIVERECONSTRUCTION_VOL)
+        ultrasound_data = [recon_node] if recon_node else []
         if clicked_button.text.startswith("Ultrasound"):
-            workflow.setup_ultrasound_view(to_hide=neurostim_data)
+            workflow.setup_ultrasound_view(to_show=ultrasound_data,
+                                           to_hide=neurostim_data)
         else:
-            workflow.setup_neurostim_view(to_show=neurostim_data)
+            # If switching to neurostim view, we want to also hide the scout
+            # scan volume (if it exists). However, we don't want to show that
+            # when switching to the US view again, so we only try to retrieve
+            # it in this case.
+            scout_node = slicer.util.getNode(Config.SCOUTSCAN_VOL)
+            if scout_node:
+                ultrasound_data.append(scout_node)
+            workflow.setup_neurostim_view(to_show=neurostim_data,
+                                          to_hide=ultrasound_data)
 
     def toggle_image(self, clicked_button):
         """
