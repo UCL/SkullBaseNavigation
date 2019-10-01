@@ -324,11 +324,10 @@ class Slicelet(object):
         received by Qt.
         """
         # See what is exclusive to a view and so needs to be shown or hidden
-        neurostim_data = (self.neurostim_points
-                          + [seg
-                             for seg in [self.ner_seg_node, self.tum_seg_node]
-                             if seg is not None]
-                          )
+        neurostim_data = (
+                self.neurostim_points
+                + list(filter(None, [self.ner_seg_node, self.tum_seg_node]))
+        )
         recon_node = slicer.util.getNode(Config.LIVERECONSTRUCTION_VOL)
         ultrasound_data = [recon_node] if recon_node else []
         if clicked_button.text.startswith("Ultrasound"):
