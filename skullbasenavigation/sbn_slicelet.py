@@ -646,17 +646,23 @@ class Slicelet(object):
 
     def load_tumour_segmentation(self):
         """Load a tumour segmentation from a file."""
-        self.tum_seg_node = functions.load_data_from_file(
-            "Tumour Segmentation", segmentation=True)
-        if self.tum_seg_node:
-            self.status_text.append("Loaded tumour segmentation from file")
+        self.tum_seg_node = self._load_segmentation("tumour")
 
     def load_nerve_segmentation(self):
         """Load a nerve segmentation from a file."""
-        self.ner_seg_node = functions.load_data_from_file(
-            "Nerve Segmentation", segmentation=True)
-        if self.ner_seg_node:
-            self.status_text.append("Loaded nerve segmentation from file")
+        self.ner_seg_node = self._load_segmentation("nerve")
+
+    def _load_segmentation(self, segmentation_type):
+        loaded_node = functions.load_data_from_file(
+            "{} Segmentation".format(segmentation_type.capitalize()),
+            segmentation=True)
+        if loaded_node:
+            self.status_text.append(
+                "Loaded {} segmentation from file".format(segmentation_type))
+            # Don't show segmentation if in US view
+            if self.view() == "us":
+                loaded_node.SetDisplayVisibility(False)
+        return loaded_node
 
     def align_volumes(self):
         """Apply appropriate transforms to ensure all volumes are aligned."""
