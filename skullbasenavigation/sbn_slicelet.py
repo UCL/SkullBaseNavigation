@@ -211,7 +211,7 @@ class Slicelet(object):
         self.background_group.buttonClicked.connect(self.toggle_image)
 
         # Checkbox to apply the colourmap or not
-        self.colormap_applied_btn = qt.QCheckBox("Show Colourmap")
+        self.colormap_applied_btn = qt.QCheckBox("Colourmap")
         self.colormap_applied_btn.setChecked(False)
         # TODO: Specify behaviour when clicked. In neurostimulation view,
         # it should show/hide the colourmap in the foreground. In US view,
@@ -364,9 +364,7 @@ class Slicelet(object):
         selected_node = self._button_to_node(image_name)
         if not selected_node:
             self.status_text.append(image_name + " node is not found.")
-        # Set the foregrounds accordingly (or remove them if node not found)
-        # TODO: Should check whether are in US view AND colourmap is selected
-        # (in that case, the colourmap should stay as the foreground)
+        # Set the backgrounds accordingly (or remove them if node not found)
         slicer.util.setSliceViewerLayers(background=selected_node)
 
     def _button_to_node(self, image_name):
@@ -374,11 +372,16 @@ class Slicelet(object):
         return {
             "T1": self.t1_node,
             "T2": self.t2_node,
-            "CT": self.ct_node
+            "CT": self.ct_node,
+            "Colourmap": self.cm_node,
         }[image_name]
 
     def toggle_colormap(self, checked):
-        """Show or hide the colourmap, depending on what view is selected."""
+        """Show or hide the colourmap, depending on what view is selected.
+
+        Also ensures that the right base image is shown (this is necessary when
+        switching views).
+        """
         if self.view() == "us":
             # In US view, selecting the colourmap means showing only that
             # in the foreground, regardless of what base layer is selected.
@@ -388,7 +391,7 @@ class Slicelet(object):
             if checked:
                 for button in self.background_group.buttons():
                     button.setEnabled(False)
-                slicer.util.setSliceViewerLayers(foreground=self.cm_node)
+                self.toggle_image(self.colormap_applied_btn)
             else:
                 # Re-enable buttons in case they were previously disabled...
                 for button in self.background_group.buttons():
@@ -397,9 +400,11 @@ class Slicelet(object):
                 self.toggle_image(self.background_group.checkedButton())
         else:
             # In neurostimulation view, the base image is in the background,
-            # so we just need to show or hide the colourmap in the foreground.
+            # so we can just show or hide the colourmap in the foreground.
+            # before updating the background image.
             fg_node = self.cm_node if checked else None
             slicer.util.setSliceViewerLayers(foreground=fg_node)
+            self.toggle_image(self.background_group.checkedButton())
 
     def save_and_display_neurostim_pt(self):
         """Save the neurostim transform in a timestamped file and
