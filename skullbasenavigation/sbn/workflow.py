@@ -236,7 +236,6 @@ def track_probe_in_slice_viewers(probe_type):
 
 def setup_ultrasound_view(to_show=[], to_hide=[]):
     """Change settings to prepare for showing the ultrasound."""
-    # TODO: Show the reconstruction in the 3D viewer and hide current contents
     for node in to_show:
         node.SetDisplayVisibility(True)
     for node in to_hide:
@@ -268,11 +267,9 @@ def setup_ultrasound_view(to_show=[], to_hide=[]):
 
 def setup_neurostim_view(to_show=[], to_hide=[]):
     """Change settings to prepare for showing the neurostimulation points."""
-    # TODO: Hide the reconstruction if shown in 3D viewer
     for node in to_show:
         node.SetDisplayVisibility(True)
     for node in to_hide:
         node.SetDisplayVisibility(False)
     # Track the neurostimulation probe
     track_probe_in_slice_viewers("neuro")
-    # TODO: Set background according to selected options
