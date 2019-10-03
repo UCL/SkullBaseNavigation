@@ -461,7 +461,7 @@ def create_neurostim_point(response, timestamp, show):
     # The sphere is shown by default; hide it if that is not desired
     sphere.SetDisplayVisibility(show)
     # To show sphere outline in slice viewers, if desired, use:
-    # sphere.GetDisplayNode().SetSliceIntersectionVisibility(True)
+    sphere.GetDisplayNode().SetSliceIntersectionVisibility(True)
     return sphere
 
 
