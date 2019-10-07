@@ -172,7 +172,7 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame),
 		<!-- <Transform Name="CUSATipToCUSA"  /> -->
 		<Transform Name="StimTipToStim"  />
         <Transform Name="StimTipToRas"  />
-       <!-- <Transform Name="StylusToRas"  /> -->
+        <Transform Name="StylusToRas"  />
       </TransformNames>
       <ImageNames>
         <Image Name="Image" EmbeddedTransformToFrame="USTip" />
