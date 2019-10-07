@@ -659,6 +659,9 @@ class Slicelet(object):
         if loaded_node:
             self.status_text.append(
                 "Loaded {} segmentation from file".format(segmentation_type))
+            # Make the segmentations partially transparent so that they don't
+            # hide the neurostimulation points
+            loaded_node.GetDisplayNode().SetOpacity3D(0.7)
             # Don't show segmentation if in US view
             if self.view() == "us":
                 loaded_node.SetDisplayVisibility(False)
