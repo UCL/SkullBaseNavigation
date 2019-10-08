@@ -231,6 +231,8 @@ class Slicelet(object):
         self.us_view_btn = qt.QRadioButton("Ultrasound view")
         self.us_view_btn.setChecked(True)  # US view is the default
         self.view_group.addButton(self.us_view_btn)
+        self.us_live_view_btn = qt.QRadioButton("Ultrasound live")
+        self.view_group.addButton(self.us_live_view_btn)
         self.neuro_view_btn = qt.QRadioButton("Neurostimulation view")
         self.neuro_view_btn.setChecked(False)
         self.view_group.addButton(self.neuro_view_btn)
@@ -244,7 +246,7 @@ class Slicelet(object):
         # First a row with the overall view choices
         for i, button in enumerate(self.view_group.buttons()):
             self.visualise_layout.addWidget(button, 0, i)
-        self.visualise_layout.addWidget(self.freeze_tracking_btn, 0, 2)  # We
+        self.visualise_layout.addWidget(self.freeze_tracking_btn, 0, 4)  # We
         # don't want the freeze_tracking button to be in the view_group
         # Then the buttons for selecting what images to show, shown in a group
         self.images_group_box = qt.QGroupBox("Displayed image")
@@ -349,8 +351,12 @@ class Slicelet(object):
         recon_node = slicer.util.getNode(Config.LIVERECONSTRUCTION_VOL)
         ultrasound_data = [recon_node] if recon_node else []
         if clicked_button.text.startswith("Ultrasound"):
-            workflow.setup_ultrasound_view(to_show=ultrasound_data,
-                                           to_hide=neurostim_data)
+            if clicked_button.text.endswith("live"):
+                workflow.setup_ultrasound_live(to_show=ultrasound_data,
+                                               to_hide=neurostim_data)
+            else:
+                workflow.setup_ultrasound_view(to_show=ultrasound_data,
+                                               to_hide=neurostim_data)
         else:
             # If switching to neurostim view, we want to also hide the scout
             # scan volume (if it exists). However, we don't want to show that
