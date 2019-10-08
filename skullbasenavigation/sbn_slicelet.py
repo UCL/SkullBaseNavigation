@@ -219,6 +219,13 @@ class Slicelet(object):
         # image type is selected from the radio button group.
         self.colormap_applied_btn.toggled.connect(self.toggle_colormap)
 
+        # Checkbox to freeze tracking
+        self.freeze_tracking_btn = qt.QCheckBox("Freeze tracking")
+        self.freeze_tracking_btn.setChecked(False)  # By default, slice views
+        # are in 'Reformat' mode, ie. images are changing along with moving
+        # the probe/Neurostimulator
+        self.freeze_tracking_btn.toggled.connect(self.freeze_tracking)
+
         # Radio buttons to choose between ultrasound or neurostimulation "view"
         self.view_group = qt.QButtonGroup()
         self.us_view_btn = qt.QRadioButton("Ultrasound view")
@@ -237,6 +244,8 @@ class Slicelet(object):
         # First a row with the overall view choices
         for i, button in enumerate(self.view_group.buttons()):
             self.visualise_layout.addWidget(button, 0, i)
+        self.visualise_layout.addWidget(self.freeze_tracking_btn, 0, 2)  # We
+        # don't want the freeze_tracking button to be in the view_group
         # Then the buttons for selecting what images to show, shown in a group
         self.images_group_box = qt.QGroupBox("Displayed image")
         self.images_layout = qt.QHBoxLayout()
@@ -405,6 +414,33 @@ class Slicelet(object):
             fg_node = self.cm_node if checked else None
             slicer.util.setSliceViewerLayers(foreground=fg_node)
             self.toggle_image(self.background_group.checkedButton())
+
+    def freeze_tracking(self, checked):
+        """Change the slice view driver from any defined node (ie, tracking) to
+        'None' (fixed) and back when unchecked."""
+        if checked:
+            # Get the slice nodes
+            red_slice_node = slicer.mrmlScene.GetNodeByID(
+                'vtkMRMLSliceNodeRed')
+            yellow_slice_node = slicer.mrmlScene.GetNodeByID(
+                'vtkMRMLSliceNodeYellow')
+            green_slice_node = slicer.mrmlScene.GetNodeByID(
+                'vtkMRMLSliceNodeGreen')
+            # Get the logic
+            reslice_logic = slicer.modules.volumereslicedriver.logic()
+            # Set the drivers to 'None'
+            for node in [red_slice_node, yellow_slice_node, green_slice_node]:
+                reslice_logic.SetDriverForSlice(Config.EMPTY_NODE, node)
+        else:
+            # Back to the default view settings
+            # WARNING: the node names used after are defined in the config.py
+            # (Config.US_TO_US_TIP_TF and Config.NEUROSTIM_TIP_TO_NEUROSTIM_TF)
+            # but are created after being tracked by the StealthStation
+            if self.us_view_btn.isChecked():
+                workflow.track_probe_in_slice_viewers("us")
+            else:
+                workflow.track_probe_in_slice_viewers("neuro")
+
 
     def save_and_display_neurostim_pt(self):
         """Save the neurostim transform in a timestamped file and
