@@ -435,7 +435,8 @@ class Slicelet(object):
             # Back to the default view settings
             # WARNING: the node names used after are defined in the config.py
             # (Config.US_TO_US_TIP_TF and Config.NEUROSTIM_TIP_TO_NEUROSTIM_TF)
-            # but are created after being tracked by the StealthStation
+            # but the nodes are created after the tools being tracked by the
+            # StealthStation.
             if self.us_view_btn.isChecked():
                 workflow.track_probe_in_slice_viewers("us")
             else:
