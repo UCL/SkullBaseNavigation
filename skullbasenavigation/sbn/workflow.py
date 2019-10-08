@@ -235,7 +235,7 @@ def track_probe_in_slice_viewers(probe_type):
 
 
 def setup_ultrasound_view(to_show=[], to_hide=[]):
-    """Change settings to prepare for showing the ultrasound."""
+    """Change settings to prepare for showing the ultrasound in view mode."""
     for node in to_show:
         node.SetDisplayVisibility(True)
     for node in to_hide:
@@ -257,6 +257,17 @@ def setup_ultrasound_view(to_show=[], to_hide=[]):
     slicer.util.setSliceViewerLayers(foreground=recon_node)
     # Set the red slice view foreground value to 0.5
     slicer.util.setSliceViewerLayers(foregroundOpacity=0.5)
+
+
+def setup_ultrasound_live(to_show=[], to_hide=[]):
+    """Change settings to prepare for showing the ultrasound in live mode."""
+    for node in to_show:
+        node.SetDisplayVisibility(True)
+    for node in to_hide:
+        node.SetDisplayVisibility(False)
+
+    us_node = slicer.mrmlScene.GetFirstNodeByName(Config.US_IMG)
+    functions.set_ultrasound_visible(us_node)
 
 
 def setup_neurostim_view(to_show=[], to_hide=[]):
