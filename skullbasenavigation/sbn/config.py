@@ -61,4 +61,7 @@ class BaseConfig:
     TF_OUTPUT_DIR = 'outputs/transforms/'
     SCENE_OUTPUT_DIR = 'outputs/scenes/'
 
+    # Empty node
+    EMPTY_NODE = ''
+
 Config = BaseConfig
