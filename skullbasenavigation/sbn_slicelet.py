@@ -54,6 +54,7 @@ class Slicelet(object):
         # Buttons to load and align volumes from file
         self.ctk_data_box = ctk.ctkCollapsibleButton()
         self.ctk_data_box.setText("Local Data Files")
+        self.ctk_data_box.setChecked(False)
         self.data_layout = qt.QGridLayout()
         self.load_t1_btn = qt.QPushButton("Load T1")
         self.load_t1_btn.clicked.connect(self.load_t1_model)
