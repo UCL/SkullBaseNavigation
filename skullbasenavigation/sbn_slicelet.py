@@ -189,6 +189,13 @@ class Slicelet(object):
             self.check_if_transforms_active)
         self.checkTranformsTimer.start()
 
+        # Timer to check if live reconstruction has some data in it
+        # The timer is started by the check_if_transforms_active function
+        self.checkReconTimer = qt.QTimer()
+        self.checkReconTimer.setInterval(1000)
+        self.checkReconTimer.timeout.connect(
+            self.check_if_recon_display_node_exists)
+
         # Tabbed modules - hide by default
         tab_widget_index = 2
         self.tabWidget = qt.QTabWidget()
@@ -231,7 +238,6 @@ class Slicelet(object):
         # Radio buttons to choose between ultrasound or neurostimulation "view"
         self.view_group = qt.QButtonGroup()
         self.us_view_btn = qt.QRadioButton("Ultrasound view")
-        self.us_view_btn.setChecked(True)  # US view is the default
         self.view_group.addButton(self.us_view_btn)
         self.us_live_view_btn = qt.QRadioButton("Ultrasound live")
         self.view_group.addButton(self.us_live_view_btn)
@@ -241,9 +247,11 @@ class Slicelet(object):
         self.view_group.buttonClicked.connect(self.toggle_view)
 
         # Visualise box containing the above buttons
+        # Box is disabled until live recon has been updated with real data
         self.ctk_visualise_box = ctk.ctkCollapsibleButton()
         self.ctk_visualise_box.setText("Choose Image")
         self.ctk_visualise_box.setChecked(False)
+        self.ctk_visualise_box.setEnabled(False) 
         self.visualise_layout = qt.QGridLayout()
         # First a row with the overall view choices
         for i, button in enumerate(self.view_group.buttons()):
@@ -567,9 +575,19 @@ class Slicelet(object):
             self.ctk_pivot_box.setChecked(True)
             self.ctk_recon_box.setEnabled(True)
             self.checkTranformsTimer.stop()
+            self.checkReconTimer.start()
+
             self.toggle_image()
-            self.toggle_view()
+            workflow.track_probe_in_slice_viewers("us")
             self.status_text.append("Enabling pivot calibration")
+    
+    def check_if_recon_display_node_exists(self):
+        recon_node = slicer.mrmlScene.GetFirstNodeByName(
+            Config.LIVERECONSTRUCTION_VOL)
+        
+        if recon_node.GetDisplayNode():
+            self.ctk_visualise_box.setEnabled(True)
+            self.checkReconTimer.stop()
 
     def choose_us_pivot(self):
         """Prepare transforms to calibrate ultrasound probe."""
