@@ -43,7 +43,7 @@ class BaseConfig:
     REGISTRATION_TF = 'StealthToUpsampled'
 
     # Image names
-    CT_IMG = 'SLD-001'
+    MR_IMG = 'SLD-001'
     US_IMG = 'Image_USTip'
     PROBE_IMG = 'BK_Probe'
 

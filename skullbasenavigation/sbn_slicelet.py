@@ -535,21 +535,20 @@ class Slicelet(object):
             workflow.set_visible(ultrasound_node)
 
         # Set the name
-        CT_node_name = Config.CT_IMG
-        CT_node_id = 'vtkMRMLScalarVolumeNode1' # Assuming the id remains always the same
+        MR_node_name = Config.MR_IMG
+        MR_node_id = 'vtkMRMLScalarVolumeNode1' # Assuming the id remains always the same
         volume_nodes_list = list(slicer.mrmlScene.GetNodesByClassByName('vtkMRMLScalarVolumeNode', ''))
         if volume_nodes_list:
 
-            #TODO: Rename all instances of CT_node* to mr_node*
             self.mr_node = volume_nodes_list[0]
-            self.mr_node.SetName(CT_node_name)
+            self.mr_node.SetName(MR_node_name)
             # Make the node visible in the volume rendering module
             workflow.set_visible(self.mr_node)
 
         # Stop the timer
         if ultrasound_exists and volume_nodes_list:
             self.status_text.append("Found Ultrasound Node: " + ultrasound_name)
-            self.status_text.append("Found CT_node: " + CT_node_name)
+            self.status_text.append("Found MR_node: " + MR_node_name)
             self.status_text.append("Waiting for tools to be visible to StealthStation")
             self.checkModelsTimer.stop()
 

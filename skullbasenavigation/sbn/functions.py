@@ -103,8 +103,8 @@ def set_node_visible(node):
         # set_ultrasound_visible(node)
         pass
     # 3D CT Model
-    elif node.GetName() == Config.CT_IMG:
-        set_CT_model_visible(node)
+    elif node.GetName() == Config.MR_IMG:
+        set_MR_model_visible(node)
 
     else:
         node.SetDisplayVisibility(1)
@@ -134,7 +134,7 @@ def enable_volume_reslice(slice_node, node_id):
     slice_node.SetSliceVisible(True)
 
 
-def set_CT_model_visible(node):
+def set_MR_model_visible(node):
     """
     CT Model is a 3D volume - set to visible.
     """
