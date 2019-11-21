@@ -233,6 +233,13 @@ def track_probe_in_slice_viewers(probe_type):
     reslice_logic.SetModeForSlice(reslice_logic.MODE_CORONAL,
                                   green_slice_node)
 
+def setup_reslice_for_ultrasound():
+    """ Change the slice viewer settings to show the live ultrasound data.
+    """
+    red_slice_node = slicer.mrmlScene.GetNodeByID('vtkMRMLSliceNodeRed')
+
+    reslice_logic = slicer.modules.volumereslicedriver.logic()
+    reslice_logic.SetModeForSlice(reslice_logic.MODE_TRANSVERSE, red_slice_node)
 
 def setup_ultrasound_view(to_show=[], to_hide=[]):
     """Change settings to prepare for showing the ultrasound in view mode."""
@@ -266,8 +273,11 @@ def setup_ultrasound_live(to_show=[], to_hide=[]):
     for node in to_hide:
         node.SetDisplayVisibility(False)
 
+    
     us_node = slicer.mrmlScene.GetFirstNodeByName(Config.US_IMG)
     functions.set_ultrasound_visible(us_node)
+
+    setup_reslice_for_ultrasound()
 
 
 def setup_neurostim_view(to_show=[], to_hide=[]):
