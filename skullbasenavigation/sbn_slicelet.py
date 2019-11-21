@@ -202,11 +202,13 @@ class Slicelet(object):
         self.T1 = qt.QRadioButton('T1')
         self.T2 = qt.QRadioButton('T2')
         self.CT = qt.QRadioButton('CT')
-        self.CT.setChecked(True)
+        self.MR = qt.QRadioButton('MR')
+        self.MR.setChecked(True)
         self.background_group = qt.QButtonGroup()
         self.background_group.addButton(self.T1)
         self.background_group.addButton(self.T2)
         self.background_group.addButton(self.CT)
+        self.background_group.addButton(self.MR)
         # Toggle the displayed image when any button in this group is clicked
         self.background_group.buttonClicked.connect(self.toggle_image)
 
@@ -251,7 +253,7 @@ class Slicelet(object):
         # Then the buttons for selecting what images to show, shown in a group
         self.images_group_box = qt.QGroupBox("Displayed image")
         self.images_layout = qt.QHBoxLayout()
-        for button in [self.T1, self.T2, self.CT, self.colormap_applied_btn]:
+        for button in [self.T1, self.T2, self.CT, self.MR, self.colormap_applied_btn]:
             self.images_layout.addWidget(button)
         self.images_group_box.setLayout(self.images_layout)
         self.visualise_layout.addWidget(self.images_group_box, 1, 0, 1, -1)
@@ -317,8 +319,8 @@ class Slicelet(object):
         self.connector = None  # the OpenIGTLink connector to be used
         self.t1_node = None  # the node holding the T1 MRI scan
         self.t2_node = None  # the node holding the T2 MRI scan
-        self.cm_node = None  # the node holding a CT scan loaded from a file
-        self.ct_node = None  # the node holding a colourmap to optionally apply
+        self.ct_node = None  # the node holding a CT scan loaded from a file
+        self.cm_node = None  # the node holding a colourmap to optionally apply
         self.tum_seg_node = None  # the node holding the tumour segmentation
         self.ner_seg_node = None  # the node holding the nerve segmentation
         self.neurostim_points = []  # list of nodes of neurostim locations
@@ -332,7 +334,7 @@ class Slicelet(object):
         """Get the Slicelet's current view mode, as either "us" or "neuro"."""
         return "us" if self.us_view_btn.isChecked() else "neuro"
 
-    def toggle_view(self, clicked_button):
+    def toggle_view(self, clicked_button=None):
         """
         Switch between the ultrasound and neurostimulation "views".
 
@@ -350,6 +352,14 @@ class Slicelet(object):
         )
         recon_node = slicer.util.getNode(Config.LIVERECONSTRUCTION_VOL)
         ultrasound_data = [recon_node] if recon_node else []
+
+        # Set default view
+        if clicked_button is None:
+            workflow.setup_ultrasound_view(to_show=ultrasound_data,
+                                           to_hide=neurostim_data)
+            return
+        
+        # Respond to user selection
         if clicked_button.text.startswith("Ultrasound"):
             if clicked_button.text.endswith("live"):
                 workflow.setup_ultrasound_live(to_show=ultrasound_data,
@@ -368,14 +378,20 @@ class Slicelet(object):
             workflow.setup_neurostim_view(to_show=neurostim_data,
                                           to_hide=ultrasound_data)
 
-    def toggle_image(self, clicked_button):
+    def toggle_image(self, clicked_button=None):
         """
         Toggle the slice view backgrounds between the loaded images from files.
 
         Note: the argument to this is the button that was clicked, and is
         received by Qt.
         """
-        image_name = clicked_button.text
+
+        if clicked_button is not None:
+            image_name = clicked_button.text
+        
+        else:
+            image_name = "MR"
+    
         selected_node = self._button_to_node(image_name)
         if not selected_node:
             self.status_text.append(image_name + " node is not found.")
@@ -388,6 +404,7 @@ class Slicelet(object):
             "T1": self.t1_node,
             "T2": self.t2_node,
             "CT": self.ct_node,
+            "MR": self.mr_node,
             "Colourmap": self.cm_node,
         }[image_name]
 
@@ -523,10 +540,11 @@ class Slicelet(object):
         volume_nodes_list = list(slicer.mrmlScene.GetNodesByClassByName('vtkMRMLScalarVolumeNode', ''))
         if volume_nodes_list:
 
-            CT_node = volume_nodes_list[0]
-            CT_node.SetName(CT_node_name)
+            #TODO: Rename all instances of CT_node* to mr_node*
+            self.mr_node = volume_nodes_list[0]
+            self.mr_node.SetName(CT_node_name)
             # Make the node visible in the volume rendering module
-            workflow.set_visible(CT_node)
+            workflow.set_visible(self.mr_node)
 
         # Stop the timer
         if ultrasound_exists and volume_nodes_list:
@@ -550,6 +568,8 @@ class Slicelet(object):
             self.ctk_pivot_box.setChecked(True)
             self.ctk_recon_box.setEnabled(True)
             self.checkTranformsTimer.stop()
+            self.toggle_image()
+            self.toggle_view()
             self.status_text.append("Enabling pivot calibration")
 
     def choose_us_pivot(self):
