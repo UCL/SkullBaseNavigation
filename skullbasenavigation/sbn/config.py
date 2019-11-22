@@ -45,17 +45,22 @@ class BaseConfig:
     # Image names
     MR_IMG = 'SLD-001'
     US_IMG = 'Image_USTip'
-    PROBE_IMG = 'BK_Probe'
+    PROBE_MOD_NAME = 'BK_Probe'
+    NEUROSTIM_IMG = 'NeuroStim'
 
     # Volume names
     SCOUTSCAN_VOL = 'ScoutScan'
     LIVERECONSTRUCTION_VOL = 'liveReconstruction'
 
     # Model names
-    STYLUS_MOD = 'StylusModel'
-    PROBE_MOD = 'ProbeModel'
-    #CUSA_MOD = 'CusaModel'
-    NEUROSTIM_MOD = 'NeurostimModel'
+    STYLUS_MOD_NAME = 'StylusModel'
+    PROBE_MOD_NAME = 'BK_Probe'
+    #CUSA_MOD_NAME = 'CusaModel'
+    NEUROSTIM_MOD_NAME = 'NeurostimModel'
+
+    # Model files
+    PROBE_MOD_FILE = 'BK_Probe.stl'
+    NEUROSTIM_MOD_FILE = 'BK_Probe.stl'
 
     # Output directories
     TF_OUTPUT_DIR = 'outputs/transforms/'

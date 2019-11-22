@@ -94,11 +94,11 @@ def create_models():
     """
     Create 3D models to visualise stylus and probe locations.
     """
-    functions.create_needle_model(Config.STYLUS_MOD, 100, 1, 0.1)
-    functions.create_needle_model(Config.PROBE_MOD, 100, 0.5, 0.2)
-    #functions.create_needle_model(Config.CUSA_MOD, 100, 2, 0.1)
-    functions.create_needle_model(Config.NEUROSTIM_MOD, 100, 3, 0.1)
-    functions.load_probe_image()
+    functions.create_needle_model(Config.STYLUS_MOD_NAME, 100, 1, 0.1)
+    #functions.create_needle_model(Config.CUSA_MOD_NAME, 100, 2, 0.1)
+    
+    functions.create_needle_model(Config.NEUROSTIM_MOD_NAME, 100, 3, 0.1)
+    functions.load_probe_image(Config.PROBE_MOD_NAME, Config.PROBE_MOD_FILE)
 
 
 def prepare_probe_pivot_cal():
@@ -154,11 +154,10 @@ def set_transform_hierarchy():
     img = scene.GetFirstNodeByName(Config.US_IMG)
     ref = scene.GetFirstNodeByName(Config.REFERENCETORAS_TF)
 
-    stylus = scene.GetFirstNodeByName(Config.STYLUS_MOD)
-    probe = scene.GetFirstNodeByName(Config.PROBE_MOD)
-    #cusa = scene.GetFirstNodeByName(Config.CUSA_MOD)
-    neurostim = scene.GetFirstNodeByName(Config.NEUROSTIM_MOD)
-    probe_img = scene.GetFirstNodeByName(Config.PROBE_IMG)
+    stylus = scene.GetFirstNodeByName(Config.STYLUS_MOD_NAME)
+    probe = scene.GetFirstNodeByName(Config.PROBE_MOD_NAME)
+    #cusa = scene.GetFirstNodeByName(Config.CUSA_MOD_NAME)
+    neurostim = scene.GetFirstNodeByName(Config.NEUROSTIM_MOD_NAME)
 
     scout = scene.GetFirstNodeByName(Config.SCOUTSCAN_VOL)
     reconstruction = scene.GetFirstNodeByName(Config.LIVERECONSTRUCTION_VOL)
@@ -169,8 +168,6 @@ def set_transform_hierarchy():
 
     # US
     functions.set_parent_of_transform_hierarchy_node(probe, tf_us_to_us_tip)
-    functions.set_parent_of_transform_hierarchy_node(
-        probe_img, tf_us_to_us_tip)
     functions.set_parent_of_transform_hierarchy_node(
         tf_us_to_us_tip, tf_us_to_ras)
 

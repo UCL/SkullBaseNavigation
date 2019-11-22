@@ -63,11 +63,15 @@ def create_needle_model(name, length, radius, tip_radius):
     return needle
 
 
-def load_probe_image(name=Config.PROBE_IMG):
-    """Load the image of the probe and name the node as requested."""
+def load_probe_image(name, model):
+    """Loads a model from a file and assign a name to the node.
+    Inputs: name - the name of the node
+            model - the name of the model file (this should be in the
+                    models subdirectory"""
     # Slicer wants an absolute path to the STL image.
     # This assumes we are at the top level of the repository.
-    img_path = os.path.join(os.getcwd(), "models", "BK_Probe.stl")
+    img_path = os.path.join(os.getcwd(), "models", model)
+
     success, img_node = slicer.util.loadModel(img_path, returnNode=True)
     if success:
         img_node.SetName(name)
