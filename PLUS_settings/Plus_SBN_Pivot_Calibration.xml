@@ -1,0 +1,162 @@
+<PlusConfiguration version="2.3">
+  <DataCollection StartupDelaySec="1.0" >
+    <DeviceSet
+      Name="PlusServer: Medtronic StealthLink tracker + BK5000 (via pyIGTLink)"
+      Description="Broadcasting tool tracking data through OpenIGTLink
+Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame), Black, Silver, Orange Passives"
+    />
+    <Device
+      Id="SLD"
+      Type="StealthLinkTracker"
+      ServerAddress="128.16.0.2"
+      ServerPort="6996"
+      ToolReferenceFrame="Tracker" >
+      <DataSources>
+        <DataSource Type="Tool" Id="Stylus" PortName="Passive Planar, Blunt" AlwaysTrack="TRUE"/>
+        <DataSource Type="Tool" Id="Reference" PortName="Small Passive Cranial Frame"  />
+        <DataSource Type="Tool" Id="Ras"      PortName="RasRegistration" />
+	      <DataSource Type="Tool" Id="US"      PortName="SureTrak2 Black Passive" AlwaysTrack="TRUE"/>
+        <!-- UNCOMMENT BELOW FOR CUSA -->
+ 	      <!-- <DataSource Type="Tool" Id="CUSA"      PortName="SureTrak2 Orange Passive" AlwaysTrack="TRUE"/> -->
+	      <DataSource Type="Tool" Id="Stim"      PortName="SureTrak2 Orange Passive" AlwaysTrack="TRUE"/>
+
+      </DataSources>
+      <OutputChannels>
+        <OutputChannel Id="TrackerStream">
+          <DataSource  Id="US"  />
+          <!-- UNCOMMENT BELOW FOR CUSA -->
+          <!-- <DataSource  Id="CUSA" /> -->
+          <DataSource  Id="Stim" />
+
+          <DataSource  Id="Stylus" />
+          <DataSource  Id="Reference" />
+          <DataSource  Id="Ras" />
+        </OutputChannel>
+      </OutputChannels>
+    </Device>
+<!-- LocalTimeOffsetSec="0.0" -->
+    <Device
+    Id="OpenIGTLinkVideoSenderDevice"
+    Type="OpenIGTLinkVideo"
+    MessageType="Image"
+    ServerAddress="127.0.0.1"
+    ServerPort="18905"
+    IgtlMessageCrcCheckEnabled="false" >
+    <DataSources>
+      <DataSource Type="Video" Id="Video" PortUsImageOrientation="MF"  />
+    </DataSources>
+    <OutputChannels>
+      <OutputChannel Id="VideoStream" VideoDataSourceId="Video" />
+    </OutputChannels>
+  </Device>
+
+  <Device
+    Id="TrackedVideoDevice"
+    Type="VirtualMixer"
+    BaseFilename="RecordingTest.mha"
+    EnableCapturingOnStart="FALSE" >
+    <InputChannels>
+      <InputChannel Id="VideoStream" />
+      <InputChannel Id="TrackerStream" />
+    </InputChannels>
+    <OutputChannels>
+      <OutputChannel Id="TrackedVideoStream"/>
+    </OutputChannels>
+  </Device>
+
+  <Device
+      Id="CaptureDevice"
+      Type="VirtualCapture"
+      BaseFilename="Recording.mhd"
+      EnableCapturingOnStart="FALSE"
+      RequestedFrameRate="15" >
+      <InputChannels>
+        <InputChannel Id="TrackedVideoStream" />
+      </InputChannels>
+    </Device>
+
+
+	<Device
+      Id="VolumeReconstructorDevice"
+      Type="VirtualVolumeReconstructor"
+      OutputVolDeviceName="RecVol_Reference">
+      <InputChannels>
+        <InputChannel Id="TrackedVideoStream" />
+      </InputChannels>
+      <VolumeReconstruction
+        ImageCoordinateFrame="Image" ReferenceCoordinateFrame="Reference"
+        Interpolation="LINEAR" Optimization="NONE" Compounding="On" FillHoles="On" NumberOfThreads="2"
+		ClipRectangleOrigin="0 0" ClipRectangleSize="820 726"
+        OutputOrigin="0 0 0" OutputSpacing="0.5 0.5 0.5">
+		        <HoleFilling>
+          <HoleFillingElement
+            Type="STICK"
+            StickLengthLimit="9"
+            NumberOfSticksToUse="1" />
+        </HoleFilling>
+		</VolumeReconstruction>
+    </Device>
+ 
+</DataCollection>
+
+  <CoordinateDefinitions>
+
+	<Transform From="Image" To="USTip"
+	Matrix="
+ -0.0640225 -0.00644543 -0.00560506 30.4624 
+-0.00582192 0.00191411 0.0642984 8.2935 
+-0.00625024 0.0642389 -0.00247827 -1.94724 
+0 0 0 1 
+	" /> 	
+	
+    <Transform From="Ras" To="Lps"
+      Matrix="
+        -1  0  0  0
+         0 -1  0  0
+         0  0  1  0
+         0  0  0  1" />
+
+
+  </CoordinateDefinitions>
+
+  <PlusOpenIGTLinkServer
+    MaxNumberOfIgtlMessagesToSend="10"
+    MaxTimeSpentWithProcessingMs="50"
+    ListeningPort="18944"
+    OutputChannelId="TrackedVideoStream"
+    SendValidTransformsOnly="true"> <!--On the US config file-->
+    <DefaultClientInfo>
+      <MessageTypes>
+        <Message Type="IMAGE" />
+        <Message Type="STRING" />
+        <Message Type="TRANSFORM" />
+      </MessageTypes>
+      <TransformNames>
+        <!-- To avoid "Transform path not found" warnings, remove transforms for tools that are not defined by the StealthStation -->
+        <Transform Name="StylusToReference" />
+        <Transform Name="USToRas"  />
+		<Transform Name="USToReference"  />
+		<Transform Name="StylusToUSTip"  />
+  	<!-- UNCOMMENT BELOW FOR CUSA -->
+		<!-- <Transform Name="CUSAToRas"  /> -->
+		<Transform Name="StimToRas"  />
+		<Transform Name="StimToReference" />
+		<Transform Name="ReferenceToRas" />
+		<Transform Name="USTipToUS"  />
+   	<!-- UNCOMMENT BELOW FOR CUSA -->
+		<!-- <Transform Name="CUSATipToCUSA"  /> -->
+		<Transform Name="StimTipToStim"  />
+        <Transform Name="StylusToRas"  />
+      </TransformNames>
+      <ImageNames>
+        <Image Name="Image" EmbeddedTransformToFrame="USTip" />
+      </ImageNames>
+      <StringNames>
+        <String Name="DepthMm" />
+        <String Name="PixelSpacingMm" />
+        <String Name="TransducerOriginPix" />
+      </StringNames>
+    </DefaultClientInfo>
+  </PlusOpenIGTLinkServer>
+  
+</PlusConfiguration>

@@ -83,54 +83,6 @@ class Slicelet(object):
         self.ctk_data_box.setLayout(self.data_layout)
         self.buttons.layout().addWidget(self.ctk_data_box)
 
-        # Collapsible button to hole Pivot calibration module
-        # Won't be active until the tools have been seen
-        # by the StealthStation - i.e. the Stylus and SureTrack
-        # transforms have been sent to Slicer
-        self.ctk_pivot_box = ctk.ctkCollapsibleButton()
-        self.ctk_pivot_box.setText("Pivot Calibration")
-        self.ctk_pivot_box.setChecked(False)
-
-        self.pivot_layout = qt.QVBoxLayout()
-        # Radio buttons to choose which instrument to calibrate
-        # QButtonGroup is just a logical grouping, not a widget!
-        self.pivot_mode_buttons = qt.QButtonGroup()
-        self.pivot_mode_probe = qt.QRadioButton("Ultrasound")
-        self.pivot_mode_probe.setChecked(True)
-        self.pivot_mode_probe.clicked.connect(self.choose_us_pivot)
-        self.pivot_mode_buttons.addButton(self.pivot_mode_probe)
-        self.pivot_mode_neuro = qt.QRadioButton("Neurostimulator")
-        self.pivot_mode_neuro.setChecked(False)
-        self.pivot_mode_neuro.clicked.connect(self.choose_neuro_pivot)
-        self.pivot_mode_buttons.addButton(self.pivot_mode_neuro)
-        # Set up the layout for these buttons
-        self.pivot_mode_buttons_box = qt.QGroupBox()
-        self.pivot_mode_buttons_layout = qt.QHBoxLayout()
-        for radio_button in self.pivot_mode_buttons.buttons():
-            self.pivot_mode_buttons_layout.addWidget(radio_button)
-        self.pivot_mode_buttons_box.setLayout(self.pivot_mode_buttons_layout)
-        self.pivot_layout.addWidget(self.pivot_mode_buttons_box)
-
-        self.pivot_scroll_area = qt.QScrollArea()
-        self.pivot = slicer.modules.pivotcalibration.widgetRepresentation()
-
-        self.pivot_scroll_area.setWidget(self.pivot)
-        self.pivot_scroll_area.setWidgetResizable(True)
-        self.pivot_layout.addWidget(self.pivot_scroll_area)
-
-        self.ctk_pivot_box.setLayout(self.pivot_layout)
-        self.buttons.layout().addWidget(self.ctk_pivot_box)
-
-        # Set the default calibration duration to 10
-        calib_duration = 10
-        calib_duration_widget = self.buttons.findChild(ctk.ctkDoubleSpinBox(),
-                                                       u'durationTimerEdit')
-
-        calib_duration_widget.setValue(calib_duration)
-        # Disable the button (enabled if wait_for_transforms returns
-        # true)
-        self.ctk_pivot_box.setEnabled(False)
-
         # Neurostimulation button to save the neurostim points and save the
         # tracking location to a file
         self.neurostim_box = ctk.ctkCollapsibleButton()
@@ -569,11 +521,8 @@ class Slicelet(object):
             self.status_text.append("Found expected transforms")
             workflow.setup_plus_remote(self.connector)
             workflow.create_models()
-            workflow.prepare_probe_pivot_cal()
             workflow.set_transform_hierarchy()
 
-            self.ctk_pivot_box.setEnabled(True)
-            self.ctk_pivot_box.setChecked(True)
             self.ctk_recon_box.setEnabled(True)
             self.checkTranformsTimer.stop()
             self.checkReconTimer.start()
