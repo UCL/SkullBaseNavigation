@@ -10,7 +10,7 @@ class BaseConfig:
     PLUS_HOST = 'localhost'
     PLUS_PORT = 18944
     PATH_TO_PLUS_SETTINGS = 'PLUS_settings'
-    PLUS_CONFIG_FILE = 'PlusDeviceSet_Server_StealthLinkTracker_pyIGTLink.xml'
+    PLUS_CONFIG_FILE = 'Plus_SBN_Navigation.xml'
     PLUS_EXEC_PATH = ''
 
     # pyIGTLink settings for BK5000
@@ -63,8 +63,8 @@ class BaseConfig:
     NEUROSTIM_MOD_FILE = 'BK_Probe.stl'
 
     # Output directories
-    TF_OUTPUT_DIR = 'outputs/transforms/'
-    SCENE_OUTPUT_DIR = 'outputs/scenes/'
+    TF_OUTPUT_DIR = '/c/Users/SBN/Code/skullbasenavigation/outputs/transforms/'
+    SCENE_OUTPUT_DIR = '/c/Users/SBN/Code/skullbasenavigation/outputs/scenes/'
 
     # Empty node
     EMPTY_NODE = ''
