@@ -4,6 +4,7 @@ import logging  #pylint: disable=unused-import
 import time
 import datetime
 import json
+import re
 import os
 import ctk
 import qt
@@ -119,14 +120,11 @@ class Slicelet(object):
         self.control_panel.insertWidget(tab_widget_index, self.tabWidget)
         # Button to save all transforms to file
         # Used for syncing with neuromonitoring data
-        self.transform_save_btn = qt.QPushButton('Save Transforms')
+        self.transform_save_btn = qt.QPushButton('Save Tip Transforms')
         self.transform_save_btn.clicked.connect(self.save_transforms)
+        self.transform_save_btn.setEnabled(False)
         self.buttons.layout().addWidget(self.transform_save_btn)
 
-        # Button to save all (scene and transforms) to file
-        self.save_all_btn = qt.QPushButton('Save All')
-        self.save_all_btn.clicked.connect(self.save_all)
-        self.buttons.layout().addWidget(self.save_all_btn)
         # Spacer to occupy excess space
         self.vertical_spacer = qt.QSpacerItem(20, 40, qt.QSizePolicy.Minimum, qt.QSizePolicy.Expanding)
         self.buttons.layout().addItem(self.vertical_spacer)
@@ -205,6 +203,7 @@ class Slicelet(object):
 
             self.ctk_pivot_box.setEnabled(True)
             self.ctk_pivot_box.setChecked(True)
+            self.transform_save_btn.setEnabled(True)
             self.checkTranformsTimer.stop()
             self.status_text.append("Enabling pivot calibration")
     
@@ -319,18 +318,7 @@ class Slicelet(object):
 
         self.status_text.append("Loading model")
 
-    def save_all(self):
-        """Save the current scene and transforms in timestamped files"""
-        current_time = datetime.datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
-        directory = Config.SCENE_OUTPUT_DIR
-        # Create dir if inexistent
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-        path_to_file = os.path.join(directory, 'scene_' + current_time + '.mrb')
-        # Save the scene
-        slicer.util.saveScene(path_to_file)
-        self.status_text.append("Saving scene to: " + path_to_file)
-
+    # TODO: Refactor this function so that we don't need to duplicate in pivot_slicelet and sbn_slicelet
     def save_transforms(self):
         """ Write all transforms in the current hierarchy to a file,
         where the filename contains a timestamp. """
@@ -341,7 +329,7 @@ class Slicelet(object):
             return
 
         directory = Config.TF_OUTPUT_DIR
-
+        
         # Create dir if it doesn't exist
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -351,6 +339,50 @@ class Slicelet(object):
             json.dump(transforms, f, indent=4)
 
         self.status_text.append("Saving transforms to: " + path_to_file)
+        
+        self.update_main_plus_config(transforms)
+
+        self.status_text.append("Updating PLUS config with new transforms")
+
+    def update_main_plus_config(self, transforms):
+        """ Update the US and Stim tip to tool transforms in the PLUS XML file.
+        Read XML data in from the config file, do some regex magic to find the relevant parts
+        and replace them with the new values, then write back to the config.
+
+        Inputs: transforms - dictionary of transforms, which should contain
+                             US and Stim Tip to Tool transforms.
+        """
+        x = transforms[Config.US_TO_US_TIP_TF]
+        y = transforms[Config.NEUROSTIM_TIP_TO_NEUROSTIM_TF]
+
+        # Flatten list of lists into single list
+        us_tip_tf = [a for b in x for a in b]
+        stim_tip_tf = [a for b in y for a in b]
+ 
+        if not (us_tip_tf and stim_tip_tf):
+            self.status_text.append("US Tip and Stim Tip transforms not found!")
+
+        us_tip_to_us_string =      Config.US_TIP_TO_US_XML.format(*us_tip_tf)
+        stim_tip_to_stim_string =  Config.STIM_TIP_TO_STIM_XML.format(*stim_tip_tf)
+
+        plus_config = os.path.join(Config.PATH_TO_PLUS_SETTINGS,
+                                   Config.PLUS_CONFIG_FILE)
+
+        with open(plus_config, 'r') as plus_file:
+            xml_data = plus_file.read()
+        
+        us_pattern =  re.compile("<Transform From=\"USTip\" To=\"US\"[\s\S]*?>")
+        stim_pattern =  re.compile("<Transform From=\"StimTip\" To=\"Stim\"[\s\S]*?>")
+
+        us_to_replace = us_pattern.search(xml_data).group(0)
+        stim_to_replace = stim_pattern.search(xml_data).group(0)
+
+        xml_data = xml_data.replace(us_to_replace, us_tip_to_us_string)
+        xml_data = xml_data.replace(stim_to_replace, stim_tip_to_stim_string)
+
+        with open(plus_config, "w+") as plus_file:
+            plus_file.write(xml_data)
+
 
 
 class TractographySlicelet(Slicelet):

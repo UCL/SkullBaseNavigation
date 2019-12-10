@@ -69,4 +69,20 @@ class BaseConfig:
     # Empty node
     EMPTY_NODE = ''
 
+    # PLUS XML Transforms
+    US_TIP_TO_US_XML =  "<Transform From=\"USTip\" To=\"US\" \n \
+                        Matrix=\" \n \
+						 {} {} {} {} \n \
+						 {} {} {} {} \n \
+						 {} {} {} {} \n \
+						 {} {} {} {} \n \
+                        \" />"
+
+    STIM_TIP_TO_STIM_XML =  "<Transform From=\"StimTip\" To=\"Stim\" \n \
+                        Matrix=\" \n \
+						 {} {} {} {} \n \
+						 {} {} {} {} \n \
+						 {} {} {} {} \n \
+						 {} {} {} {} \n \
+                        \" />"
 Config = BaseConfig
