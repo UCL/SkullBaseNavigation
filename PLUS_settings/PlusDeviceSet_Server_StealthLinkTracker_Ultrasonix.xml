@@ -1,4 +1,4 @@
-<PlusConfiguration version="2.3">
+<PlusConfiguration version="2.6">
   <DataCollection StartupDelaySec="1.0" >
     <DeviceSet
       Name="PlusServer: Medtronic StealthLink tracker + Ultrasonix"
@@ -12,10 +12,10 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
       ServerPort="6996"
       ToolReferenceFrame="Tracker" >
       <DataSources>
-        <DataSource Type="Tool" Id="Stylus" PortName="Passive Planar, Blunt" />
-        <DataSource Type="Tool" Id="Reference" PortName="Small Passive Cranial Frame" />
-        <DataSource Type="Tool" Id="Ras"      PortName="RasRegistration" />
-	      <DataSource Type="Tool" Id="SureTrack2"      PortName="SureTrak2 Silver Passive" />
+        <DataSource Type="Tool" Id="Stylus" PortName="Passive Planar, Blunt" AlwaysTrack="True" />
+        <DataSource Type="Tool" Id="Reference" PortName="Small Passive Cranial Frame" AlwaysTrack="True" />
+        <DataSource Type="Tool" Id="Ras"      PortName="RasRegistration" AlwaysTrack="True"/>
+	      <DataSource Type="Tool" Id="SureTrack2"      PortName="SureTrak2 Black Passive" AlwaysTrack="True"/>
       </DataSources>
       <OutputChannels>
         <OutputChannel Id="TrackerStream">
@@ -33,7 +33,6 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
     AcquisitionRate="30"
     AutoClipEnabled="TRUE"
     ImageGeometryOutputEnabled="TRUE"
-    
     ImageToTransducerTransformName="ImageToTransducer"
     IP="128.16.0.3" >
     <DataSources>
@@ -73,15 +72,17 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
 
   <CoordinateDefinitions>
 
-<!-- TransducerToProbe transform matrix is computed from calibration matrices provided by Ultrasonix for linear GPS probe -->
+<!-- TransducerToProbe transform matrix is computed from calibration matrices provided by Ultrasonix for linear GPS probe  -->
 
-    <Transform From="Transducer" To="Probe"
+    <Transform From="Image" To="SureTrack2Tip"
       Matrix="
-        0.0018    0.9477   -0.0175   14.8449
-       -1.0000    0.0016   -0.0052   15.0061
-       -0.0052    0.0166    0.9998    0.1638
-             0         0         0    1.0000" />
+		0.0228533 0.0324832 0.0646095 -7.36664 
+		0.0718974 -0.0174831 -0.0166412 -15.1173 
+		0.00776649 0.0662647 -0.0360624 -3.47876 
+		0 0 0 1 
+			" />
 
+ 
     <Transform From="Ras" To="Lps"
       Matrix="
         -1  0  0  0
@@ -89,14 +90,26 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
          0  0  1  0
          0  0  0  1" />
 
-    <Transform From="Image" To="Reference"
+    <!--<Transform From="Image" To="Reference"
       Matrix="
-        0.2 0.0 0.0 0.0
+		1.0 0.0 0.0 0.0
+        0.0 1.0 0.0 0.0
+        0.0 0.0 1.0 0.0
+        0 0 0 1
+        " /> -->
+		
+		<!--"0.2 0.0 0.0 0.0
         0.0 0.2 0.0 0.0
         0.0 0.0 0.2 0.0
-        0 0 0 1" />
-  </CoordinateDefinitions>
+        0 0 0 1 /> -->
+	<Transform From="SureTrack2Tip" To="SureTrack2"
+      Matrix="
+	0.999996 0 0.00295124 2.10151 
+	0.0029511 -0.00962836 -0.999949 -262.709 
+	2.84156e-05 0.999954 -0.00962832 -48.7503 
+	0 0 0 1 " />
 
+  </CoordinateDefinitions>
   <PlusOpenIGTLinkServer
     MaxNumberOfIgtlMessagesToSend="1"
     MaxTimeSpentWithProcessingMs="50"
@@ -112,11 +125,13 @@ Tools: Stylus (Passive Planar, Blunt) , Reference (Small Passive Cranial Frame)"
       <TransformNames>
         <!-- To avoid "Transform path not found" warnings, remove transforms for tools that are not defined by the StealthStation -->
         <Transform Name="StylusToReference" />
+		<Transform Name="SureTrack2ToReference"  />
+		<Transform Name="SureTrack2TipToSureTrack2"  />
         <Transform Name="SureTrack2ToRas"  />
         <Transform Name="StylusToRas"  />
       </TransformNames>
       <ImageNames>
-        <Image Name="Image" EmbeddedTransformToFrame="Reference" />
+        <Image Name="Image" EmbeddedTransformToFrame="SureTrack2Tip" />
       </ImageNames>
       <StringNames>
         <String Name="DepthMm" />

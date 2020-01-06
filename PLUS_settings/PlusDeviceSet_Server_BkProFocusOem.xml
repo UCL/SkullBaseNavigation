@@ -12,9 +12,9 @@
       Type="BkProFocusOem"
       ScannerAddress="128.16.0.3"
       OemPort="7915"
-      ContinuousStreamingEnabled="false"
+      ContinuousStreamingEnabled="true"
       ColorEnabled="false"
-      AcquisitionRate="1.5"
+      AcquisitionRate="10"
       OfflineTesting="false"
       OfflineTestingFilePath="c:\dev\bktest.png" >
       <DataSources>
