@@ -1,3 +1,7 @@
+
+README Out of date (10/12/2019) T Dowick to update
+===============================
+
 Skull Base Navigation
 ===============================
 
