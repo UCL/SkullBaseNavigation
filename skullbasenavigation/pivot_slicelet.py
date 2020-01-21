@@ -97,7 +97,7 @@ class Slicelet(object):
         calib_duration_widget.setValue(calib_duration)
         # Disable the button (enabled if wait_for_transforms returns
         # true)
-        self.ctk_pivot_box.setEnabled(False)
+        self.ctk_pivot_box.setEnabled(True)
         # Timer to check if CT model and ultrasound are available
         self.checkModelsTimer = qt.QTimer()
         self.checkModelsTimer.setInterval(1000)
@@ -122,7 +122,7 @@ class Slicelet(object):
         # Used for syncing with neuromonitoring data
         self.transform_save_btn = qt.QPushButton('Save Tip Transforms')
         self.transform_save_btn.clicked.connect(self.save_transforms)
-        self.transform_save_btn.setEnabled(False)
+        self.transform_save_btn.setEnabled(True)
         self.buttons.layout().addWidget(self.transform_save_btn)
 
         # Spacer to occupy excess space
@@ -256,7 +256,7 @@ class Slicelet(object):
 
         :return: True if the connection was successful, else False.
         """
-        self.connect_btn.setEnabled(False)
+        self.connect_btn.setEnabled(True)
         self.connect_btn.setText("Connecting...")
         self.connector = workflow.connect()
         success = functions.is_connected(self.connector)

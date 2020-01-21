@@ -70,6 +70,14 @@ class Slicelet(object):
         self.load_ner_seg_btn.clicked.connect(self.load_nerve_segmentation)
         self.align_btn = qt.QPushButton("Align Data")
         self.align_btn.clicked.connect(self.align_volumes)
+
+        t1_file = 'C:/Users/SBN/Documents/sbn_005_SliceletData/sbn_005_SliceletData/T1stealth.nii.gz'
+        t2_file = 'C:/Users/SBN/Documents/sbn_005_SliceletData/sbn_005_SliceletData/T2.nii.gz'
+        ct_file = 'C:/Users/SBN/Documents/sbn_005_SliceletData/sbn_005_SliceletData/s007_t1_mpr_stealth_ns_tra_DIS3D.nii.gz'
+        ts_file = 'C:/Users/SBN/Documents/sbn_005_SliceletData/sbn_005_SliceletData/abn_005_VS.seg.nrrd'
+        ns_file = 'C:/Users/SBN/Documents/sbn_005_SliceletData/sbn_005_SliceletData/sbn_005_nerve.seg.nrrd'
+        cm_file = 'C:/Users/SBN/Documents/sbn_005_SliceletData/sbn_005_SliceletData/colourmap_wm_gm_csf_2.nii.mgh'
+
         # Add volume buttons to one row
         self.data_layout.addWidget(self.load_t1_btn, 0, 0)
         self.data_layout.addWidget(self.load_t2_btn, 0, 1)
@@ -127,7 +135,7 @@ class Slicelet(object):
 
         self.ctk_recon_box.setChecked(False)
         # Disable until transforms are available
-        self.ctk_recon_box.setEnabled(False)
+        self.ctk_recon_box.setEnabled(True)
 
         # Timer to check if CT model and ultrasound are available
         self.checkModelsTimer = qt.QTimer()
@@ -163,7 +171,7 @@ class Slicelet(object):
         self.T2 = qt.QRadioButton('T2')
         self.CT = qt.QRadioButton('CT')
         self.MR = qt.QRadioButton('MR')
-        self.MR.setChecked(True)
+        self.MR.setEnabled(False)
         self.background_group = qt.QButtonGroup()
         self.background_group.addButton(self.T1)
         self.background_group.addButton(self.T2)
@@ -191,8 +199,10 @@ class Slicelet(object):
         # Radio buttons to choose between ultrasound or neurostimulation "view"
         self.view_group = qt.QButtonGroup()
         self.us_view_btn = qt.QRadioButton("Ultrasound view")
+        self.us_view_btn.setEnabled(False)
         self.view_group.addButton(self.us_view_btn)
         self.us_live_view_btn = qt.QRadioButton("Ultrasound live")
+        self.us_live_view_btn.setEnabled(False)
         self.view_group.addButton(self.us_live_view_btn)
         self.neuro_view_btn = qt.QRadioButton("Neurostimulation view")
         self.neuro_view_btn.setChecked(False)
@@ -204,7 +214,7 @@ class Slicelet(object):
         self.ctk_visualise_box = ctk.ctkCollapsibleButton()
         self.ctk_visualise_box.setText("Choose Image")
         self.ctk_visualise_box.setChecked(False)
-        self.ctk_visualise_box.setEnabled(False) 
+        self.ctk_visualise_box.setEnabled(True) 
         self.visualise_layout = qt.QGridLayout()
         # First a row with the overall view choices
         for i, button in enumerate(self.view_group.buttons()):
@@ -220,6 +230,7 @@ class Slicelet(object):
         self.visualise_layout.addWidget(self.images_group_box, 1, 0, 1, -1)
         # Update and assign layout
         self.ctk_visualise_box.setLayout(self.visualise_layout)
+        self.ctk_visualise_box.setChecked(True)
         self.buttons.layout().addWidget(self.ctk_visualise_box)
 
         # Button to save all transforms to file
@@ -278,12 +289,16 @@ class Slicelet(object):
 
         # Non-visual members:
         self.connector = None  # the OpenIGTLink connector to be used
-        self.t1_node = None  # the node holding the T1 MRI scan
-        self.t2_node = None  # the node holding the T2 MRI scan
-        self.ct_node = None  # the node holding a CT scan loaded from a file
-        self.cm_node = None  # the node holding a colourmap to optionally apply
-        self.tum_seg_node = None  # the node holding the tumour segmentation
-        self.ner_seg_node = None  # the node holding the nerve segmentation
+        # Load data in for demo automatically
+        _, self.t1_node = slicer.util.loadVolume(t1_file, {"show": False}, returnNode=True)
+        _, self.t2_node = slicer.util.loadVolume(t2_file, {"show": False}, returnNode=True)
+        _, self.ct_node = slicer.util.loadVolume(ct_file, {"show": True}, returnNode=True)
+        _, self.tum_seg_node = slicer.util.loadSegmentation(ts_file, returnNode=True)
+        _, self.ner_seg_node = slicer.util.loadSegmentation(ns_file, returnNode=True)
+        _, self.cm_node = slicer.util.loadVolume(cm_file, {"show": False}, returnNode=True)
+
+        # Show in 3D view
+        functions.set_MR_model_visible(self.ct_node)
         self.neurostim_points = []  # list of nodes of neurostim locations
 
         # Launch dependencies
@@ -365,7 +380,7 @@ class Slicelet(object):
             "T1": self.t1_node,
             "T2": self.t2_node,
             "CT": self.ct_node,
-            "MR": self.mr_node,
+            #"MR": self.mr_node,
             "Colourmap": self.cm_node,
         }[image_name]
 
@@ -375,29 +390,29 @@ class Slicelet(object):
         Also ensures that the right base image is shown (this is necessary when
         switching views).
         """
-        if self.view() == "us":
-            # In US view, selecting the colourmap means showing only that
-            # in the foreground, regardless of what base layer is selected.
-            # We also disable the other radio buttons to make that clear.
-            # This is because we can only show two layers, and the ultrasound
-            # reconstruction will take up the background.
-            if checked:
-                for button in self.background_group.buttons():
-                    button.setEnabled(False)
-                self.toggle_image(self.colormap_applied_btn)
-            else:
-                # Re-enable buttons in case they were previously disabled...
-                for button in self.background_group.buttons():
-                    button.setEnabled(True)
-                # ...and show the appropriate image
-                self.toggle_image(self.background_group.checkedButton())
-        else:
-            # In neurostimulation view, the base image is in the background,
-            # so we can just show or hide the colourmap in the foreground.
-            # before updating the background image.
-            fg_node = self.cm_node if checked else None
-            slicer.util.setSliceViewerLayers(foreground=fg_node)
-            self.toggle_image(self.background_group.checkedButton())
+        # if self.view() == "us":
+        #     # In US view, selecting the colourmap means showing only that
+        #     # in the foreground, regardless of what base layer is selected.
+        #     # We also disable the other radio buttons to make that clear.
+        #     # This is because we can only show two layers, and the ultrasound
+        #     # reconstruction will take up the background.
+        #     if checked:
+        #         for button in self.background_group.buttons():
+        #             button.setEnabled(True)
+        #         self.toggle_image(self.colormap_applied_btn)
+        #     else:
+        #         # Re-enable buttons in case they were previously disabled...
+        #         for button in self.background_group.buttons():
+        #             button.setEnabled(True)
+        #         # ...and show the appropriate image
+        #         self.toggle_image(self.background_group.checkedButton())
+        # else:
+        #     # In neurostimulation view, the base image is in the background,
+        #     # so we can just show or hide the colourmap in the foreground.
+        #     # before updating the background image.
+        fg_node = self.cm_node if checked else None
+        slicer.util.setSliceViewerLayers(foreground=fg_node)
+        self.toggle_image(self.background_group.checkedButton())
 
     def freeze_tracking(self, checked):
         """Change the slice view driver from any defined node (ie, tracking) to
@@ -588,7 +603,7 @@ class Slicelet(object):
 
         :return: True if the connection was successful, else False.
         """
-        self.connect_btn.setEnabled(False)
+        self.connect_btn.setEnabled(True)
         self.connect_btn.setText("Connecting...")
         self.connector = workflow.connect()
         success = functions.is_connected(self.connector)

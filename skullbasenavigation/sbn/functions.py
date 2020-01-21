@@ -484,6 +484,7 @@ def load_data_from_file(data_type, segmentation=False):
     dialog.setLabelText(dialog.Accept, "Load " + data_type)
     # Display dialog and load the first selected file (if multiple)
     if dialog.exec_():
+        print(dialog.selectedFiles()[0])
         # Use the appropriate Slicer method depending on what we are loading
         # These methods return a tuple (success::bool, node), but only if
         # returnNode is explicitly specified
