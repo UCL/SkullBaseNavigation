@@ -10,7 +10,7 @@ We welcome contributions to Skull Base Navigation.
 Reporting bugs and feature requests
 -----------------------------------
 
-Please create a new issue on https://weisslab.cs.ucl.ac.uk/WEISS/SoftwareRepositories/SkullBaseNavigation/issues/new
+Please create a new issue on https://github.com/UCL/SkullBaseNavigation/issues/new
 
 When reporting a bug, please include:
 * The version of Skull Base Navigation you are using
@@ -25,12 +25,12 @@ Fixing bugs or implement features
 
 The easiest way to contribute is to follow these guidelines:
 
-1. Look through the issues on https://weisslab.cs.ucl.ac.uk/WEISS/SoftwareRepositories/SkullBaseNavigation/issues and assign the relevant issue to yourself. If there is not an existing issue that covers your work, please create one: https://weisslab.cs.ucl.ac.uk/WEISS/SoftwareRepositories/SkullBaseNavigation/issues/new
-2. Fork the repository: https://weisslab.cs.ucl.ac.uk/WEISS/SoftwareRepositories/SkullBaseNavigation/forks/new
+1. Look through the issues on https://github.com/UCL/SkullBaseNavigation/issues and assign the relevant issue to yourself. If there is not an existing issue that covers your work, please create one: https://github.com/UCL/SkullBaseNavigation/issues/new
+2. Fork the repository: https://github.com/UCL/SkullBaseNavigation/forks/new
 3. Create a branch for your changes
 4. Make your changes following the coding guidelines below.
 5. Commit and push your changes to your fork.
-6. Submit a merge request: https://weisslab.cs.ucl.ac.uk/WEISS/SoftwareRepositories/SkullBaseNavigation/merge_requests/new
+6. Submit a merge request: https://github.com/UCL/SkullBaseNavigation/merge_requests/new
 
 
 
