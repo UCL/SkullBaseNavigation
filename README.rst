@@ -1,9 +1,6 @@
 
-README Out of date (10/12/2019) T Dowick to update
-===============================
-
 Skull Base Navigation
-===============================
+=====================
 
 .. image:: https://github.com/UCL/SkullBaseNavigation/raw/master/project-icon.png
    :height: 128px
@@ -15,19 +12,15 @@ Author: Thomas Dowrick
 
 Skull Base Navigation was developed at the `Wellcome EPSRC Centre for Interventional and Surgical Sciences`_ in `University College London (UCL)`_.
 
-.. image:: images/slicelet.gif
-
 
 Requirements
-^^^^^^^^^^
+^^^^^^^^^^^^
 
 See the `wiki
 <https://github.com/UCL/SkullBaseNavigation/wikis/home>`_.
 
-Start up guide and running
-^^^^^^^^^^
-
-Since the **SkullBaseNavigation** slicelet is connected to different pieces of hardware, here is a quick user's guide to help with a smooth start up. These steps are to be executed in sequence:
+Guide
+^^^^^
 
 - Check that BK5000, laptop and StealthStation are connnected to the network switch.
 - Power on all devices (BK, laptop, Stealth, network switch).
@@ -58,28 +51,10 @@ There are some basic unit tests implemented, these can be ran using:
     
 
 
-Developing
-^^^^^^^^^^
-
-You can clone the repository using the following command:
-
-::
-
-    git clone https://github.com/UCL/SkullBaseNavigation
-
-
-
 Contributing
 ^^^^^^^^^^^^
 
 Please see the `contributing guidelines`_.
-
-
-Useful links
-^^^^^^^^^^^^
-
-`Source code repository`_
-`Documentation`_
 
 
 Licensing and copyright
@@ -103,8 +78,3 @@ Supported by `Wellcome`_ and `EPSRC`_.
 .. _`EPSRC`: https://www.epsrc.ac.uk/
 .. _`contributing guidelines`: https://github.com/UCL/SkullBaseNavigation/blob/master/CONTRIBUTING.rst
 .. _`license file`: https://github.com/UCL/SkullBaseNavigation/blob/master/LICENSE
-
-
-.. toctree::
-   :maxdepth: 4
-   :caption: Contents:
